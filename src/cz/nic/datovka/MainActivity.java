@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,24 +26,12 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Spinner folder_spinner = (Spinner) findViewById(R.id.folder_spinner);
-		Spinner account_spinner = (Spinner) findViewById(R.id.account_spinner);
-
-		ArrayAdapter<CharSequence> adapter_accounts = ArrayAdapter
-				.createFromResource(this, R.array.accounts,
-						R.layout.top_spinner_layout);
-		ArrayAdapter<CharSequence> adapter_folders = ArrayAdapter
-				.createFromResource(this, R.array.folders,
-						R.layout.top_spinner_layout);
-
-		adapter_accounts
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		adapter_folders
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		account_spinner.setAdapter(adapter_accounts);
-		folder_spinner.setAdapter(adapter_folders);
-
+		Button folder_button = (Button) findViewById(R.id.folder_button);
+		Button account_button = (Button) findViewById(R.id.account_button);
+		
+		folder_button.setText("Inbox");
+		account_button.setText("martin.strbacka@nic.cz");
+		
 	}
 
 	@Override
@@ -51,9 +40,4 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 
-	public void messageClicked(View textview) {
-		TextView tv = (TextView) textview;
-		tv.setBackgroundColor(getResources().getColor(R.color.dimwhite));
-		Toast.makeText(this, tv.getText(), Toast.LENGTH_SHORT).show();
-	}
 }

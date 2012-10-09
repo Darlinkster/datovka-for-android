@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/message_item"
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="@color/gray"
-    android:clickable="true"
-    android:onClick="messageClicked"
-    android:textStyle="bold" />
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/message_item_annotation"
+        android:layout_width="match_parent"
+        android:background="@color/gray"
+        android:clickable="true"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/message_item_sender"
+        android:layout_width="match_parent"
+        android:background="@color/gray"
+        android:clickable="true"
+        android:textStyle="normal" />
+
+</LinearLayout>
