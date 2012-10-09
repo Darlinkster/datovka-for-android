@@ -1,5 +1,6 @@
 package cz.nic.datovka;
 
+import cz.nic.datovka.connector.Connector;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -9,10 +10,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity{
+public class MainActivity extends FragmentActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+
+		try {
+			Connector.connect("co55on", "Fx2MAt3u8wDRL5", Connector.TESTING,
+					this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 

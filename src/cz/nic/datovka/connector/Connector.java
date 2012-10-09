@@ -15,32 +15,29 @@ import cz.nic.datovka.tinyDB.DataBoxManager;
 
 
 public class Connector {
-	private String login;
-	private String password;
-	private DataBoxMessagesService messagesService;
+	public static int PRODUCTION = 1;
+	public static int TESTING = 2;
+	
+	private static DataBoxMessagesService messagesService;
 	private DataBoxDownloadService downloadService;
-	private DataBoxServices service;
-	private Context context;
-
-	public Connector(String login, String password, Context context) {
-		this.login = login;
-		this.password = password;
-		this.context = context;
-	}
-
-	public void connectToProduction() throws Exception {
-		Config config = new Config(DataBoxEnvironment.PRODUCTION);
+	private static DataBoxServices service;
+	
+	public static void connect(String login, String password, int environment, Context context) throws Exception {
+		Config config;
+		if(environment == PRODUCTION)
+			config = new Config(DataBoxEnvironment.PRODUCTION);
+		else
+			config = new Config(DataBoxEnvironment.TEST);
+		
 		service = DataBoxManager.login(config, login, password, context);
 		messagesService = service.getDataBoxMessagesService();
 	}
 
-	public void connectToTesting() throws Exception {
-		Config config = new Config(DataBoxEnvironment.TEST);
-		service = DataBoxManager.login(config, login, password, context);
-		messagesService = service.getDataBoxMessagesService();
-	}
-
-	public List<MessageEnvelope> getMessageList() {
+	public static List<MessageEnvelope> getMessageList() {
+		if (messagesService == null){
+			throw new IllegalStateException("Object not initialized");
+		}
+		
 		GregorianCalendar now = new GregorianCalendar();
 		GregorianCalendar from = new GregorianCalendar();
 		
