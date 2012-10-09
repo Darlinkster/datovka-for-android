@@ -1,0 +1,18 @@
+<resources>
+
+    <string name="app_name">Datovka</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Datovka</string>
+    <string name="shortdemo">Lorem Ipsum Dolor</string>
+
+    <string-array name="accounts">
+        <item>m. strbacka</item>
+        <item>o. mikle</item>
+    </string-array>
+
+    <string-array name="folders">
+        <item>Inbox</item>
+        <item>Sent</item>
+    </string-array>
+
+</resources>
