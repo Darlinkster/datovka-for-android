@@ -1,11 +1,10 @@
 package cz.nic.datovka.connector;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 
+import android.content.Context;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
@@ -13,11 +12,6 @@ import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxServices;
 import cz.nic.datovka.tinyDB.DataBoxManager;
-
-import android.content.Context;
-import android.util.Log;
-
-
 
 
 public class Connector {
@@ -55,11 +49,6 @@ public class Connector {
 		
 		List<MessageEnvelope> recievedMessageList = messagesService
 				.getListOfReceivedMessages(from.getTime(), now.getTime(), null, 0, 15);
-		
-		Log.w("Datovka", "Velikost: " + Integer.toString(recievedMessageList.size()));
-		for (MessageEnvelope envelope : recievedMessageList) {
-			Log.w("Datovka", "Anotace" + envelope.getAnnotation());
-		}
 		
 		return recievedMessageList;
 	}

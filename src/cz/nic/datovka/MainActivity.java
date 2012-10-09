@@ -1,27 +1,15 @@
 package cz.nic.datovka;
 
-import java.util.Iterator;
-import java.util.List;
-
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
-import cz.nic.datovka.connector.Connector;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity{
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,30 +33,6 @@ public class MainActivity extends Activity {
 
 		account_spinner.setAdapter(adapter_accounts);
 		folder_spinner.setAdapter(adapter_folders);
-
-		Connector connector = new Connector("co55on", "Fx2MAt3u8wDRL5", this);
-		try {
-			connector.connectToTesting();
-		} catch (Exception e) {
-			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
-		
-
-		LinearLayout messageView = (LinearLayout) findViewById(R.id.message_view);
-		List<MessageEnvelope> messageList = connector.getMessageList();
-		Iterator<MessageEnvelope> messageIterator = messageList.iterator();
-
-		int i = 0;
-		while (messageIterator.hasNext()) {
-			LayoutInflater inflater = (LayoutInflater) this
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			TextView message = (TextView) inflater.inflate(
-					R.layout.message_item, messageView, false);
-
-			message.setTag(i++);
-			message.setText(messageIterator.next().getAnnotation());
-			messageView.addView(message);
-		}
 
 	}
 
