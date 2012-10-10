@@ -20,8 +20,6 @@ public class MessageListFragment extends ListFragment {
 		List<MessageEnvelope> messageList = Connector.getMessageList();
 		setListAdapter(new MessageListAdapter(messageList));
 	}
-	
-
 
 	private class MessageListAdapter extends BaseAdapter {
 		private List<MessageEnvelope> messageList;
@@ -43,22 +41,28 @@ public class MessageListFragment extends ListFragment {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView result;
-			
+
+			View result;
+
+			String annotationText = getItem(position).getAnnotation();
+			String senderText = getItem(position).getSender().getIdentity();
+
 			if (convertView == null) {
-				result = (TextView) getActivity().getLayoutInflater().inflate(
+				result =  getActivity().getLayoutInflater().inflate(
 						R.layout.message_list_fragment, parent, false);
 			} else {
 				result = (TextView) convertView;
 			}
 
-			final String cheese = getItem(position).getAnnotation();
-			result.setText(cheese);
-
+			TextView annotationView = (TextView) result.findViewById(R.id.message_item_annotation);
+			TextView senderView = (TextView) result.findViewById(R.id.message_item_sender);
+			
+			annotationView.setText(annotationText);
+			senderView.setText(senderText);
+			
 			return result;
 
 		}
 
-		
 	}
 }

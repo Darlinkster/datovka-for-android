@@ -8,15 +8,25 @@
     <TextView
         android:id="@+id/message_item_annotation"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/gray"
         android:clickable="true"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/message_item_sender"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/gray"
         android:clickable="true"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:textSize="14sp"
         android:textStyle="normal" />
 
 </LinearLayout>
