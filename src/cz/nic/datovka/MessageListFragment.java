@@ -1,5 +1,6 @@
 package cz.nic.datovka;
 
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.Context;
@@ -46,20 +47,27 @@ public class MessageListFragment extends ListFragment {
 
 			String annotationText = getItem(position).getAnnotation();
 			String senderText = getItem(position).getSender().getIdentity();
+			String date = Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.DAY_OF_MONTH))
+					+ ". "
+					+ Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.MONTH))
+					+ ". "
+					+ Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.YEAR));
 
 			if (convertView == null) {
-				result =  getActivity().getLayoutInflater().inflate(
+				result = getActivity().getLayoutInflater().inflate(
 						R.layout.message_list_fragment, parent, false);
 			} else {
 				result = (TextView) convertView;
 			}
 
-			TextView annotationView = (TextView) result.findViewById(R.id.message_item_annotation);
-			TextView senderView = (TextView) result.findViewById(R.id.message_item_sender);
-			
+			TextView annotationView = (TextView) result
+					.findViewById(R.id.message_item_annotation);
+			TextView senderView = (TextView) result
+					.findViewById(R.id.message_item_sender);
+
 			annotationView.setText(annotationText);
-			senderView.setText(senderText);
-			
+			senderView.setText(senderText + "\t " + date);
+
 			return result;
 
 		}

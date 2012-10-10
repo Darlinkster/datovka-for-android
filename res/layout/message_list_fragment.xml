@@ -14,7 +14,8 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="8dp"
-        android:textSize="16sp"
+        android:singleLine="true"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
@@ -23,10 +24,11 @@
         android:layout_height="wrap_content"
         android:background="@color/gray"
         android:clickable="true"
+        android:paddingBottom="8dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:paddingBottom="8dp"
-        android:textSize="14sp"
+        android:singleLine="true"
+        android:textSize="12sp"
         android:textStyle="normal" />
 
 </LinearLayout>
