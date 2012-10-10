@@ -1,15 +1,12 @@
 package cz.nic.datovka;
 
-import cz.nic.datovka.connector.Connector;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import cz.nic.datovka.connector.Connector;
 
 public class MainActivity extends FragmentActivity {
 
@@ -40,4 +37,11 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 
+	public void itemClicked(View view) {
+		view.setBackgroundColor(getResources().getColor(R.color.dimwhite));
+		int id = view.getId();
+		Intent i = new Intent(this, MessageDetailActivity.class);
+		i.putExtra(MessageDetailActivity.ID, id);
+		startActivity(i);
+	}
 }

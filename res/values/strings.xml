@@ -1,8 +1,9 @@
 <resources>
 
     <string name="app_name">Datovka</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_settings">Nastavení</string>
     <string name="title_activity_main">Datovka</string>
+    <string name="sender">Odesilatel:</string>
     <string name="shortdemo">Lorem Ipsum Dolor</string>
 
 </resources>

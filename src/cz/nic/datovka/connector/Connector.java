@@ -2,6 +2,7 @@ package cz.nic.datovka.connector;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
@@ -21,6 +22,7 @@ public class Connector {
 	private static DataBoxMessagesService messagesService;
 	private DataBoxDownloadService downloadService;
 	private static DataBoxServices service;
+	private static List<MessageEnvelope> recievedMessageList;
 	
 	public static void connect(String login, String password, int environment, Context context) throws Exception {
 		Config config;
@@ -44,9 +46,24 @@ public class Connector {
 		from.roll(Calendar.DAY_OF_YEAR, -28);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 		
-		List<MessageEnvelope> recievedMessageList = messagesService
+		recievedMessageList = messagesService
 				.getListOfReceivedMessages(from.getTime(), now.getTime(), null, 0, 15);
 		
 		return recievedMessageList;
 	}
+	
+	public static MessageEnvelope getMessageById(int id) {
+		Iterator<MessageEnvelope> iterator = recievedMessageList.iterator();
+		MessageEnvelope result = null;
+		
+		while(iterator.hasNext()){
+			result = iterator.next();
+			if(Integer.parseInt(result.getMessageID()) == id){
+				return result;
+			}
+		}
+		
+		throw new IllegalStateException("Cannot find message id=" + id);
+	}
+	
 }

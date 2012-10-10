@@ -20,6 +20,7 @@ public class MessageListFragment extends ListFragment {
 		super.onActivityCreated(savedInstanceState);
 		List<MessageEnvelope> messageList = Connector.getMessageList();
 		setListAdapter(new MessageListAdapter(messageList));
+		
 	}
 
 	private class MessageListAdapter extends BaseAdapter {
@@ -68,6 +69,7 @@ public class MessageListFragment extends ListFragment {
 			annotationView.setText(annotationText);
 			senderView.setText(senderText + "\t " + date);
 
+			result.setId(Integer.parseInt(messageList.get(position).getMessageID()));
 			return result;
 
 		}
