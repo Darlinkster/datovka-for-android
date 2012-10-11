@@ -2,6 +2,7 @@
 
     <string name="app_name">Datovka</string>
     <string name="menu_settings">Nastavení</string>
+    <string name="menu_accounts">Účty</string>
     <string name="title_activity_main">Datovka</string>
     <string name="sender">Odesilatel:</string>
     <string name="shortdemo">Lorem Ipsum Dolor</string>
