@@ -1,11 +1,11 @@
 package cz.nic.datovka;
 
-import org.w3c.dom.Text;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +32,14 @@ public class MainActivity extends FragmentActivity {
 		
 		folder_button.setText("Inbox");
 		account_button.setText("martin.strbacka@nic.cz");
+
+		if(savedInstanceState == null){
+		MessageListFragment mlf = new MessageListFragment();
+		FragmentManager fm = getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.replace(R.id.main_linearlayout, mlf);
+		ft.commit();
+		}
 		
 	}
 
