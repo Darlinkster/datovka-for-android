@@ -263,7 +263,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         }
     }
 
-    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException{
+    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, DataBoxException{
     	//System.out.println("HTTP CODE: " + con.getResponseCode());
     	if (!OKCodes.contains(con.getResponseCode())) {
             String message = String.format("Pozadavek selhal se stavovym kodem %d %s.",

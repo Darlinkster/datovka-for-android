@@ -1,11 +1,15 @@
 package cz.nic.datovka;
 
+import org.w3c.dom.Text;
+
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import cz.nic.datovka.connector.Connector;
 
 public class MainActivity extends FragmentActivity {
@@ -38,7 +42,13 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	public void itemClicked(View view) {
-		view.setBackgroundColor(getResources().getColor(R.color.dimwhite));
+		view.setBackgroundColor(getResources().getColor(R.color.gray));
+		TextView annotation = (TextView) view.findViewById(R.id.message_item_annotation);
+		TextView sender = (TextView) view.findViewById(R.id.message_item_sender);
+		
+		annotation.setTypeface(null, Typeface.NORMAL);
+		sender.setTypeface(null, Typeface.NORMAL);
+		
 		int id = view.getId();
 		Intent i = new Intent(this, MessageDetailActivity.class);
 		i.putExtra(MessageDetailActivity.ID, id);

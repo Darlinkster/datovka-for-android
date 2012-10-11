@@ -43,8 +43,14 @@ public class MessageListFragment extends ListFragment {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
-
 			View result;
+			
+			if (convertView == null) {
+				result = getActivity().getLayoutInflater().inflate(
+						R.layout.message_list_fragment, parent, false);
+			} else {
+				result = convertView;
+			}
 
 			String annotationText = getItem(position).getAnnotation();
 			String senderText = getItem(position).getSender().getIdentity();
@@ -54,20 +60,16 @@ public class MessageListFragment extends ListFragment {
 					+ ". "
 					+ Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.YEAR));
 
-			if (convertView == null) {
-				result = getActivity().getLayoutInflater().inflate(
-						R.layout.message_list_fragment, parent, false);
-			} else {
-				result = (TextView) convertView;
-			}
-
 			TextView annotationView = (TextView) result
 					.findViewById(R.id.message_item_annotation);
 			TextView senderView = (TextView) result
 					.findViewById(R.id.message_item_sender);
+			TextView dateView = (TextView) result
+					.findViewById(R.id.message_item_date);
 
 			annotationView.setText(annotationText);
-			senderView.setText(senderText + "\t " + date);
+			senderView.setText(senderText);
+			dateView.setText(date);
 
 			result.setId(Integer.parseInt(messageList.get(position).getMessageID()));
 			return result;

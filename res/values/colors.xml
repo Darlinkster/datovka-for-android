@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="lightblack">#444</color>
-    <color name="gray">#aaa</color>
-    <color name="dimwhite">#eee</color>
+    <color name="gray">#bbb</color>
+    <color name="dimwhite">#fff</color>
 </resources>
