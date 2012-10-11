@@ -33,13 +33,11 @@ public class MainActivity extends FragmentActivity {
 		folder_button.setText("Inbox");
 		account_button.setText("martin.strbacka@nic.cz");
 
-		if(savedInstanceState == null){
 		MessageListFragment mlf = new MessageListFragment();
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.main_linearlayout, mlf);
 		ft.commit();
-		}
 		
 	}
 
