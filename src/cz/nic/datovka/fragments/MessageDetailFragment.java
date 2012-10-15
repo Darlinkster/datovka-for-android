@@ -1,8 +1,11 @@
-package cz.nic.datovka;
+package cz.nic.datovka.fragments;
 
 import java.util.GregorianCalendar;
 
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.R;
+import cz.nic.datovka.R.id;
+import cz.nic.datovka.R.layout;
 import cz.nic.datovka.connector.Connector;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,7 +40,7 @@ public class MessageDetailFragment extends Fragment {
 		TextView sender = (TextView) v.findViewById(R.id.message_sender);
 		TextView senderAddress = (TextView) v.findViewById(R.id.message_sender_address);
 		TextView messageType = (TextView) v.findViewById(R.id.message_type);
-		
+		/*
 		MessageEnvelope message = Connector.getMessageById(id);
 		
 		annotation.setText(message.getAnnotation());
@@ -48,7 +51,8 @@ public class MessageDetailFragment extends Fragment {
 		sender.setText(message.getSender().getIdentity());
 		senderAddress.setText(message.getSender().getAddress());
 		messageType.setText(message.getType().toString());
-
+*/
 		return v;
+		
 	}
 }

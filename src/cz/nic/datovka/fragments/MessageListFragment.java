@@ -1,4 +1,4 @@
-package cz.nic.datovka;
+package cz.nic.datovka.fragments;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.R;
+import cz.nic.datovka.R.id;
+import cz.nic.datovka.R.layout;
 import cz.nic.datovka.connector.Connector;
 
 public class MessageListFragment extends ListFragment {
@@ -18,8 +21,8 @@ public class MessageListFragment extends ListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		List<MessageEnvelope> messageList = Connector.getMessageList();
-		setListAdapter(new MessageListAdapter(messageList));
+		//List<MessageEnvelope> messageList = Connector.getMessageList();
+		//setListAdapter(new MessageListAdapter(messageList));
 		
 	}
 

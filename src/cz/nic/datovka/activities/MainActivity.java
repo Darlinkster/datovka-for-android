@@ -1,4 +1,4 @@
-package cz.nic.datovka;
+package cz.nic.datovka.activities;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -7,10 +7,18 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+import cz.nic.datovka.R;
+import cz.nic.datovka.R.color;
+import cz.nic.datovka.R.id;
+import cz.nic.datovka.R.layout;
+import cz.nic.datovka.R.menu;
 import cz.nic.datovka.connector.Connector;
+import cz.nic.datovka.fragments.MessageListFragment;
 
 public class MainActivity extends FragmentActivity {
 
@@ -44,6 +52,20 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_accounts:
+				startActivity(new Intent(this, AccountActivity.class));
+				return true;
+			case R.id.menu_settings:
+				Toast.makeText(this, "nastaveni", Toast.LENGTH_SHORT).show();
+				return true;
+		}
+		
 		return true;
 	}
 

@@ -236,11 +236,14 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
                 throw new DataBoxException(message);
             }
         } catch (SAXException sax) {
-            throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
+            sax.printStackTrace();
+        	//throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
         } catch (ParserConfigurationException pce) {
-            throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
+            pce.printStackTrace();
+        	//throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
         } catch (IOException ioe) {
-            throw new DataBoxException("IO chyba pri cteni odpovedi.", ioe);
+        	ioe.printStackTrace();
+           // throw new DataBoxException("IO chyba pri cteni odpovedi.", ioe);
         } finally {
             close(con);
         }
@@ -263,7 +266,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         }
     }
 
-    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, DataBoxException{
+    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException{
     	//System.out.println("HTTP CODE: " + con.getResponseCode());
     	if (!OKCodes.contains(con.getResponseCode())) {
             String message = String.format("Pozadavek selhal se stavovym kodem %d %s.",

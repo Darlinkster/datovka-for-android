@@ -1,5 +1,9 @@
-package cz.nic.datovka;
+package cz.nic.datovka.activities;
 
+import cz.nic.datovka.R;
+import cz.nic.datovka.R.id;
+import cz.nic.datovka.R.layout;
+import cz.nic.datovka.fragments.MessageDetailFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
