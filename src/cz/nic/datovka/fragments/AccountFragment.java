@@ -1,59 +1,62 @@
 package cz.nic.datovka.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import cz.nic.datovka.R;
-import cz.nic.datovka.connector.SQliteConnector;
+import cz.nic.datovka.connector.AccountContentProvider;
+import cz.nic.datovka.connector.DatabaseHelper;
 
-public class AccountFragment extends ListFragment {
-	private SQliteConnector sqlConnector;
+public class AccountFragment extends ListFragment implements
+		LoaderCallbacks<Cursor> {
+	private SimpleCursorAdapter adapter;
 
 	public static AccountFragment newInstance() {
 		AccountFragment f = new AccountFragment();
 		return f;
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-
-		View v = inflater.inflate(R.layout.account_fragment, container, false);
-
-		return v;
-	}
-
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		registerForContextMenu(getListView());
 		updateList();
+		registerForContextMenu(getListView());
 	}
 
 	public void updateList() {
 		Context context = getActivity();
-		sqlConnector = new SQliteConnector(context);
+		
+		String[] from = { DatabaseHelper.ACCOUNT_LOGIN };
+		//String[] from = DatabaseHelper.account_columns;
+		int[] to = { R.id.account_item };
+		
+		getLoaderManager().initLoader(0, null, this);
+		
+		adapter = new SimpleCursorAdapter(context,
+				R.layout.account_fragment, null, from,
+				to, 0);
 
-		String[] from = { sqlConnector.ACCOUNT_LOGIN };
-		int[] to = { R.id.account_item }; 
-		
-		
-		ListAdapter adapter = new SimpleCursorAdapter(context, 
-				R.layout.account_fragment, sqlConnector.getAccounts(),
-				from, to, 0);
-		
 		setListAdapter(adapter);
-		sqlConnector.close();
-		
 	}
-	
-	@Override
-	public void onDestroyView(){
-		super.onDestroyView();
-		sqlConnector.close();
+
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		String[] projection = DatabaseHelper.account_columns;
+		CursorLoader cursorLoader = new CursorLoader(getActivity(),
+				AccountContentProvider.CONTENT_URI, projection, null, null,
+				null);
+
+		return cursorLoader;
+	}
+
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		adapter.swapCursor(arg1);
+	}
+
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		adapter.swapCursor(null);
 	}
 }

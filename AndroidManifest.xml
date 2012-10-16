@@ -21,16 +21,24 @@
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.MessageDetailActivity"
             android:label="@string/title_activity_main" >
-       </activity>     
-       <activity
+        </activity>
+        <activity
             android:name=".activities.AccountActivity"
             android:label="@string/title_activity_main" >
-       </activity>     
+        </activity>
+
+        <provider
+            android:name=".connector.AccountContentProvider"
+            android:authorities="cz.nic.datovka.connector.accountcontentprovider"
+            android:exported="false" >
+        </provider>
     </application>
+
 </manifest>

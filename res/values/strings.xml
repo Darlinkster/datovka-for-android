@@ -5,6 +5,10 @@
     <string name="menu_accounts">Účty</string>
     <string name="title_activity_main">Datovka</string>
     <string name="sender">Odesilatel:</string>
-    <string name="shortdemo">Lorem Ipsum Dolor</string>
+    <string name="add_acount">Přidat účet</string>
+    <string name="username">Uživatelské jméno</string>
+    <string name="password">Heslo</string>
+    <string name="add_account_button">Vytvořit účet</string>
+    <string name="storno">Storno</string>
 
 </resources>
