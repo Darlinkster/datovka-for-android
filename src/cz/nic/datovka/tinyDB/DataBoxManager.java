@@ -11,6 +11,8 @@ import cz.abclinuxu.datoveschranky.common.entities.Message;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.MessageState;
 import cz.abclinuxu.datoveschranky.common.entities.MessageType;
+import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
+import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxAccessService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
@@ -23,7 +25,9 @@ import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
+import cz.nic.datovka.tinyDB.responseparsers.GetListOfSentMessages;
 import cz.nic.datovka.tinyDB.responseparsers.VerifyMessage;
+import cz.nic.datovka.tinyDB.responseparsers.GetUserInfoFromLogin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +39,7 @@ import java.security.KeyStoreException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +62,7 @@ import org.xml.sax.SAXException;
  * @author Vaclav Rosecky <xrosecky 'at' gmail 'dot' com>
  * 
  */
-public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadService, DataBoxServices {
+public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadService, DataBoxServices, DataBoxAccessService {
     
     private static final int MAX_REDIRECT_COUNT = 25;
     private static final List<Integer> redirectionCodes = Arrays.asList(301, 302);
@@ -97,66 +102,11 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     public DataBoxMessagesService getDataBoxMessagesService() {
         return this;
     }
-
-    public DataBoxUploadService getDataBoxUploadService() {
-        throw new UnsupportedOperationException("Sluzba DataBoxUploadService neni pristupna.");
+    
+    public DataBoxAccessService getDataBoxAccessService() {
+        return this;
     }
-
-    // metody z DataBoxMessages
-    public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to,
-            EnumSet<MessageState> state, int offset, int limit) {
-        // tohle hrani se stringy je neefektivní, ale pro nase 
-        // demonstracni ucely to vyhovuje.
-    	String resource = "/res/raw/getlistofreceivedmessages.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
-        post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
-        post = post.replace("${OFFSET}", String.valueOf(offset));
-        post = post.replace("${LIMIT}", String.valueOf(limit));
-        GetListOfReceivedMessages result = new GetListOfReceivedMessages();
-        this.postAndParseResponse(post, "dx", result);
-        return result.getMessages();
-    }
-
-    public List<MessageEnvelope> getListOfSentMessages(Date from,
-            Date to, EnumSet<MessageState> state,  int offset, int limit) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Hash verifyMessage(MessageEnvelope envelope) {
-        String resource = "/res/raw/verifymessage.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
-        VerifyMessage parser = new VerifyMessage();
-        this.postAndParseResponse(post, "dx", parser);
-        return parser.getResult();
-    }
-
-    // metody z DataBoxDownload
-    public Message downloadMessage(MessageEnvelope envelope,
-            AttachmentStorer storer) {
-        if (envelope.getType() != MessageType.RECEIVED) {
-            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }
-        String resource = "/res/raw/downloadreceivedmessage.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
-        DownloadReceivedMessage parser = new DownloadReceivedMessage(envelope, storer);
-        this.postAndParseResponse(post, "dz", parser);
-        return new Message(envelope, null, null, parser.getResult());
-    }
-
-    public void downloadSignedMessage(MessageEnvelope envelope, OutputStream os) {
-        if (envelope.getType() != MessageType.RECEIVED) {
-            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }
-        String resource = "/res/raw/downloadsignedreceivedmessage.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
-        DownloadSignedReceivedMessage parser = new DownloadSignedReceivedMessage(os);
-        this.postAndParseResponse(post, "dz", parser);
-    }
-
+    
     public DeliveryInfo getDeliveryInfo(MessageEnvelope arg0) {
         throw new UnsupportedOperationException("Operace getDeliveryInfo neni touto " +
                 "knihovnou podporovana.");
@@ -170,12 +120,101 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         throw new UnsupportedOperationException("Operace markMessageAsDownloaded neni " +
                 "touto knihovnou podporovana.");
     }
-    
-    public DataBoxAccessService getDataBoxAccessService() {
-        throw new UnsupportedOperationException("Operace getDataBoxAccessService neni " +
-        "touto knihovnou podporovana.");
+
+    public DataBoxUploadService getDataBoxUploadService() {
+        throw new UnsupportedOperationException("Sluzba DataBoxUploadService neni pristupna.");
     }
 
+    // metody z DataBoxMessages
+    public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to,
+            EnumSet<MessageState> state, int offset, int limit) {
+        
+    	String resource = "/res/raw/get_list_of_received_messages.xml";
+        String post = Utils.readResourceAsString(this.getClass(), resource);
+        
+        post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
+        post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
+        post = post.replace("${OFFSET}", String.valueOf(offset));
+        post = post.replace("${LIMIT}", String.valueOf(limit));
+        GetListOfReceivedMessages result = new GetListOfReceivedMessages();
+        this.postAndParseResponse(post, "dx", result);
+        return result.getMessages();
+    }
+
+    public List<MessageEnvelope> getListOfSentMessages(Date from,
+            Date to, EnumSet<MessageState> state,  int offset, int limit) {
+
+    	String resource = "/res/raw/get_list_of_sent_messages.xml";
+        String post = Utils.readResourceAsString(this.getClass(), resource);
+        
+        post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
+        post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
+        post = post.replace("${OFFSET}", String.valueOf(offset));
+        post = post.replace("${LIMIT}", String.valueOf(limit));
+        GetListOfSentMessages result = new GetListOfSentMessages(); 
+        this.postAndParseResponse(post, "dx", result);
+        return result.getMessages();
+    }
+
+    public Hash verifyMessage(MessageEnvelope envelope) {
+        String resource = "/res/raw/verify_message.xml";
+        String post = Utils.readResourceAsString(this.getClass(), resource);
+        post = post.replace("${ID}", envelope.getMessageID());
+        VerifyMessage parser = new VerifyMessage();
+        this.postAndParseResponse(post, "dx", parser);
+        return parser.getResult();
+    }
+
+    // metody z DataBoxDownload
+    public Message downloadMessage(MessageEnvelope envelope,
+            AttachmentStorer storer) {
+        if (envelope.getType() != MessageType.RECEIVED) {
+            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+        }
+        String resource = "/res/raw/download_received_message.xml";
+        String post = Utils.readResourceAsString(this.getClass(), resource);
+        post = post.replace("${ID}", envelope.getMessageID());
+        DownloadReceivedMessage parser = new DownloadReceivedMessage(envelope, storer);
+        this.postAndParseResponse(post, "dz", parser);
+        return new Message(envelope, null, null, parser.getResult());
+    }
+
+    public void downloadSignedMessage(MessageEnvelope envelope, OutputStream os) {
+        if (envelope.getType() != MessageType.RECEIVED) {
+            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+        }
+        String resource = "/res/raw/download_signed_received_message.xml";
+        String post = Utils.readResourceAsString(this.getClass(), resource);
+        post = post.replace("${ID}", envelope.getMessageID());
+        DownloadSignedReceivedMessage parser = new DownloadSignedReceivedMessage(os);
+        this.postAndParseResponse(post, "dz", parser);
+    }
+
+    // metody z DataAccessService
+    
+    public OwnerInfo GetOwnerInfoFromLogin(){
+    	String resource = "/res/raw/get_owner_info_from_login.xml";
+    	String post = Utils.readResourceAsString(this.getClass(), resource);
+    	
+    	return null;
+    }
+    
+	public UserInfo GetUserInfoFromLogin(){
+		String resource = "/res/raw/get_user_info_from_login.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		GetUserInfoFromLogin parser = new GetUserInfoFromLogin();
+		this.postAndParseResponse(post, "DsManage", parser);
+		
+		return parser.getUserInfo();
+	}
+	
+	public GregorianCalendar GetPasswordInfo(){
+		String resource = "/res/raw/get_password_info.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		
+		return null;
+	}
+    
     /**
      * Stáhne přijatou zprávu včetně SOAP obálky a příloh jako XML soubor. Vhodné pouze
      * pro debugovací účely, ne pro záholování.
@@ -189,7 +228,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         if (envelope.getType() != MessageType.RECEIVED) {
             throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
         }
-        String resource = "/res/raw/downloadreceivedmessage.xml";
+        String resource = "/res/raw/download_received_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", envelope.getMessageID());
         this.storeRequest(post, "dz", os);

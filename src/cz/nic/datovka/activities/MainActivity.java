@@ -25,13 +25,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
-		try {
-			Connector.connect("co55on", "Fx2MAt3u8wDRL5", Connector.TESTING,
-					this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 

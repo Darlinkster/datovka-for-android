@@ -39,6 +39,11 @@
             android:authorities="cz.nic.datovka.connector.accountcontentprovider"
             android:exported="false" >
         </provider>
+
+        <service android:name=".services.MessageDownloadService" >
+        </service>
+        <service android:name=".services.AddAccountService" >
+        </service>
     </application>
 
 </manifest>

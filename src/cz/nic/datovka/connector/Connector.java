@@ -11,9 +11,11 @@ import android.content.Context;
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
 import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
+import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxAccessService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxServices;
@@ -25,6 +27,7 @@ public class Connector {
 
 	private static DataBoxMessagesService messagesService;
 	private static DataBoxDownloadService downloadService;
+	private static DataBoxAccessService accessService;
 	private static DataBoxServices service;
 	private static List<MessageEnvelope> recievedMessageList;
 
@@ -38,8 +41,13 @@ public class Connector {
 
 		service = DataBoxManager.login(config, login, password, context);
 		messagesService = service.getDataBoxMessagesService();
+		accessService = service.getDataBoxAccessService();
 	}
 
+	public static UserInfo getUserInfo(){
+		return accessService.GetUserInfoFromLogin();
+	}
+	
 	public static List<MessageEnvelope> getMessageList() {
 		if (messagesService == null) {
 			throw new IllegalStateException("Object not initialized");
