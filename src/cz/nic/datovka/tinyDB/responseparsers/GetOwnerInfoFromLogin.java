@@ -73,8 +73,9 @@ public class GetOwnerInfoFromLogin extends AbstractResponseParser {
 			ownerInfo.setNationality(map.get("nationality").toString());
 			ownerInfo.setIdentifier(map.get("identifier").toString());
 			ownerInfo.setRegistryCode(map.get("registryCode").toString());
+			ownerInfo.setTelNumber(map.get("telNumber").toString());
+			ownerInfo.setEmail(map.get("email").toString());
 			
-			// TODO OwnerInfo nema email a telNumber, patch?
 			// TODO dbState? dbEffectiveOVM? dbOpenAddressing?
 		}
 	}

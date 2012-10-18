@@ -1,20 +1,17 @@
 package cz.nic.datovka.services;
 
+import java.util.GregorianCalendar;
 import java.util.List;
 
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
-import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
-import cz.nic.datovka.connector.AccountContentProvider;
-import cz.nic.datovka.connector.Connector;
-import cz.nic.datovka.connector.DatabaseHelper;
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
+import cz.nic.datovka.connector.Connector;
 
 public class AddAccountService extends IntentService {
 	public static final String LOGIN = "login";
@@ -59,8 +56,8 @@ public class AddAccountService extends IntentService {
 		UserInfo uinfo = Connector.getUserInfo();
 		List<MessageEnvelope> recievedMessageList = Connector.getRecievedMessageList();
 		List<MessageEnvelope> sentMessageList = Connector.getSentMessageList();
+		GregorianCalendar cal = Connector.getPasswordInfo();
 		
-		System.out.println(uinfo.toString());
 		
 		/*
 		ContentValues values = new ContentValues();

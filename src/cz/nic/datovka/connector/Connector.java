@@ -1,20 +1,15 @@
 package cz.nic.datovka.connector;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
-import cz.abclinuxu.datoveschranky.common.entities.Attachment;
-import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.abclinuxu.datoveschranky.common.entities.PasswordExpirationInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
-import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxAccessService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
@@ -45,6 +40,10 @@ public class Connector {
 
 	public static UserInfo getUserInfo(){
 		return accessService.GetUserInfoFromLogin();
+	}
+	
+	public static GregorianCalendar getPasswordInfo(){
+		return accessService.GetPasswordInfo();
 	}
 	
 	public static List<MessageEnvelope> getRecievedMessageList() {

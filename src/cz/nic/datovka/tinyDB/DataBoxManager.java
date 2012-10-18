@@ -1,11 +1,32 @@
 package cz.nic.datovka.tinyDB;
 
-import android.R;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.kobjects.base64.Base64;
+import org.xml.sax.SAXException;
+
 import android.content.Context;
 import cz.abclinuxu.datoveschranky.common.entities.DeliveryInfo;
-import cz.abclinuxu.datoveschranky.common.impl.Utils;
-import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
-import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.Message;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
@@ -14,6 +35,9 @@ import cz.abclinuxu.datoveschranky.common.entities.MessageType;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
+import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
+import cz.abclinuxu.datoveschranky.common.impl.Utils;
+import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxAccessService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
@@ -26,39 +50,11 @@ import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfSentMessages;
-import cz.nic.datovka.tinyDB.responseparsers.VerifyMessage;
-import cz.nic.datovka.tinyDB.responseparsers.GetUserInfoFromLogin;
 import cz.nic.datovka.tinyDB.responseparsers.GetOwnerInfoFromLogin;
+import cz.nic.datovka.tinyDB.responseparsers.GetUserInfoFromLogin;
+import cz.nic.datovka.tinyDB.responseparsers.VerifyMessage;
+import cz.nic.datovka.tinyDB.responseparsers.GetPasswordInfo;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.kobjects.base64.Base64;
-import org.xml.sax.SAXException;
 
 
 
@@ -220,8 +216,12 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 	public GregorianCalendar GetPasswordInfo(){
 		String resource = "/res/raw/get_password_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
+		GetPasswordInfo parser = new GetPasswordInfo();
+		this.postAndParseResponse(post, "DsManage", parser);
 		
-		return null;
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime((parser.getPasswordInfo().getPasswordExpiration()));
+		return cal;
 	}
     
     /**
