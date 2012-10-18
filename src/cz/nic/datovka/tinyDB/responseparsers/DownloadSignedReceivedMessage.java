@@ -1,12 +1,12 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
+import android.util.Base64OutputStream;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
 import cz.nic.datovka.tinyDB.holders.OutputStreamHolder;
 
 import java.io.Closeable;
 import java.io.OutputStream;
-import org.apache.commons.codec.binary.Base64OutputStream;
 import org.xml.sax.Attributes;
 
 /**
@@ -24,7 +24,8 @@ public class DownloadSignedReceivedMessage extends AbstractResponseParser {
     @Override
     public OutputHolder startElementImpl(String elName, Attributes attributes) {
         if ("dmSignature".equals(elName)) {
-            Base64OutputStream bos = new Base64OutputStream(output, false, 0, null);
+            //Base64OutputStream bos = new Base64OutputStream(output, false, 0, null);
+        	Base64OutputStream bos = new Base64OutputStream(output, 0);
             OutputHolder input = new OutputStreamHolder(bos);
             return input;
 

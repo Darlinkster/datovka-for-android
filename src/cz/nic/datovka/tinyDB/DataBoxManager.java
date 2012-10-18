@@ -28,10 +28,15 @@ import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfSentMessages;
 import cz.nic.datovka.tinyDB.responseparsers.VerifyMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetUserInfoFromLogin;
+import cz.nic.datovka.tinyDB.responseparsers.GetOwnerInfoFromLogin;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.KeyStore;
@@ -51,6 +56,8 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.kobjects.base64.Base64;
 import org.xml.sax.SAXException;
 
 
@@ -195,8 +202,10 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     public OwnerInfo GetOwnerInfoFromLogin(){
     	String resource = "/res/raw/get_owner_info_from_login.xml";
     	String post = Utils.readResourceAsString(this.getClass(), resource);
+    	GetOwnerInfoFromLogin parser = new  GetOwnerInfoFromLogin();
+    	this.postAndParseResponse(post, "DsManage", parser);
     	
-    	return null;
+    	return parser.getOwnerInfo();
     }
     
 	public UserInfo GetUserInfoFromLogin(){
@@ -240,7 +249,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         // základní HTTP autorizace
         //authorization = "Basic " + new String(base64.encode(userPassword.getBytes()), "UTF-8");
        
-        authorization = "Basic " + new String(Base64.encodeBytes(userPassword.getBytes()));
+        authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
       
         KeyStore keyStore = KeyStore.getInstance("BKS");
         SSLContext sslcontext = SSLContext.getInstance("TLS");
@@ -262,6 +271,17 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
             this.configure(con);
             con.getOutputStream().write(post.getBytes("UTF-8"));
             checkHttpResponseCode(con);
+          
+            //DEBUG
+          /*
+            InputStreamReader bis = new InputStreamReader(con.getInputStream());
+            BufferedReader br = new BufferedReader(bis);
+            
+            String line = null;
+            while((line = br.readLine()) != null) {
+              System.out.println(line);
+            }
+           */
             // zparsujeme výsledek SAX parserem
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setValidating(false);

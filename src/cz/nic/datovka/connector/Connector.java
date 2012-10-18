@@ -29,7 +29,6 @@ public class Connector {
 	private static DataBoxDownloadService downloadService;
 	private static DataBoxAccessService accessService;
 	private static DataBoxServices service;
-	private static List<MessageEnvelope> recievedMessageList;
 
 	public static void connect(String login, String password, int environment,
 			Context context) throws Exception {
@@ -48,7 +47,9 @@ public class Connector {
 		return accessService.GetUserInfoFromLogin();
 	}
 	
-	public static List<MessageEnvelope> getMessageList() {
+	public static List<MessageEnvelope> getRecievedMessageList() {
+		List<MessageEnvelope> recievedMessageList;
+		
 		if (messagesService == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -65,23 +66,30 @@ public class Connector {
 
 		return recievedMessageList;
 	}
-
-	public static MessageEnvelope getMessageById(int id) {
-		Iterator<MessageEnvelope> iterator = recievedMessageList.iterator();
-		MessageEnvelope result = null;
-
-		while (iterator.hasNext()) {
-			result = iterator.next();
-			if (Integer.parseInt(result.getMessageID()) == id) {
-				return result;
-			}
+	
+	public static List<MessageEnvelope> getSentMessageList() {
+		List<MessageEnvelope> sentMessageList;
+		
+		if (messagesService == null) {
+			throw new IllegalStateException("Object not initialized");
 		}
 
-		throw new IllegalStateException("Cannot find message id=" + id);
+		GregorianCalendar now = new GregorianCalendar();
+		GregorianCalendar from = new GregorianCalendar();
+
+		from.setTimeInMillis(0);
+		//from.roll(Calendar.DAY_OF_YEAR, -28);
+		now.roll(Calendar.DAY_OF_YEAR, 1);
+
+		sentMessageList = messagesService.getListOfSentMessages(
+				from.getTime(), now.getTime(), null, 0, 15);
+
+		return sentMessageList;
 	}
 
+	
 	public static void getAttachments(int id) {
-		MessageEnvelope message = getMessageById(id);
+	//	MessageEnvelope message = getMessageById(id);
 		//List<Attachment> attachments = downloadService.
 		
 		/*

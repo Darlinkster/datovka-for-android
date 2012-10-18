@@ -57,7 +57,8 @@ public class AddAccountService extends IntentService {
 		}
 		
 		UserInfo uinfo = Connector.getUserInfo();
-		List<MessageEnvelope> messageList = Connector.getMessageList();
+		List<MessageEnvelope> recievedMessageList = Connector.getRecievedMessageList();
+		List<MessageEnvelope> sentMessageList = Connector.getSentMessageList();
 		
 		System.out.println(uinfo.toString());
 		

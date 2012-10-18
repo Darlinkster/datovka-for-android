@@ -20,7 +20,8 @@ public abstract class AbstractResponseParser implements ResponseParser {
 
     private static final boolean debug = false;
     private static final int MAX_DEPTH = 128;
-    private static final String[] wanting = {"dmStatusCode", "dmStatusMessage"};
+    private static final String[] wanting = {"dmStatusCode", "dmStatusMessage",
+    										"dbStatusCode", "dbStatusMessage"};
     
     private String[] path = new String[MAX_DEPTH];
     private int pathIndex = 0;
@@ -38,10 +39,15 @@ public abstract class AbstractResponseParser implements ResponseParser {
     }
 
     public void done() {
-        String dmStatusCode = map.get("dmStatusCode").toString();
-        String dmStatusMessage = map.get("dmStatusMessage").toString();
-        status = new Status(dmStatusCode, dmStatusMessage);
-
+        String StatusCode = map.get("dmStatusCode").toString();
+        String StatusMessage = map.get("dmStatusMessage").toString();
+         
+        if(StatusCode.length() == 0 && StatusMessage.length() == 0){
+        	StatusCode = map.get("dbStatusCode").toString();
+        	StatusMessage = map.get("dbStatusMessage").toString();
+        }
+        
+        status = new Status(StatusCode, StatusMessage);
     }
 
     /**

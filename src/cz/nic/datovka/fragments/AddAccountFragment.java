@@ -53,10 +53,13 @@ public class AddAccountFragment extends DialogFragment {
 						Intent intent = new Intent(getActivity(),
 								AddAccountService.class);
 						intent.putExtra(AddAccountService.HANDLER, messenger);
-						intent.putExtra(AddAccountService.LOGIN, loginTv
-								.getText().toString());
-						intent.putExtra(AddAccountService.PASSWORD, passwordTv
-								.getText().toString());
+						//intent.putExtra(AddAccountService.LOGIN, loginTv
+						//		.getText().toString());
+					//	intent.putExtra(AddAccountService.PASSWORD, passwordTv
+						//		.getText().toString());
+						
+						intent.putExtra(AddAccountService.LOGIN, "co55on");
+						intent.putExtra(AddAccountService.PASSWORD,"Fx2MAt3u8wDRL5");
 
 						getActivity().startService(intent);
 					}

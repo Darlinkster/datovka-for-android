@@ -41,7 +41,7 @@
         </provider>
 
         <service android:name=".services.MessageDownloadService" >
-        </service>
+        </service> 
         <service android:name=".services.AddAccountService" >
         </service>
     </application>
