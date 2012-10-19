@@ -35,8 +35,18 @@
         </activity>
 
         <provider
-            android:name=".connector.AccountContentProvider"
-            android:authorities="cz.nic.datovka.connector.accountcontentprovider"
+            android:name=".contentProviders.MsgBoxContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.msgboxcontentprovider"
+            android:exported="false" >
+        </provider>
+        <provider
+            android:name=".contentProviders.ReceivedMessagesContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.receivedmessagescontentprovider"
+            android:exported="false" >
+        </provider>
+        <provider
+            android:name=".contentProviders.SentMessagesContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.sentmessagescontentprovider"
             android:exported="false" >
         </provider>
 

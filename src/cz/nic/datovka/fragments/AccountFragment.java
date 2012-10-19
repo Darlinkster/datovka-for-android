@@ -9,8 +9,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import cz.nic.datovka.R;
-import cz.nic.datovka.connector.AccountContentProvider;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 
 public class AccountFragment extends ListFragment implements
 		LoaderCallbacks<Cursor> {
@@ -30,7 +30,7 @@ public class AccountFragment extends ListFragment implements
 	public void updateList() {
 		Context context = getActivity();
 		
-		String[] from = { DatabaseHelper.ACCOUNT_LOGIN };
+		String[] from = { DatabaseHelper.MSGBOX_LOGIN };
 		//String[] from = DatabaseHelper.account_columns;
 		int[] to = { R.id.account_item };
 		
@@ -44,9 +44,9 @@ public class AccountFragment extends ListFragment implements
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String[] projection = DatabaseHelper.account_columns;
+		String[] projection = DatabaseHelper.msgbox_columns;
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				AccountContentProvider.CONTENT_URI, projection, null, null,
+				MsgBoxContentProvider.CONTENT_URI, projection, null, null,
 				null);
 
 		return cursorLoader;

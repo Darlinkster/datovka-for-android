@@ -12,5 +12,6 @@
     <string name="storno">Storno</string>
     <string name="account_created">Účet vytvořen</string>
     <string name="account_not_created">Chyba při vytváření účtu</string>
-
+	<string name="test_environment_checkbox">Připojit k testovacímu prostředí?</string>
+    
 </resources>

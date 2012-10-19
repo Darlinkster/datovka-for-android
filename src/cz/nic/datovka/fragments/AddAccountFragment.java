@@ -12,6 +12,7 @@ import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import cz.nic.datovka.R;
@@ -48,19 +49,25 @@ public class AddAccountFragment extends DialogFragment {
 								.findViewById(R.id.username);
 						EditText passwordTv = (EditText) dialogView
 								.findViewById(R.id.password);
-
+						CheckBox testEnvCheckbox = (CheckBox) dialogView
+								.findViewById(R.id.test_environment_checkbox);
+						
 						Messenger messenger = new Messenger(handler);
 						Intent intent = new Intent(getActivity(),
 								AddAccountService.class);
 						intent.putExtra(AddAccountService.HANDLER, messenger);
-						//intent.putExtra(AddAccountService.LOGIN, loginTv
-						//		.getText().toString());
-					//	intent.putExtra(AddAccountService.PASSWORD, passwordTv
-						//		.getText().toString());
+						intent.putExtra(AddAccountService.LOGIN, loginTv
+								.getText().toString());
+						intent.putExtra(AddAccountService.PASSWORD, passwordTv
+								.getText().toString());
+						intent.putExtra(AddAccountService.TESTENV,
+								testEnvCheckbox.isChecked());
 						
+						// TODO HACK
 						intent.putExtra(AddAccountService.LOGIN, "co55on");
 						intent.putExtra(AddAccountService.PASSWORD,"Fx2MAt3u8wDRL5");
-
+						// TODO END HACK
+						
 						getActivity().startService(intent);
 					}
 				});

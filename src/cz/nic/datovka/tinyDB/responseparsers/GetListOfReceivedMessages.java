@@ -48,13 +48,16 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
             String senderName = map.get("dmSender").toString();
             String senderAddress = map.get("dmSenderAddress").toString();
             DataBox sender = new DataBox(senderID, senderName, senderAddress);
+            
             String recipientID = map.get("dbIDRecipient").toString();
             String recipientName = map.get("dmRecipient").toString();
             String recipientAdress = map.get("dmRecipientAddress").toString();
             DataBox recipient = new DataBox(recipientID, recipientName, recipientAdress);
+            
             String dmAnnotation = map.get("dmAnnotation").toString();
             String messageID = map.get("dmID").toString();
             MessageEnvelope env = new MessageEnvelope(MessageType.RECEIVED, sender, recipient, messageID, dmAnnotation);
+           
             String accepted = map.get("dmAcceptanceTime").toString();
             if (accepted != null && !accepted.equals("")) {
                 env.setAcceptanceTime(AndroidUtils.toGregorianCalendar(accepted));

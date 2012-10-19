@@ -1,7 +1,9 @@
-package cz.nic.datovka.connector;
+package cz.nic.datovka.contentProviders;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
+import cz.nic.datovka.connector.DatabaseHelper;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -13,27 +15,26 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-public class AccountContentProvider extends ContentProvider {
+public class MsgBoxContentProvider extends ContentProvider {
 
-	private static final int ACCOUNTS = 10;
-	private static final int ACCOUNT_ID = 20;
+	private static final int MSGBOX = 10;
+	private static final int MSGBOX_ID = 20;
 
-	private static final String AUTHORITY = "cz.nic.datovka.connector.accountcontentprovider";
+	private static final String AUTHORITY = "cz.nic.datovka.contentproviders.msgboxcontentprovider";
 
-	private static final String BASE_PATH = "accounts";
+	private static final String BASE_PATH = "msgbox";
 
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
 			+ "/" + BASE_PATH);
 	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-			+ "/accounts";
+			+ "/msgbox";
 	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
 			+ "/todo";
 
-	private static final UriMatcher sURIMatcher = new UriMatcher(
-			UriMatcher.NO_MATCH);
+	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
-		sURIMatcher.addURI(AUTHORITY, BASE_PATH, ACCOUNTS);
-		sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", ACCOUNT_ID);
+		sURIMatcher.addURI(AUTHORITY, BASE_PATH, MSGBOX);
+		sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", MSGBOX_ID);
 	}
 
 	private DatabaseHelper database;
@@ -45,19 +46,19 @@ public class AccountContentProvider extends ContentProvider {
 		int rowsDeleted = 0;
 
 		switch (uriType) {
-		case ACCOUNTS:
-			rowsDeleted = sqlDB.delete(DatabaseHelper.ACCOUNT_TB_NAME,
+		case MSGBOX:
+			rowsDeleted = sqlDB.delete(DatabaseHelper.MSGBOX_TB_NAME,
 					selection, selectionArgs);
 			break;
 
-		case ACCOUNT_ID:
+		case MSGBOX_ID:
 			String id = uri.getLastPathSegment();
 			if (TextUtils.isEmpty(selection)) {
-				rowsDeleted = sqlDB.delete(DatabaseHelper.ACCOUNT_TB_NAME,
-						DatabaseHelper.ACCOUNT_ID + " = " + id, null);
+				rowsDeleted = sqlDB.delete(DatabaseHelper.MSGBOX_TB_NAME,
+						DatabaseHelper.MSGBOX_ID + " = " + id, null);
 			} else {
-				rowsDeleted = sqlDB.delete(DatabaseHelper.ACCOUNT_TB_NAME,
-						DatabaseHelper.ACCOUNT_ID + " = " + id + " AND "
+				rowsDeleted = sqlDB.delete(DatabaseHelper.MSGBOX_TB_NAME,
+						DatabaseHelper.MSGBOX_ID + " = " + id + " AND "
 								+ selection, selectionArgs);
 			}
 			break;
@@ -82,8 +83,8 @@ public class AccountContentProvider extends ContentProvider {
 		long id = 0;
 
 		switch (uriType) {
-		case ACCOUNTS:
-			id = sqlDB.insert(DatabaseHelper.ACCOUNT_TB_NAME, null, values);
+		case MSGBOX:
+			id = sqlDB.insert(DatabaseHelper.MSGBOX_TB_NAME, null, values);
 			break;
 
 		default:
@@ -106,16 +107,16 @@ public class AccountContentProvider extends ContentProvider {
 
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		checkColumns(projection);
-		queryBuilder.setTables(DatabaseHelper.ACCOUNT_TB_NAME);
+		queryBuilder.setTables(DatabaseHelper.MSGBOX_TB_NAME);
 
 		int uriType = sURIMatcher.match(uri);
 
 		switch (uriType) {
-		case ACCOUNTS:
+		case MSGBOX:
 			break;
 
-		case ACCOUNT_ID:
-			queryBuilder.appendWhere(DatabaseHelper.ACCOUNT_ID + " = "
+		case MSGBOX_ID:
+			queryBuilder.appendWhere(DatabaseHelper.MSGBOX_ID + " = "
 					+ uri.getLastPathSegment());
 			break;
 
@@ -140,19 +141,19 @@ public class AccountContentProvider extends ContentProvider {
 		int rowsUpdated = 0;
 
 		switch (uriType) {
-		case ACCOUNTS:
-			rowsUpdated = sqlDB.update(DatabaseHelper.ACCOUNT_TB_NAME, values,
+		case MSGBOX:
+			rowsUpdated = sqlDB.update(DatabaseHelper.MSGBOX_TB_NAME, values,
 					selection, selectionArgs);
 			break;
 
-		case ACCOUNT_ID:
+		case MSGBOX_ID:
 			String id = uri.getLastPathSegment();
 			if (TextUtils.isEmpty(selection)) {
-				rowsUpdated = sqlDB.update(DatabaseHelper.ACCOUNT_TB_NAME,
-						values, DatabaseHelper.ACCOUNT_ID + "=" + id, null);
+				rowsUpdated = sqlDB.update(DatabaseHelper.MSGBOX_TB_NAME,
+						values, DatabaseHelper.MSGBOX_ID + "=" + id, null);
 			} else {
-				rowsUpdated = sqlDB.update(DatabaseHelper.ACCOUNT_TB_NAME,
-						values, DatabaseHelper.ACCOUNT_ID + "=" + id + " and "
+				rowsUpdated = sqlDB.update(DatabaseHelper.MSGBOX_TB_NAME,
+						values, DatabaseHelper.MSGBOX_ID + "=" + id + " and "
 								+ selection, selectionArgs);
 			}
 			break;
@@ -166,7 +167,7 @@ public class AccountContentProvider extends ContentProvider {
 	}
 
 	private void checkColumns(String[] projection) {
-		String[] available = DatabaseHelper.account_columns;
+		String[] available = DatabaseHelper.msgbox_columns;
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(
 					Arrays.asList(projection));
