@@ -1,83 +1,79 @@
 package cz.nic.datovka.fragments;
 
-import java.util.GregorianCalendar;
-import java.util.List;
-
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.nic.datovka.R;
-import cz.nic.datovka.R.id;
-import cz.nic.datovka.R.layout;
-import cz.nic.datovka.connector.Connector;
+import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
+import cz.nic.datovka.tinyDB.AndroidUtils;
 
-public class MessageListFragment extends ListFragment {
-
+public class MessageListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
+	private SimpleCursorAdapter adapter;
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		//List<MessageEnvelope> messageList = Connector.getMessageList();
-		//setListAdapter(new MessageListAdapter(messageList));
-		
+		updateList();
+		registerForContextMenu(getListView());
 	}
 
-	private class MessageListAdapter extends BaseAdapter {
-		private List<MessageEnvelope> messageList;
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		String[] projection = DatabaseHelper.received_message_columns;
+		CursorLoader cursorLoader = new CursorLoader(getActivity(),
+				ReceivedMessagesContentProvider.CONTENT_URI, projection, null, null,
+				null);
 
-		public MessageListAdapter(List<MessageEnvelope> messageList) {
-			this.messageList = messageList;
-		}
+		return cursorLoader;
+	}
 
-		public int getCount() {
-			return messageList.size();
-		}
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		adapter.swapCursor(arg1);
+	}
 
-		public MessageEnvelope getItem(int position) {
-			return messageList.get(position);
-		}
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		adapter.swapCursor(null);
+	}
+	
+	public void updateList() {
+		Context context = getActivity();
+		
+		String[] from = { DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION,
+				DatabaseHelper.SENDER_NAME,
+				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE };
+		
+		int[] to = { R.id.message_item_annotation, R.id.message_item_sender,
+				R.id.message_item_date };
+		
+		getLoaderManager().initLoader(0, null, this);
+		
+		adapter = new SimpleCursorAdapter(context,
+				R.layout.message_list_fragment, null, from,
+				to, 0);
+		
+		adapter.setViewBinder(new ViewBinder() {
 
-		public long getItemId(int position) {
-			return Long.parseLong(messageList.get(position).getMessageID());
-		}
+			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View result;
-			
-			if (convertView == null) {
-				result = getActivity().getLayoutInflater().inflate(
-						R.layout.message_list_fragment, parent, false);
-			} else {
-				result = convertView;
+				if(view.getId() == R.id.message_item_date){
+					TextView textView = (TextView) view;
+					String date = cursor.getString(colIndex);
+					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
+					
+					return true;
+				}
+				return false;
 			}
+		});
 
-			String annotationText = getItem(position).getAnnotation();
-			String senderText = getItem(position).getSender().getIdentity();
-			String date = Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.DAY_OF_MONTH))
-					+ ". "
-					+ Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.MONTH))
-					+ ". "
-					+ Integer.toString(getItem(position).getDeliveryTime().get(GregorianCalendar.YEAR));
-
-			TextView annotationView = (TextView) result
-					.findViewById(R.id.message_item_annotation);
-			TextView senderView = (TextView) result
-					.findViewById(R.id.message_item_sender);
-			TextView dateView = (TextView) result
-					.findViewById(R.id.message_item_date);
-
-			annotationView.setText(annotationText);
-			senderView.setText(senderText);
-			dateView.setText(date);
-
-			result.setId(Integer.parseInt(messageList.get(position).getMessageID()));
-			return result;
-
-		}
-
+		setListAdapter(adapter);
 	}
 }

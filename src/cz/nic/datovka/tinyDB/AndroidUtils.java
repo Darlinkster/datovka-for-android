@@ -1,5 +1,6 @@
 package cz.nic.datovka.tinyDB;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -29,5 +30,12 @@ public class AndroidUtils {
 				IsoDate.DATE_TIME));
 		
 		return gregorianCalendar;
+	}
+	
+	public static String FromXmlToHumanReadableDate(String date){
+		Date dateObj = IsoDate.stringToDate(date, IsoDate.DATE_TIME);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd. MM. yyyy");
+		
+		return sdf.format(dateObj);
 	}
 }

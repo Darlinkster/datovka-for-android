@@ -63,7 +63,7 @@ public class GetUserInfoFromLogin extends AbstractResponseParser {
 			userInfo.setFirmName(map.get("firmName").toString());
 			userInfo.setContactAdressStreet(map.get("caStreet").toString());
 			userInfo.setContactAdressZipCode(map.get("caZipCode").toString());
-			userInfo.setContactAdressCity(map.get("caState").toString());
+			userInfo.setContactAdressCity(map.get("caCity").toString());
 		}
 	}
 

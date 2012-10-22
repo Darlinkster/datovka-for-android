@@ -30,9 +30,8 @@ public class AccountFragment extends ListFragment implements
 	public void updateList() {
 		Context context = getActivity();
 		
-		String[] from = { DatabaseHelper.MSGBOX_LOGIN };
-		//String[] from = DatabaseHelper.account_columns;
-		int[] to = { R.id.account_item };
+		String[] from = { DatabaseHelper.OWNER_NAME, DatabaseHelper.USER_NAME };
+		int[] to = { R.id.account_item_owner, R.id.account_item_user };
 		
 		getLoaderManager().initLoader(0, null, this);
 		

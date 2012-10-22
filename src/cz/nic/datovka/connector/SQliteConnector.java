@@ -17,14 +17,15 @@ public class SQliteConnector {
 	public void close() {
 		openHelper.close();
 	}
-/*
+
 	public Cursor getAccounts() {
 		SQLiteDatabase db = openHelper.getReadableDatabase();
-		return db.query(DatabaseHelper.ACCOUNT_TB_NAME,
-				DatabaseHelper.account_columns, null, null, null, null, null,
+		
+		return db.query(DatabaseHelper.MSGBOX_TB_NAME,
+				DatabaseHelper.msgbox_columns, null, null, null, null, null,
 				null);
 	}
-
+/*
 	synchronized public long createAccount(String username, String password) {
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 

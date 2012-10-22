@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.content.Context;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.PasswordExpirationInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
@@ -39,10 +40,26 @@ public class Connector {
 	}
 
 	public static UserInfo getUserInfo(){
+		if (accessService == null) {
+			throw new IllegalStateException("Object not initialized");
+		}
+		
 		return accessService.GetUserInfoFromLogin();
 	}
 	
+	public static OwnerInfo getOwnerInfo(){
+		if (accessService == null) {
+			throw new IllegalStateException("Object not initialized");
+		}
+		
+		return accessService.GetOwnerInfoFromLogin();
+	}
+	
 	public static GregorianCalendar getPasswordInfo(){
+		if (accessService == null) {
+			throw new IllegalStateException("Object not initialized");
+		}
+		
 		return accessService.GetPasswordInfo();
 	}
 	
