@@ -18,7 +18,7 @@ import cz.nic.datovka.R.id;
 import cz.nic.datovka.R.layout;
 import cz.nic.datovka.R.menu;
 import cz.nic.datovka.connector.Connector;
-import cz.nic.datovka.fragments.MessageListFragment;
+import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 
 public class MainActivity extends FragmentActivity {
 
@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity {
 		folder_button.setText("Inbox");
 		account_button.setText("martin.strbacka@nic.cz");
 
-		MessageListFragment mlf = new MessageListFragment();
+		ReceivedMessageListFragment mlf = new ReceivedMessageListFragment();
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.main_linearlayout, mlf);

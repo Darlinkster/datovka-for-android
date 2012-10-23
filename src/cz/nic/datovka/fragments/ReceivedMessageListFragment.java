@@ -16,7 +16,7 @@ import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
-public class MessageListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
+public class ReceivedMessageListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
 	private SimpleCursorAdapter adapter;
 	
 	@Override
