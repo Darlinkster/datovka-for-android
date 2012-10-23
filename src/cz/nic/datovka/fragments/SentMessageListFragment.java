@@ -81,14 +81,17 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		adapter.setViewBinder(new ViewBinder() {
 
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
-
+				int messageIdIndex = cursor.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ID);
+				TextView textView = (TextView) view;
 				if(view.getId() == R.id.message_item_date){
-					TextView textView = (TextView) view;
 					String date = cursor.getString(colIndex);
 					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
+					textView.setTag(cursor.getString(messageIdIndex));
 					
 					return true;
 				}
+				
+				textView.setTag(cursor.getString(messageIdIndex));
 				return false;
 			}
 		});

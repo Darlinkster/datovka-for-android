@@ -82,14 +82,16 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 		adapter.setViewBinder(new ViewBinder() {
 
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
-
+				int messageIdIndex = cursor.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ID);
+				TextView textView = (TextView) view;
 				if(view.getId() == R.id.message_item_date){
-					TextView textView = (TextView) view;
 					String date = cursor.getString(colIndex);
 					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
+					textView.setTag(cursor.getString(messageIdIndex));
 					
 					return true;
 				}
+				textView.setTag(cursor.getString(messageIdIndex));
 				return false;
 			}
 		});
