@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 public class MessageDetailActivity  extends FragmentActivity {
 	
 	public static final String ID = "id";
+	public static final String FOLDER = "folder";
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -20,8 +21,9 @@ public class MessageDetailActivity  extends FragmentActivity {
 		
 		Intent i = getIntent();
 		int id = i.getIntExtra(ID, 0);
+		String folder = i.getStringExtra(FOLDER);
 		
-		MessageDetailFragment mdf = MessageDetailFragment.newInstance(id);
+		MessageDetailFragment mdf = MessageDetailFragment.newInstance(id, folder);
 		
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();

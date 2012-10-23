@@ -42,6 +42,9 @@ LoaderCallbacks<Cursor>{
 	private String selectedMsgBoxID;
 	private int selectedFolder;
 	
+	private static final int INBOX = 0;
+	private static final int OUTBOX = 1;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -115,15 +118,18 @@ LoaderCallbacks<Cursor>{
 		annotation.setTypeface(null, Typeface.NORMAL);
 		sender.setTypeface(null, Typeface.NORMAL);
 		
-		int id = view.getId();
+		String id = (String) view.getTag();
+		
 		Intent i = new Intent(this, MessageDetailActivity.class);
 		i.putExtra(MessageDetailActivity.ID, id);
+		i.putExtra(MessageDetailActivity.FOLDER, selectedFolder);
+		
 		startActivity(i);
 	}
 
 	public void onItemSelected(AdapterView<?> parent, View row, int pos, long id) {
 		if(parent.getId() == R.id.folder_spinner){
-			if (pos == 0){
+			if (pos == INBOX){
 				// Inbox
 				selectedFolder = pos;
 				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
@@ -131,7 +137,7 @@ LoaderCallbacks<Cursor>{
 				ft.replace(R.id.main_linearlayout, rmlf);
 				ft.commit();
 			}
-			else if(pos == 1){
+			else if(pos == OUTBOX){
 				// Outbox
 				selectedFolder = pos;
 				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
@@ -144,14 +150,14 @@ LoaderCallbacks<Cursor>{
 			// Get msgbox ID from textview tag
 			TextView tv = (TextView) row;
 			selectedMsgBoxID = (String) tv.getTag();
-			if (selectedFolder == 0){
+			if (selectedFolder == INBOX){
 				// Inbox
 				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
 				FragmentTransaction ft = fragmentManager.beginTransaction();
 				ft.replace(R.id.main_linearlayout, rmlf);
 				ft.commit();
 			}
-			else if(selectedFolder == 1){
+			else if(selectedFolder == OUTBOX){
 				// Outbox
 				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
 				FragmentTransaction ft = fragmentManager.beginTransaction();

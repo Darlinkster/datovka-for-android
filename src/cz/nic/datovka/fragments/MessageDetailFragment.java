@@ -16,11 +16,13 @@ import android.widget.TextView;
 
 public class MessageDetailFragment extends Fragment {
 	public static final String ID = "id";
+	public static final String FOLDER = "folder";
 
-	public static MessageDetailFragment newInstance(int id) {
+	public static MessageDetailFragment newInstance(int id, String folder) {
 		MessageDetailFragment f = new MessageDetailFragment();
 		Bundle args = new Bundle();
 		args.putInt(ID, id);
+		args.putString(FOLDER, folder);
 		
 		f.setArguments(args);
 		return f;
@@ -32,6 +34,7 @@ public class MessageDetailFragment extends Fragment {
 
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
 		int id = getArguments().getInt(ID, 0);
+		String folder = getArguments().getString(FOLDER);
 
 
 		TextView annotation = (TextView) v.findViewById(R.id.message_annotation);
