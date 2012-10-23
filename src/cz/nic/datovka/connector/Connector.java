@@ -74,7 +74,6 @@ public class Connector {
 		GregorianCalendar from = new GregorianCalendar();
 
 		from.setTimeInMillis(0);
-		//from.roll(Calendar.DAY_OF_YEAR, -28);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
 		recievedMessageList = messagesService.getListOfReceivedMessages(
@@ -94,7 +93,6 @@ public class Connector {
 		GregorianCalendar from = new GregorianCalendar();
 
 		from.setTimeInMillis(0);
-		//from.roll(Calendar.DAY_OF_YEAR, -28);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
 		sentMessageList = messagesService.getListOfSentMessages(

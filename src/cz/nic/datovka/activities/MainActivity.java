@@ -39,8 +39,8 @@ LoaderCallbacks<Cursor>{
 	
 	private FragmentManager fragmentManager;
 	private SimpleCursorAdapter account_adapter;
-	private String selectedMsgBoxID = "1";
-	private int selectedFolder = 0;
+	private String selectedMsgBoxID;
+	private int selectedFolder;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
