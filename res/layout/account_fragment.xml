@@ -27,8 +27,8 @@
         android:paddingRight="12dp"
         android:paddingTop="6dp"
         android:singleLine="true"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textStyle="normal"
         android:clickable="true" />
     
 

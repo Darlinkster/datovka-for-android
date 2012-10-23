@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import cz.nic.datovka.R;
-import cz.nic.datovka.fragments.AccountFragment;
+import cz.nic.datovka.fragments.AccountListFragment;
 import cz.nic.datovka.fragments.AddAccountFragment;
 
 public class AccountActivity extends FragmentActivity {
@@ -16,7 +16,7 @@ public class AccountActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.account_activity);
 						
-		AccountFragment af = AccountFragment.newInstance();
+		AccountListFragment af = AccountListFragment.newInstance();
 		
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();

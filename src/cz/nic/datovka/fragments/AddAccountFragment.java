@@ -64,8 +64,10 @@ public class AddAccountFragment extends DialogFragment {
 								testEnvCheckbox.isChecked());
 						
 						// TODO HACK
-						intent.putExtra(AddAccountService.LOGIN, "co55on");
-						intent.putExtra(AddAccountService.PASSWORD,"Fx2MAt3u8wDRL5");
+						if(loginTv.getText().toString().length() == 0){
+							intent.putExtra(AddAccountService.LOGIN, "co55on");
+							intent.putExtra(AddAccountService.PASSWORD,"Fx2MAt3u8wDRL5");
+						}
 						// TODO END HACK
 						
 						getActivity().startService(intent);

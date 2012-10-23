@@ -1,15 +1,25 @@
 package cz.nic.datovka.activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import cz.nic.datovka.R;
@@ -18,28 +28,54 @@ import cz.nic.datovka.R.id;
 import cz.nic.datovka.R.layout;
 import cz.nic.datovka.R.menu;
 import cz.nic.datovka.connector.Connector;
+import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
+import cz.nic.datovka.fragments.SentMessageListFragment;
 
-public class MainActivity extends FragmentActivity {
-
+public class MainActivity extends FragmentActivity implements OnItemSelectedListener,
+LoaderCallbacks<Cursor>{
+	
+	private FragmentManager fragmentManager;
+	private SimpleCursorAdapter account_adapter;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Button folder_button = (Button) findViewById(R.id.folder_button);
-		Button account_button = (Button) findViewById(R.id.account_button);
+		fragmentManager = getSupportFragmentManager();
 		
-		folder_button.setText("Inbox");
-		account_button.setText("martin.strbacka@nic.cz");
+		Spinner folder_spinner = (Spinner) findViewById(R.id.folder_spinner);
+		Spinner account_spinner = (Spinner) findViewById(R.id.account_spinner);
 
-		ReceivedMessageListFragment mlf = new ReceivedMessageListFragment();
-		FragmentManager fm = getSupportFragmentManager();
-		FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.main_linearlayout, mlf);
-		ft.commit();
+		// folder spinner setup 
+		ArrayAdapter<CharSequence> folder_adapter = ArrayAdapter.createFromResource(this, R.array.folder_spinner, android.R.layout.simple_spinner_item);
+		folder_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		folder_spinner.setAdapter(folder_adapter);
+		folder_spinner.setOnItemSelectedListener(this);
 		
+		// account spinner setup
+		String[] from = new String[]{DatabaseHelper.OWNER_FIRM_NAME};
+		int[] to = new int[]{android.R.id.text1};
+		getSupportLoaderManager().initLoader(0, null, this);
+		account_adapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, null, from, to, 0);
+		account_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		account_adapter.setViewBinder(new ViewBinder() {
+			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
+				TextView tv = (TextView) view;
+				// If the owner_firm_name is empty set that textview to owner_name
+				if(cursor.getString(colIndex).length() == 0){
+					int index = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
+					tv.setText(cursor.getString(index));
+					return true;
+				}
+				return false;	
+			}
+		});
+		account_spinner.setAdapter(account_adapter);
 	}
 
 	@Override
@@ -74,5 +110,45 @@ public class MainActivity extends FragmentActivity {
 		Intent i = new Intent(this, MessageDetailActivity.class);
 		i.putExtra(MessageDetailActivity.ID, id);
 		startActivity(i);
+	}
+
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long id) {
+		if (pos == 0){
+			// Inbox
+			ReceivedMessageListFragment rmlf = new ReceivedMessageListFragment();
+			FragmentTransaction ft = fragmentManager.beginTransaction();
+			ft.replace(R.id.main_linearlayout, rmlf);
+			ft.commit();
+		}
+		else if(pos == 1){
+			// Outbox
+			SentMessageListFragment smlf = new SentMessageListFragment();
+			FragmentTransaction ft = fragmentManager.beginTransaction();
+			ft.replace(R.id.main_linearlayout, smlf);
+			ft.commit();
+		}
+		
+	}
+
+	public void onNothingSelected(AdapterView<?> arg0) {
+		
+	}
+
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		String[] projection = new String[]{ DatabaseHelper.MSGBOX_ID,
+				DatabaseHelper.OWNER_NAME, DatabaseHelper.OWNER_FIRM_NAME};
+		CursorLoader cursorLoader = new CursorLoader(this,
+				MsgBoxContentProvider.CONTENT_URI, projection, null, null,
+				null);
+
+		return cursorLoader;
+	}
+
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		account_adapter.swapCursor(arg1);
+	}
+
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		account_adapter.swapCursor(null);
 	}
 }

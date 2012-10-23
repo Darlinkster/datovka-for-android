@@ -122,7 +122,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String SENT_MESSAGE_ISDS_ID = "isds_id";
 	public static final String SENT_MESSAGE_ANNOTATION = "annotation";
 	public static final String SENT_MESSAGE_ACCEPTANCE_DATE = "date_acceptance";
-	public static final String SENT_MESSAGE_RECEIVED_DATE = "date_received";
 	public static final String SENT_MESSAGE_MSGBOX_ID = "msgbox_id";
 	public static final String SENT_MESSAGE_TYPE = "type";
 	
@@ -140,7 +139,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String RECIPIENT_ADDRESS = "recipient_address";
 	public static final String[] sent_message_columns = { SENT_MESSAGE_ID,
 			SENT_MESSAGE_ISDS_ID, SENT_MESSAGE_ANNOTATION,
-			SENT_MESSAGE_ACCEPTANCE_DATE, SENT_MESSAGE_RECEIVED_DATE,
+			SENT_MESSAGE_ACCEPTANCE_DATE, 
 			SENT_MESSAGE_MSGBOX_ID, RECIPIENT_ISDS_ID, RECIPIENT_NAME,
 			RECIPIENT_ADDRESS, SENT_MESSAGE_TYPE, SENT_MESSAGE_DM_TYPE,
 			SENT_MESSAGE_TO_HANDS, SENT_MESSAGE_ALLOW_SUBST_DELIVERY,
@@ -232,7 +231,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SENT_MESSAGE_ISDS_ID + " INTEGER NOT NULL,"
 				+ SENT_MESSAGE_ANNOTATION + " TEXT NOT NULL,"
 				+ SENT_MESSAGE_ACCEPTANCE_DATE + " TEXT NOT NULL,"
-				+ SENT_MESSAGE_RECEIVED_DATE + " TEXT NOT NULL,"
 				+ SENT_MESSAGE_MSGBOX_ID + " INTEGER NOT NULL,"
 				+ SENT_MESSAGE_TYPE + " TEXT NOT NULL," 
 				+ SENT_MESSAGE_DM_TYPE + " TEXT, "
