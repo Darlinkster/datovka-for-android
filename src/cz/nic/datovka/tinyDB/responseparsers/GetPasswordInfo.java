@@ -1,6 +1,7 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import org.xml.sax.Attributes;
@@ -40,9 +41,16 @@ public class GetPasswordInfo extends AbstractResponseParser {
 
 		if (super.match("GetPasswordInfoResponse")) { // máme jeden seznam
 			
-			Date date = AndroidUtils.toGregorianCalendar(map.get("pswExpDate").toString()).getTime();
-			passwordInfo = new PasswordExpirationInfo(date);
-		}
+			String stringDate = map.get("pswExpDate").toString();
+			GregorianCalendar cal = AndroidUtils.toGregorianCalendar(stringDate);
+			
+			if(cal == null){
+				passwordInfo = new PasswordExpirationInfo(null);
+			}
+			else
+				passwordInfo = new PasswordExpirationInfo(cal.getTime());
+			}
+		
 	}
 
     public PasswordExpirationInfo getPasswordInfo() {

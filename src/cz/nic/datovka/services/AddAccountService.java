@@ -70,6 +70,14 @@ public class AddAccountService extends IntentService {
 			GregorianCalendar cal = Connector.getPasswordInfo();
 			UserInfo user = Connector.getUserInfo();
 			OwnerInfo owner = Connector.getOwnerInfo();
+
+			String passwordExpiration;			
+			if(cal == null){
+				passwordExpiration = Integer.toString(-1);
+			}
+			else{
+				passwordExpiration = cal.toString();
+			}
 			
 			ContentValues values = new ContentValues();
 			values.put(DatabaseHelper.OWNER_ADDRESS_CITY, owner.getAddressCity());
@@ -124,7 +132,7 @@ public class AddAccountService extends IntentService {
 			values.put(DatabaseHelper.MSGBOX_LOGIN, login);
 			values.put(DatabaseHelper.MSGBOX_PASSWORD, password);
 			values.put(DatabaseHelper.MSGBOX_TEST_ENV, testEnvironment);
-			values.put(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION, cal.toString());
+			values.put(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION, passwordExpiration);
 			
 			
 			String msgBoxId = getContentResolver().insert(

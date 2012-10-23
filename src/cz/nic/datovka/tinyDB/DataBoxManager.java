@@ -220,7 +220,14 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 		this.postAndParseResponse(post, "DsManage", parser);
 		
 		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime((parser.getPasswordInfo().getPasswordExpiration()));
+		Date expirationDate = parser.getPasswordInfo().getPasswordExpiration();
+		
+		if(expirationDate != null){
+			cal.setTime(expirationDate);
+		}
+		else{
+			cal = null;
+		}
 		return cal;
 	}
     

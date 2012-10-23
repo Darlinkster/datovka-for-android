@@ -13,11 +13,21 @@ import android.view.View;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class SentMessageListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
 	private SimpleCursorAdapter adapter;
+	private static String MSGBOXID = "msgboxid";
+	
+	public static SentMessageListFragment getInstance(String arg){
+		SentMessageListFragment smlf = new SentMessageListFragment();
+		Bundle bundle = new Bundle();
+		bundle.putString(MSGBOXID, arg);
+		smlf.setArguments(bundle);
+		return smlf;
+	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -27,9 +37,10 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		String selectionArgs = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + " = " + getArguments().getString(MSGBOXID);
 		String[] projection = DatabaseHelper.sent_message_columns;
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				SentMessagesContentProvider.CONTENT_URI, projection, null, null,
+				SentMessagesContentProvider.CONTENT_URI, projection, selectionArgs, null,
 				null);
 
 		return cursorLoader;

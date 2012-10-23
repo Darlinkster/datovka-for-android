@@ -21,7 +21,7 @@ public class AndroidUtils {
 	}
 
 	public static GregorianCalendar toGregorianCalendar(String date) {
-		if (date == null) {
+		if (date == null || date.length() == 0) {
 			return null;
 		}
 		

@@ -9,7 +9,9 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
@@ -18,6 +20,15 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class ReceivedMessageListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
 	private SimpleCursorAdapter adapter;
+	private static String MSGBOXID = "msgboxid";
+	
+	public static ReceivedMessageListFragment getInstance(String arg){
+		ReceivedMessageListFragment rmlf = new ReceivedMessageListFragment();
+		Bundle bundle = new Bundle();
+		bundle.putString(MSGBOXID, arg);
+		rmlf.setArguments(bundle);
+		return rmlf;
+	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -28,8 +39,10 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		String[] projection = DatabaseHelper.received_message_columns;
+		String selectionArgs = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID + " = " + getArguments().getString(MSGBOXID);
+		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				ReceivedMessagesContentProvider.CONTENT_URI, projection, null, null,
+				ReceivedMessagesContentProvider.CONTENT_URI, projection, selectionArgs, null,
 				null);
 
 		return cursorLoader;

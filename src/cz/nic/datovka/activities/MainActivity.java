@@ -39,6 +39,8 @@ LoaderCallbacks<Cursor>{
 	
 	private FragmentManager fragmentManager;
 	private SimpleCursorAdapter account_adapter;
+	private String selectedMsgBoxID = "1";
+	private int selectedFolder = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,16 +68,23 @@ LoaderCallbacks<Cursor>{
 		account_adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 				TextView tv = (TextView) view;
+				int indexMsgBoxId = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
 				// If the owner_firm_name is empty set that textview to owner_name
 				if(cursor.getString(colIndex).length() == 0){
-					int index = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
-					tv.setText(cursor.getString(index));
+					int indexOwnerName = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
+					tv.setText(cursor.getString(indexOwnerName));
+					// Set msgbox ID as a tag
+					tv.setTag(cursor.getString(indexMsgBoxId));
 					return true;
 				}
+				
+				// Set msgbox ID as a tag
+				tv.setTag(cursor.getString(indexMsgBoxId));
 				return false;	
 			}
 		});
 		account_spinner.setAdapter(account_adapter);
+		account_spinner.setOnItemSelectedListener(this);
 	}
 
 	@Override
@@ -112,22 +121,44 @@ LoaderCallbacks<Cursor>{
 		startActivity(i);
 	}
 
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long id) {
-		if (pos == 0){
-			// Inbox
-			ReceivedMessageListFragment rmlf = new ReceivedMessageListFragment();
-			FragmentTransaction ft = fragmentManager.beginTransaction();
-			ft.replace(R.id.main_linearlayout, rmlf);
-			ft.commit();
+	public void onItemSelected(AdapterView<?> parent, View row, int pos, long id) {
+		if(parent.getId() == R.id.folder_spinner){
+			if (pos == 0){
+				// Inbox
+				selectedFolder = pos;
+				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
+				FragmentTransaction ft = fragmentManager.beginTransaction();
+				ft.replace(R.id.main_linearlayout, rmlf);
+				ft.commit();
+			}
+			else if(pos == 1){
+				// Outbox
+				selectedFolder = pos;
+				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
+				FragmentTransaction ft = fragmentManager.beginTransaction();
+				ft.replace(R.id.main_linearlayout, smlf);
+				ft.commit();
+			}
 		}
-		else if(pos == 1){
-			// Outbox
-			SentMessageListFragment smlf = new SentMessageListFragment();
-			FragmentTransaction ft = fragmentManager.beginTransaction();
-			ft.replace(R.id.main_linearlayout, smlf);
-			ft.commit();
+		else if (parent.getId() == R.id.account_spinner){
+			// Get msgbox ID from textview tag
+			TextView tv = (TextView) row;
+			selectedMsgBoxID = (String) tv.getTag();
+			if (selectedFolder == 0){
+				// Inbox
+				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
+				FragmentTransaction ft = fragmentManager.beginTransaction();
+				ft.replace(R.id.main_linearlayout, rmlf);
+				ft.commit();
+			}
+			else if(selectedFolder == 1){
+				// Outbox
+				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
+				FragmentTransaction ft = fragmentManager.beginTransaction();
+				ft.replace(R.id.main_linearlayout, smlf);
+				ft.commit();
+			}
 		}
-		
 	}
 
 	public void onNothingSelected(AdapterView<?> arg0) {
@@ -136,7 +167,7 @@ LoaderCallbacks<Cursor>{
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		String[] projection = new String[]{ DatabaseHelper.MSGBOX_ID,
-				DatabaseHelper.OWNER_NAME, DatabaseHelper.OWNER_FIRM_NAME};
+				DatabaseHelper.OWNER_NAME, DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.MSGBOX_ID};
 		CursorLoader cursorLoader = new CursorLoader(this,
 				MsgBoxContentProvider.CONTENT_URI, projection, null, null,
 				null);
