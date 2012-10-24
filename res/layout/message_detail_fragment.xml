@@ -85,6 +85,7 @@
             android:paddingTop="2dp"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_dark" />
+        
     </LinearLayout>
 
 </ScrollView>
