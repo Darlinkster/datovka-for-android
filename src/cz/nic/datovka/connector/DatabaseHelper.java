@@ -98,6 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String RECEIVED_MESSAGE_LEGALTITLE_POINT = "legaltitle_point";
 	public static final String RECEIVED_MESSAGE_LEGALTITLE_SECT = "legaltitle_sect";
 	public static final String RECEIVED_MESSAGE_LEGALTITLE_YEAR = "legaltitle_year";
+	public static final String RECEIVED_MESSAGE_IS_READ = "is_read";
 	public static final String SENDER_ISDS_ID = "sender_isds_id";
 	public static final String SENDER_NAME = "sender_name";
 	public static final String SENDER_ADDRESS = "sender_address";
@@ -115,7 +116,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			SENDER_IDENT, SENDER_REF_NUMBER, RECEIVED_MESSAGE_STATE,
 			RECEIVED_MESSAGE_LEGALTITLE_LAW, RECEIVED_MESSAGE_LEGALTITLE_PAR,
 			RECEIVED_MESSAGE_LEGALTITLE_POINT,
-			RECEIVED_MESSAGE_LEGALTITLE_SECT, RECEIVED_MESSAGE_LEGALTITLE_YEAR };
+			RECEIVED_MESSAGE_LEGALTITLE_SECT, RECEIVED_MESSAGE_LEGALTITLE_YEAR,
+			RECEIVED_MESSAGE_IS_READ };
 
 	public static final String SENT_MESSAGE_TB_NAME = "sent_message";
 	public static final String SENT_MESSAGE_ID = "_id";
@@ -124,27 +126,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String SENT_MESSAGE_ACCEPTANCE_DATE = "date_acceptance";
 	public static final String SENT_MESSAGE_MSGBOX_ID = "msgbox_id";
 	public static final String SENT_MESSAGE_TYPE = "type";
-	
 	public static final String SENT_MESSAGE_DM_TYPE = "dm_type";
 	public static final String SENT_MESSAGE_TO_HANDS = "to_hands";
 	public static final String SENT_MESSAGE_ALLOW_SUBST_DELIVERY = "subst_delivery";
 	public static final String SENT_MESSAGE_PERSONAL_DELIVERY = "personal_delivery";
 	public static final String SENT_MESSAGE_SENT_DATE = "sent_date";
+	public static final String SENT_MESSAGE_IS_READ = "is_read";
 	public static final String RECIPIENT_DATABOX_TYPE = "recipient_databox_type";
 	public static final String RECIPIENT_IDENT = "recipient_ident";
 	public static final String RECIPIENT_REF_NUMBER = "recipient_ref_num";
-	
 	public static final String RECIPIENT_ISDS_ID = "recipient_isds_id";
 	public static final String RECIPIENT_NAME = "recipient_name";
 	public static final String RECIPIENT_ADDRESS = "recipient_address";
 	public static final String[] sent_message_columns = { SENT_MESSAGE_ID,
 			SENT_MESSAGE_ISDS_ID, SENT_MESSAGE_ANNOTATION,
-			SENT_MESSAGE_ACCEPTANCE_DATE, 
-			SENT_MESSAGE_MSGBOX_ID, RECIPIENT_ISDS_ID, RECIPIENT_NAME,
-			RECIPIENT_ADDRESS, SENT_MESSAGE_TYPE, SENT_MESSAGE_DM_TYPE,
-			SENT_MESSAGE_TO_HANDS, SENT_MESSAGE_ALLOW_SUBST_DELIVERY,
-			SENT_MESSAGE_PERSONAL_DELIVERY, SENT_MESSAGE_SENT_DATE,
-			RECIPIENT_DATABOX_TYPE, RECIPIENT_IDENT, RECIPIENT_REF_NUMBER };
+			SENT_MESSAGE_ACCEPTANCE_DATE, SENT_MESSAGE_MSGBOX_ID,
+			RECIPIENT_ISDS_ID, RECIPIENT_NAME, RECIPIENT_ADDRESS,
+			SENT_MESSAGE_TYPE, SENT_MESSAGE_DM_TYPE, SENT_MESSAGE_TO_HANDS,
+			SENT_MESSAGE_ALLOW_SUBST_DELIVERY, SENT_MESSAGE_PERSONAL_DELIVERY,
+			SENT_MESSAGE_SENT_DATE, RECIPIENT_DATABOX_TYPE, RECIPIENT_IDENT,
+			RECIPIENT_REF_NUMBER, SENT_MESSAGE_IS_READ };
 
 	// protected static final String ORDER_BY = ACCOUNT_ID + " DESC";
 
@@ -218,6 +219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ RECEIVED_MESSAGE_LEGALTITLE_POINT  + " TEXT, "
 				+ RECEIVED_MESSAGE_LEGALTITLE_SECT  + " TEXT, "
 				+ RECEIVED_MESSAGE_LEGALTITLE_YEAR  + " TEXT, "
+				+ RECEIVED_MESSAGE_IS_READ + " INTEGER NOT NULL,"
 				+ SENDER_ISDS_ID + " INTEGER NOT NULL," 
 				+ SENDER_NAME + " TEXT NOT NULL,"
 				+ SENDER_ADDRESS + " TEXT, " 
@@ -238,6 +240,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SENT_MESSAGE_ALLOW_SUBST_DELIVERY + " TEXT, "
 				+ SENT_MESSAGE_PERSONAL_DELIVERY + " TEXT, "
 				+ SENT_MESSAGE_SENT_DATE + " TEXT, "
+				+ SENT_MESSAGE_IS_READ + " INTEGER NOT NULL,"
 				+ RECIPIENT_DATABOX_TYPE + " TEXT, "
 				+ RECIPIENT_IDENT + " TEXT, "
 				+ RECIPIENT_REF_NUMBER + " TEXT, "

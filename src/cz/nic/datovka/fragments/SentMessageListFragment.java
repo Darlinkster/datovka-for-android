@@ -2,6 +2,7 @@ package cz.nic.datovka.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -45,7 +46,8 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 				DatabaseHelper.SENT_MESSAGE_ID,
 				DatabaseHelper.SENT_MESSAGE_ANNOTATION,
 				DatabaseHelper.RECIPIENT_NAME,
-				DatabaseHelper.SENT_MESSAGE_SENT_DATE };
+				DatabaseHelper.SENT_MESSAGE_SENT_DATE,
+				DatabaseHelper.SENT_MESSAGE_IS_READ };
 		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SentMessagesContentProvider.CONTENT_URI, projection,
@@ -83,6 +85,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 				int messageIdIndex = cursor.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ID);
 				TextView textView = (TextView) view;
+				// covert date to human readable format
 				if(view.getId() == R.id.message_item_date){
 					String date = cursor.getString(colIndex);
 					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
@@ -91,6 +94,14 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 					return true;
 				}
 				
+				//set item appearance as read
+				int isReadColId = cursor.getColumnIndex(DatabaseHelper.SENT_MESSAGE_IS_READ);
+				int isReadValue = cursor.getInt(isReadColId);
+				if(isReadValue == 1){
+					textView.setTypeface(null, Typeface.NORMAL);
+					((View) view.getParent()).setBackgroundColor(getResources().getColor(R.color.gray));
+				}
+				// Add database id to tag
 				textView.setTag(cursor.getString(messageIdIndex));
 				return false;
 			}

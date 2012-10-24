@@ -112,13 +112,9 @@ LoaderCallbacks<Cursor>{
 	}
 
 	public void itemClicked(View view) {
-		view.setBackgroundColor(getResources().getColor(R.color.gray));
 		TextView annotation = (TextView) view.findViewById(R.id.message_item_annotation);
-		TextView sender = (TextView) view.findViewById(R.id.message_item_sender);
 		
 		annotation.setTypeface(null, Typeface.NORMAL);
-		sender.setTypeface(null, Typeface.NORMAL);
-		
 		String id = (String) annotation.getTag();
 		
 		Intent i = new Intent(this, MessageDetailActivity.class);

@@ -2,6 +2,7 @@ package cz.nic.datovka.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -43,7 +44,8 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 				DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID,
 				DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION,
 				DatabaseHelper.SENDER_NAME,
-				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE };
+				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE,
+				DatabaseHelper.RECEIVED_MESSAGE_IS_READ};
 		
 		String selectionArgs = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID
 				+ " = " + getArguments().getString(MSGBOXID);
@@ -84,6 +86,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 				int messageIdIndex = cursor.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ID);
 				TextView textView = (TextView) view;
+				// covert date to human readable format
 				if(view.getId() == R.id.message_item_date){
 					String date = cursor.getString(colIndex);
 					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
@@ -91,7 +94,14 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 					
 					return true;
 				}
-				
+				//set item appearance as read
+				int isReadColId = cursor.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_IS_READ);
+				int isReadValue = cursor.getInt(isReadColId);
+				if(isReadValue == 1){
+					textView.setTypeface(null, Typeface.NORMAL);
+					((View) view.getParent()).setBackgroundColor(getResources().getColor(R.color.gray));
+				}
+				// Add database id to tag
 				textView.setTag(cursor.getString(messageIdIndex));
 				return false;
 			}

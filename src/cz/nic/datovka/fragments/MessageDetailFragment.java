@@ -1,36 +1,28 @@
 package cz.nic.datovka.fragments;
 
-import java.util.GregorianCalendar;
-
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
-import cz.nic.datovka.R;
-import cz.nic.datovka.R.id;
-import cz.nic.datovka.R.layout;
-import cz.nic.datovka.connector.Connector;
-import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.UserDictionary;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import cz.nic.datovka.R;
+import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
+import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 
 public class MessageDetailFragment extends Fragment {
 	public static final String ID = "id";
 	public static final String FOLDER = "folder";
 	private static final int INBOX = 0;
 	private static final int OUTBOX = 1;
-
+	private static final int IS_READ = 1;
+	
 	public static MessageDetailFragment newInstance(long id, int folder) {
 		MessageDetailFragment f = new MessageDetailFragment();
 		Bundle args = new Bundle();
@@ -46,6 +38,8 @@ public class MessageDetailFragment extends Fragment {
 			Bundle savedInstanceState) {
 
 		Cursor message = getMessageCursor();
+		setMessageRead();
+		
 		int folder = getArguments().getInt(FOLDER, 0);
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
 
@@ -71,7 +65,7 @@ public class MessageDetailFragment extends Fragment {
 			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.SENDER_ADDRESS);
 			messageTypeColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_TYPE);
 		}
-		else{
+		else{ // OUTBOX
 			annotationColId =  message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ANNOTATION);
 			messageIdColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ISDS_ID);
 			messageDateColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENT_DATE);
@@ -91,7 +85,7 @@ public class MessageDetailFragment extends Fragment {
 		
 	}
 
-	public Cursor getMessageCursor(){
+	private Cursor getMessageCursor(){
 		long id = getArguments().getLong(ID, 0);
 		int folder = getArguments().getInt(FOLDER, 0);
 		
@@ -109,5 +103,23 @@ public class MessageDetailFragment extends Fragment {
 		cursor.moveToFirst();
 		
 		return cursor;
+	}
+	
+	private void setMessageRead(){
+		long id = getArguments().getLong(ID, 0);
+		int folder = getArguments().getInt(FOLDER, 0);
+		
+		Uri singleUri;
+		ContentValues value = new ContentValues();
+		if(folder == INBOX){
+			singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI,id);
+			value.put(DatabaseHelper.RECEIVED_MESSAGE_IS_READ, IS_READ);
+		}
+		else { //if(folder == OUTBOX)
+			singleUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI,id);
+			value.put(DatabaseHelper.SENT_MESSAGE_IS_READ, IS_READ);
+		}
+		
+		int cursor = getActivity().getContentResolver().update(singleUri, value, null, null);
 	}
 }
