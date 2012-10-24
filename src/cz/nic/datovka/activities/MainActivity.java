@@ -112,10 +112,7 @@ LoaderCallbacks<Cursor>{
 	}
 
 	public void itemClicked(View view) {
-		TextView annotation = (TextView) view.findViewById(R.id.message_item_annotation);
-		
-		annotation.setTypeface(null, Typeface.NORMAL);
-		String id = (String) annotation.getTag();
+		String id = (String) view.getTag();
 		
 		Intent i = new Intent(this, MessageDetailActivity.class);
 		i.putExtra(MessageDetailActivity.ID, Long.parseLong(id));

@@ -40,7 +40,6 @@ public class MessageDetailFragment extends Fragment {
 		Cursor message = getMessageCursor();
 		setMessageRead();
 		
-		int folder = getArguments().getInt(FOLDER, 0);
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
 
 		TextView annotation = (TextView) v.findViewById(R.id.message_annotation);
@@ -57,6 +56,7 @@ public class MessageDetailFragment extends Fragment {
 		int senderRecipientAddressColId;
 		int messageTypeColId;
 		
+		int folder = getArguments().getInt(FOLDER, 0);
 		if(folder == INBOX){
 			annotationColId =  message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION);
 			messageIdColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID);

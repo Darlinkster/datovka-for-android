@@ -89,11 +89,9 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 				if(view.getId() == R.id.message_item_date){
 					String date = cursor.getString(colIndex);
 					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
-					textView.setTag(cursor.getString(messageIdIndex));
 					
 					return true;
 				}
-				
 				//set item appearance as read
 				int isReadColId = cursor.getColumnIndex(DatabaseHelper.SENT_MESSAGE_IS_READ);
 				int isReadValue = cursor.getInt(isReadColId);
@@ -102,7 +100,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 					((View) view.getParent()).setBackgroundColor(getResources().getColor(R.color.gray));
 				}
 				// Add database id to tag
-				textView.setTag(cursor.getString(messageIdIndex));
+				((View) view.getParent()).setTag(cursor.getString(messageIdIndex));
 				return false;
 			}
 		});
@@ -110,3 +108,5 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		setListAdapter(adapter);
 	}
 }
+
+

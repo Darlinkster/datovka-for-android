@@ -90,7 +90,6 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 				if(view.getId() == R.id.message_item_date){
 					String date = cursor.getString(colIndex);
 					textView.setText(AndroidUtils.FromXmlToHumanReadableDate(date));
-					textView.setTag(cursor.getString(messageIdIndex));
 					
 					return true;
 				}
@@ -101,8 +100,8 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 					textView.setTypeface(null, Typeface.NORMAL);
 					((View) view.getParent()).setBackgroundColor(getResources().getColor(R.color.gray));
 				}
-				// Add database id to tag
-				textView.setTag(cursor.getString(messageIdIndex));
+				// Add database id to the parent tag
+				((View) view.getParent()).setTag(cursor.getString(messageIdIndex));
 				return false;
 			}
 		});
@@ -110,3 +109,4 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 		setListAdapter(adapter);
 	}
 }
+
