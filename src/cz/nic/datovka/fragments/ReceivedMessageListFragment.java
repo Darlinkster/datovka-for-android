@@ -91,6 +91,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 					
 					return true;
 				}
+				
 				textView.setTag(cursor.getString(messageIdIndex));
 				return false;
 			}

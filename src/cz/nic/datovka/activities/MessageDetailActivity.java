@@ -20,8 +20,8 @@ public class MessageDetailActivity  extends FragmentActivity {
 		setContentView(R.layout.message_detail_activity);
 		
 		Intent i = getIntent();
-		int id = i.getIntExtra(ID, 0);
-		String folder = i.getStringExtra(FOLDER);
+		long id = i.getLongExtra(ID, 0);
+		int folder = i.getIntExtra(FOLDER,0);
 		
 		MessageDetailFragment mdf = MessageDetailFragment.newInstance(id, folder);
 		

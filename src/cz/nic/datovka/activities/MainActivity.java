@@ -66,6 +66,7 @@ LoaderCallbacks<Cursor>{
 		String[] from = new String[]{DatabaseHelper.OWNER_FIRM_NAME};
 		int[] to = new int[]{android.R.id.text1};
 		getSupportLoaderManager().initLoader(0, null, this);
+		
 		account_adapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, null, from, to, 0);
 		account_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		account_adapter.setViewBinder(new ViewBinder() {
@@ -118,10 +119,10 @@ LoaderCallbacks<Cursor>{
 		annotation.setTypeface(null, Typeface.NORMAL);
 		sender.setTypeface(null, Typeface.NORMAL);
 		
-		String id = (String) view.getTag();
+		String id = (String) annotation.getTag();
 		
 		Intent i = new Intent(this, MessageDetailActivity.class);
-		i.putExtra(MessageDetailActivity.ID, id);
+		i.putExtra(MessageDetailActivity.ID, Long.parseLong(id));
 		i.putExtra(MessageDetailActivity.FOLDER, selectedFolder);
 		
 		startActivity(i);
