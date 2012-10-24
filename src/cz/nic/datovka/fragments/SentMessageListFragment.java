@@ -99,7 +99,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 					textView.setTypeface(null, Typeface.NORMAL);
 					((View) view.getParent()).setBackgroundColor(getResources().getColor(R.color.gray));
 				}
-				// Add database id to tag
+				// Add database id to tag parent tag
 				((View) view.getParent()).setTag(cursor.getString(messageIdIndex));
 				return false;
 			}
