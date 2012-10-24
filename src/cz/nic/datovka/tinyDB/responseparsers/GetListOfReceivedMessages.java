@@ -22,7 +22,7 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
 
     static private final String[] wanting = {"dbIDSender", "dmSender", "dmSenderAddress",
         "dbIDRecipient", "dmRecipient", "dmRecipientAddress", "dmID", "dmAnnotation",
-        "dmDeliveryTime", "dmAcceptanceTime"
+        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize"
     };
     private HashMap<String, StringHolder> map = new HashMap<String, StringHolder>();
     private List<MessageEnvelope> messages = new ArrayList<MessageEnvelope>();
@@ -57,6 +57,12 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
             String dmAnnotation = map.get("dmAnnotation").toString();
             String messageID = map.get("dmID").toString();
             MessageEnvelope env = new MessageEnvelope(MessageType.RECEIVED, sender, recipient, messageID, dmAnnotation);
+
+            
+            String attachmentSize = map.get("dmAttachmentSize").toString();
+            if (attachmentSize != null && !attachmentSize.equals("")) {
+            	env.setAttachmentSize(Integer.parseInt(attachmentSize));
+            }
            
             String accepted = map.get("dmAcceptanceTime").toString();
             if (accepted != null && !accepted.equals("")) {

@@ -168,6 +168,7 @@ public class AddAccountService extends IntentService {
 				//rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msgEnvelope.getState().name());
 				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TYPE, msgEnvelope.getType().name());
 				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, msgBoxId);
+				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 				
 				getContentResolver().insert(ReceivedMessagesContentProvider.CONTENT_URI, rcvdMessageValues);
 			}
@@ -200,6 +201,7 @@ public class AddAccountService extends IntentService {
 				//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATE, msgEnvelope.getState().name());
 				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TYPE, msgEnvelope.getType().name());
 				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_MSGBOX_ID, msgBoxId);
+				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 				
 				getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
 			}

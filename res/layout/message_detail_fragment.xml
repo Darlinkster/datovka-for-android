@@ -66,6 +66,14 @@
             android:paddingLeft="8dp"
             android:singleLine="true"
             android:textSize="14sp" />
+        
+        <TextView
+            android:id="@+id/message_attachment_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:singleLine="true"
+            android:textSize="14sp" />
 
         <ImageView
             android:layout_width="fill_parent"

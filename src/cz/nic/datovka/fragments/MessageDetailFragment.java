@@ -48,6 +48,7 @@ public class MessageDetailFragment extends Fragment {
 		TextView sender = (TextView) v.findViewById(R.id.message_sender);
 		TextView senderAddress = (TextView) v.findViewById(R.id.message_sender_address);
 		TextView messageType = (TextView) v.findViewById(R.id.message_type);
+		TextView messageAttachmentSize = (TextView) v.findViewById(R.id.message_attachment_size);
 		
 		int annotationColId;
 		int messageIdColId;
@@ -55,6 +56,7 @@ public class MessageDetailFragment extends Fragment {
 		int senderRecipientColId;
 		int senderRecipientAddressColId;
 		int messageTypeColId;
+		int messageAttachmentSizeColId;
 		
 		int folder = getArguments().getInt(FOLDER, 0);
 		if(folder == INBOX){
@@ -64,6 +66,7 @@ public class MessageDetailFragment extends Fragment {
 			senderRecipientColId = message.getColumnIndex(DatabaseHelper.SENDER_NAME);
 			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.SENDER_ADDRESS);
 			messageTypeColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_TYPE);
+			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE);
 		}
 		else{ // OUTBOX
 			annotationColId =  message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ANNOTATION);
@@ -72,6 +75,7 @@ public class MessageDetailFragment extends Fragment {
 			senderRecipientColId = message.getColumnIndex(DatabaseHelper.RECIPIENT_NAME);
 			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.RECIPIENT_ADDRESS);
 			messageTypeColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_TYPE);
+			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE);
 		}
 		
 		annotation.setText(message.getString(annotationColId));
@@ -80,6 +84,7 @@ public class MessageDetailFragment extends Fragment {
 		sender.setText(message.getString(senderRecipientColId));
 		senderAddress.setText(message.getString(senderRecipientAddressColId));
 		messageType.setText(message.getString(messageTypeColId));
+		messageAttachmentSize.setText("Velikost prilohy: " + message.getInt(messageAttachmentSizeColId)+"kB");
 
 		return v;
 		
