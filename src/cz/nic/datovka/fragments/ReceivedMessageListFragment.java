@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.ModifiedSimpleCursorAdapter;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
@@ -77,9 +78,11 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 		
 		getLoaderManager().initLoader(0, null, this);
 		
-		adapter = new SimpleCursorAdapter(context,
-				R.layout.message_list_fragment, null, from,
-				to, 0);
+		adapter = new ModifiedSimpleCursorAdapter(context,
+				R.layout.message_list_fragment, null, from, to,
+				DatabaseHelper.RECEIVED_MESSAGE_IS_READ, 
+				getResources().getColor(R.color.gray), 
+				getResources().getColor(R.color.dimwhite), 0);
 		
 		adapter.setViewBinder(new ViewBinder() {
 
@@ -93,13 +96,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 					
 					return true;
 				}
-				//set item appearance as read
-				int isReadColId = cursor.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_IS_READ);
-				int isReadValue = cursor.getInt(isReadColId);
-				if(isReadValue == 1){
-					textView.setTypeface(null, Typeface.NORMAL);
-					((View) view.getParent()).setBackgroundColor(getResources().getColor(R.color.gray));
-				}
+				
 				// Add database id to the parent tag
 				((View) view.getParent()).setTag(cursor.getString(messageIdIndex));
 				return false;
