@@ -1,19 +1,21 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
-import android.util.Base64OutputStream;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.tinyDB.base64.Base64OutputStream;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
 import cz.nic.datovka.tinyDB.holders.OutputStreamHolder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.xml.sax.Attributes;
 
 /**
@@ -46,8 +48,12 @@ public class DownloadReceivedMessage extends AbstractResponseParser {
                 OutputStream os = storer.store(envelope, attachment);
                 attachments.add(attachment);
                 // FileOutputStream fos = new FileOutputStream(file);
-               // Base64OutputStream bos = new Base64OutputStream(os, false, 0, null);
-                Base64OutputStream bos = new Base64OutputStream(os, 0);
+              // Base64OutputStream bos = new Base64OutputStream(os, false, 0, null);
+               Base64OutputStream bos = new Base64OutputStream(os, 0, false);
+               // ByteArrayOutputStream baos = new ByteArrayOutputStream();
+               // Base64.decode(arg0, os);
+                
+                
                 OutputHolder input = new OutputStreamHolder(bos);
                 return input;
             } catch (IOException ioe) {
