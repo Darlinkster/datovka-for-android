@@ -14,6 +14,7 @@
     <string name="account_not_created">Chyba při vytváření účtu</string>
 	<string name="test_environment_checkbox">Připojit k testovacímu prostředí?</string>
 	<string name="download_attachment_button">Stáhnout přílohy</string>
+	<string name="download_attachment_progress">Stahuji zprávy</string>
     
 	<string-array name="folder_spinner">
 	    <item>Přijaté</item>

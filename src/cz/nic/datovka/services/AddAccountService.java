@@ -59,8 +59,12 @@ public class AddAccountService extends IntentService {
 			// Account doesn't exist, so let's create it
 			// try to login
 			try {
-				Connector.connect(login, password, Connector.TESTING,
-						getApplicationContext());
+				if(testEnvironment == 1){
+					Connector.connect(login, password, Connector.TESTING, getApplicationContext());
+				}
+				else{
+					Connector.connect(login, password, Connector.PRODUCTION, getApplicationContext());
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

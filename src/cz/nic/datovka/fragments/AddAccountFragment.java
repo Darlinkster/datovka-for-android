@@ -19,9 +19,9 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.services.AddAccountService;
 
 public class AddAccountFragment extends DialogFragment {
-	Context context;
+	private static Context context;
 	
-	 private Handler handler = new Handler() {
+	 private static Handler handler = new Handler() {
 		 public void handleMessage(Message message){
 			 if(message.arg1 == AddAccountService.RESULT_OK) {
 				 Toast.makeText(context, R.string.account_created, Toast.LENGTH_SHORT).show();
@@ -67,6 +67,7 @@ public class AddAccountFragment extends DialogFragment {
 						if(loginTv.getText().toString().length() == 0){
 							intent.putExtra(AddAccountService.LOGIN, "co55on");
 							intent.putExtra(AddAccountService.PASSWORD,"Fx2MAt3u8wDRL5");
+							intent.putExtra(AddAccountService.TESTENV,true);
 						}
 						// TODO END HACK
 						

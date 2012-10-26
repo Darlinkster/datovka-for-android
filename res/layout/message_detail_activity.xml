@@ -13,9 +13,11 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/download_attachment_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:onClick="onClick"
         android:text="@string/download_attachment_button" />
 
 </RelativeLayout>

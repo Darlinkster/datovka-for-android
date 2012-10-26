@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.Context;
+import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.PasswordExpirationInfo;
@@ -18,11 +19,10 @@ import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxServices;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 
 public class Connector {
-	public static int PRODUCTION = 1;
-	public static int TESTING = 2;
+	public static int PRODUCTION = 0;
+	public static int TESTING = 1;
 
 	private static DataBoxMessagesService messagesService;
-	private static DataBoxDownloadService downloadService;
 	private static DataBoxAccessService accessService;
 	private static DataBoxServices service;
 
@@ -37,6 +37,15 @@ public class Connector {
 		service = DataBoxManager.login(config, login, password, context);
 		messagesService = service.getDataBoxMessagesService();
 		accessService = service.getDataBoxAccessService();
+	}
+	
+	public static boolean isOnline(){
+		if(service == null) return false;
+		return true;
+	}
+	
+	public static DataBoxDownloadService getDownloadService(){
+		return service.getDataBoxDownloadService();
 	}
 
 	public static UserInfo getUserInfo(){
@@ -101,6 +110,9 @@ public class Connector {
 		return sentMessageList;
 	}
 
+	public static Hash verifyMessage(MessageEnvelope envelope){
+		return messagesService.verifyMessage(envelope);
+	}
 	
 	public static void getAttachments(int id) {
 	//	MessageEnvelope message = getMessageById(id);

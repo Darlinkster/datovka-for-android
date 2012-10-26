@@ -171,9 +171,9 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     // metody z DataBoxDownload
     public Message downloadMessage(MessageEnvelope envelope,
             AttachmentStorer storer) {
-        if (envelope.getType() != MessageType.RECEIVED) {
-            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }
+        //if (envelope.getType() != MessageType.RECEIVED) {
+         //   throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+       // }
         String resource = "/res/raw/download_received_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", envelope.getMessageID());
@@ -183,9 +183,9 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     }
 
     public void downloadSignedMessage(MessageEnvelope envelope, OutputStream os) {
-        if (envelope.getType() != MessageType.RECEIVED) {
-            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }
+        /*if (envelope.getType() != MessageType.RECEIVED) {
+           throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+        }*/
         String resource = "/res/raw/download_signed_received_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", envelope.getMessageID());

@@ -125,6 +125,6 @@ public class MessageDetailFragment extends Fragment {
 			value.put(DatabaseHelper.SENT_MESSAGE_IS_READ, IS_READ);
 		}
 		
-		int cursor = getActivity().getContentResolver().update(singleUri, value, null, null);
+		getActivity().getContentResolver().update(singleUri, value, null, null);
 	}
 }

@@ -19,9 +19,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String MSGBOX_PASSWD_EXPIRATION = "msgbox_passwd_expiration";
 	
 	public static final String USER_ISDS_ID = "user_isds_id";
-	//public static final String USER_FIRST_NAME = "user_first_name";
-	//public static final String USER_MIDDLE_NAME = "user_middle_name";
-	//public static final String USER_LAST_NAME = "user_last_name";
 	public static final String USER_LAST_BIRTH_NAME = "user_last_birth_name";
 	public static final String USER_NAME = "user_name";
 	public static final String USER_ADDRESS_CITY = "user_address_city";
@@ -40,9 +37,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String USER_CON_ADDRESS_ZIP = "user_con_address_zip";
 	public static final String USER_CON_ADDRESS_STATE = "user_con_address_state";
 	
-	//public static final String OWNER_FIRST_NAME = "owner_first_name";
-	//public static final String OWNER_MIDDLE_NAME = "owner_middle_name";
-	//public static final String OWNER_LAST_NAME = "owner_last_name";
 	public static final String OWNER_LAST_BIRTH_NAME = "owner_last_birth_name";
 	public static final String OWNER_NAME = "owner_name";
 	public static final String OWNER_ADDRESS_CITY = "owner_address_city";
