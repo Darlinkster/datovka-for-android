@@ -1,15 +1,5 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
-import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
-import cz.abclinuxu.datoveschranky.common.impl.Utils;
-
-import cz.abclinuxu.datoveschranky.common.entities.Attachment;
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
-import cz.nic.datovka.tinyDB.base64.Base64OutputStream;
-import cz.nic.datovka.tinyDB.holders.OutputHolder;
-import cz.nic.datovka.tinyDB.holders.OutputStreamHolder;
-
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,6 +8,14 @@ import java.util.List;
 
 import org.xml.sax.Attributes;
 
+import cz.abclinuxu.datoveschranky.common.entities.Attachment;
+import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.abclinuxu.datoveschranky.common.impl.Utils;
+import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
+import cz.nic.datovka.tinyDB.base64.Base64OutputStream;
+import cz.nic.datovka.tinyDB.holders.OutputHolder;
+import cz.nic.datovka.tinyDB.holders.OutputStreamHolder;
+
 /**
  * 
  * @author Vaclav Rosecky <xrosecky 'at' gmail 'dot' com>
@@ -25,53 +23,49 @@ import org.xml.sax.Attributes;
  */
 public class DownloadReceivedMessage extends AbstractResponseParser {
 
-    private Attachment attachment = null; // právě zpracovávaná příloha
-    private List<Attachment> attachments = new ArrayList<Attachment>();
-    private AttachmentStorer storer = null;
-    private MessageEnvelope envelope = null;
-    
-    public DownloadReceivedMessage(MessageEnvelope env, AttachmentStorer attachStorer) {
-        this.envelope = env;
-        this.storer = attachStorer;
-    }
+	private Attachment attachment = null; // právě zpracovávaná příloha
+	private List<Attachment> attachments = new ArrayList<Attachment>();
+	private AttachmentStorer storer = null;
+	private MessageEnvelope envelope = null;
 
-    @Override
-    public OutputHolder startElementImpl(String elName, Attributes attributes) {
-        if ("dmFile".equals(elName)) {
-            attachment = new Attachment();
-            attachment.setDescription(attributes.getValue("dmFileDescr"));
-            attachment.setMetaType(attributes.getValue("dmFileMetaType"));
-            attachment.setMimeType(attributes.getValue("dmMimeType"));
-        }
-        if ("dmEncodedContent".equals(elName)) {
-            try {
-                OutputStream os = storer.store(envelope, attachment);
-                attachments.add(attachment);
-                // FileOutputStream fos = new FileOutputStream(file);
-              // Base64OutputStream bos = new Base64OutputStream(os, false, 0, null);
-               Base64OutputStream bos = new Base64OutputStream(os, 0, false);
-               // ByteArrayOutputStream baos = new ByteArrayOutputStream();
-               // Base64.decode(arg0, os);
-                
-                
-                OutputHolder input = new OutputStreamHolder(bos);
-                return input;
-            } catch (IOException ioe) {
-                throw new RuntimeException("Nemohu otevrit soubor", ioe);
-            }
+	public DownloadReceivedMessage(MessageEnvelope env,
+			AttachmentStorer attachStorer) {
+		this.envelope = env;
+		this.storer = attachStorer;
+	}
 
-        }
-        return null;
-    }
+	@Override
+	public OutputHolder startElementImpl(String elName, Attributes attributes) {
+		if ("dmFile".equals(elName)) {
+			attachment = new Attachment();
+			attachment.setDescription(attributes.getValue("dmFileDescr"));
+			attachment.setMetaType(attributes.getValue("dmFileMetaType"));
+			attachment.setMimeType(attributes.getValue("dmMimeType"));
+		}
+		if ("dmEncodedContent".equals(elName)) {
+			try {
+				OutputStream os = storer.store(envelope, attachment);
+				attachments.add(attachment);
+				Base64OutputStream bos = new Base64OutputStream(os, 0, false);
 
-    @Override
-    public void endElementImpl(String elName, OutputHolder handle) {
-        if (handle instanceof Closeable) {
-            Utils.close((Closeable) handle);
-        }
-    }
-    
-    public List<Attachment> getResult() {
-        return attachments;
-    }
+				OutputHolder input = new OutputStreamHolder(bos);
+				return input;
+			} catch (IOException ioe) {
+				throw new RuntimeException("Nemohu otevrit soubor", ioe);
+			}
+
+		}
+		return null;
+	}
+
+	@Override
+	public void endElementImpl(String elName, OutputHolder handle) {
+		if (handle instanceof Closeable) {
+			Utils.close((Closeable) handle);
+		}
+	}
+
+	public List<Attachment> getResult() {
+		return attachments;
+	}
 }

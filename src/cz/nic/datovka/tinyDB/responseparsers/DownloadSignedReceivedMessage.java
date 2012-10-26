@@ -28,7 +28,6 @@ public class DownloadSignedReceivedMessage extends AbstractResponseParser {
     @Override
     public OutputHolder startElementImpl(String elName, Attributes attributes) {
         if ("dmSignature".equals(elName)) {
-          //  Base64OutputStream bos = new Base64OutputStream(output, false, 0, null);
         	Base64OutputStream bos = new Base64OutputStream(output, 0, false);
             OutputHolder input = new OutputStreamHolder(output);
             return input;
