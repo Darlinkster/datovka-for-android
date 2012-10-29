@@ -14,11 +14,14 @@ import java.util.List;
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
 import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
+import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
@@ -26,6 +29,7 @@ import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import android.app.IntentService;
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,7 +40,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 
-public class MessageDownloadService extends IntentService {
+public class MessageDownloadService extends IntentService implements AttachmentStorer{
 	public static final int UPDATE_PROGRESS = 8344;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
@@ -45,6 +49,11 @@ public class MessageDownloadService extends IntentService {
 	private static String PROGRAM_FOLDER;
 	private static final int INBOX = 0;
 	private static final int OUTBOX = 1;
+	
+	private String directory;
+	private long messageId;
+	private int messageIsdsId;
+	private int folder;
 
 	public MessageDownloadService() {
 		super("DownloadService");
@@ -53,16 +62,15 @@ public class MessageDownloadService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		PROGRAM_FOLDER = Environment.getExternalStorageDirectory().getPath() + "/Datovka/";
-		long messageId = intent.getLongExtra(MSG_ID, 0);
-		int folder = intent.getIntExtra(FOLDER, 0);
+		messageId = intent.getLongExtra(MSG_ID, 0);
+		folder = intent.getIntExtra(FOLDER, 0);
 		ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER);
-		int messageIsdsId, msgBoxId;
+		
+		// Get ISDS ID and MSGBOX ID of the message 
 		Uri singleUri;
 		String[] projection;
 		String IsdsIdColName;
 		String msgBoxIdColName;
-		
-		// Get ISDS ID and MSGBOX ID of the message 
 		if(folder == INBOX){
 			singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI,messageId);
 			projection = new String[]{DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID, DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID};
@@ -82,42 +90,22 @@ public class MessageDownloadService extends IntentService {
 		int msgBoxIdColIndex = msgCursor.getColumnIndex(msgBoxIdColName);
 		
 		messageIsdsId = msgCursor.getInt(isdsIdColIndex);
-		msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
+		int msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
 		msgCursor.close();
 		
 		// Connect to WS
 		if (!Connector.isOnline()) {
-			Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI,msgBoxId);
-			String[] msgBoxProjection = new String[] {
-					DatabaseHelper.MSGBOX_LOGIN,
-					DatabaseHelper.MSGBOX_PASSWORD,
-					DatabaseHelper.MSGBOX_TEST_ENV };
-			Cursor msgBoxCursor = getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
-			msgBoxCursor.moveToFirst();
-			
-			int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
-			int passwordIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);
-			int envIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TEST_ENV);
-			String login = msgBoxCursor.getString(loginIndex);
-			String password = msgBoxCursor.getString(passwordIndex);
-			int environment = msgBoxCursor.getInt(envIndex);
-			msgBoxCursor.close();
-			try {
-				Connector.connect(login, password, environment, getApplicationContext());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			connectToWs(msgBoxId);
 		}
 		
 		// If the download folder not exists create it
 		checkExternalStorage();
-		File aaa = getExternalFilesDir(null);
-		System.out.println("aaa " + aaa.getPath());
+		//File aaa = getExternalFilesDir(null);
+		//System.out.println("aaa " + aaa.getPath());
 		
-		String downloadFolder = PROGRAM_FOLDER + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
+		directory = PROGRAM_FOLDER + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
 		//String downloadFolder = aaa.getPath() + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
-		File destFolder = new File(downloadFolder);
+		File destFolder = new File(directory);
 		if(!destFolder.exists()){
 			if(!destFolder.mkdirs()){
 				// TODO
@@ -148,7 +136,7 @@ public class MessageDownloadService extends IntentService {
 			e.printStackTrace();
 		}
 		// stáhneme přílohy ke zprávě
-		List<Attachment> attachments = downloadService.downloadMessage(envelope, storer).getAttachments();
+		List<Attachment> attachments = downloadService.downloadMessage(envelope, this).getAttachments();
 		Hash hash = Connector.verifyMessage(envelope);
 		
 		
@@ -192,7 +180,32 @@ public class MessageDownloadService extends IntentService {
 		receiver.send(UPDATE_PROGRESS, resultData);
 	}
 
-	private void checkExternalStorage(){
+	private void connectToWs(int msgBoxId) {
+		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI,msgBoxId);
+		String[] msgBoxProjection = new String[] {
+				DatabaseHelper.MSGBOX_LOGIN,
+				DatabaseHelper.MSGBOX_PASSWORD,
+				DatabaseHelper.MSGBOX_TEST_ENV };
+		Cursor msgBoxCursor = getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
+		msgBoxCursor.moveToFirst();
+		
+		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
+		int passwordIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);
+		int envIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TEST_ENV);
+		String login = msgBoxCursor.getString(loginIndex);
+		String password = msgBoxCursor.getString(passwordIndex);
+		int environment = msgBoxCursor.getInt(envIndex);
+		msgBoxCursor.close();
+		try {
+			Connector.connect(login, password, environment, getApplicationContext());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void checkExternalStorage() {
 
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
@@ -213,7 +226,7 @@ public class MessageDownloadService extends IntentService {
 		}
 
 		if (!mExternalStorageAvailable && !mExternalStorageWriteable) {
-			
+
 			try {
 				throw new Exception("External storage available: "
 						+ mExternalStorageAvailable + " writable: "
@@ -222,7 +235,31 @@ public class MessageDownloadService extends IntentService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
+	}
+
+	public OutputStream store(MessageEnvelope envelope, Attachment attachment)
+			throws IOException {
+		String name = name(envelope, attachment);
+		File output = new File(directory, name);
+		insertAttachmentToDb(directory + name);
+		attachment.setContents(new FileContent(output));
+		return new FileOutputStream(output);
+	}
+	
+	protected String name(MessageEnvelope envelope, Attachment attachment) {
+        String prefix = envelope.getMessageID();
+        String description = attachment.getDescription();
+
+        return prefix + "_" + description;
+    }
+	
+	private void insertAttachmentToDb(String path){
+		ContentValues value = new ContentValues();
+		value.put(DatabaseHelper.ATTACHMENTS_MSG_ID, messageId);
+		value.put(DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID, folder);
+		value.put(DatabaseHelper.ATTACHMENTS_PATH, path);
+		getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
 	}
 }

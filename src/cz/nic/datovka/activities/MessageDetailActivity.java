@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import cz.nic.datovka.R;
+import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
+import cz.nic.datovka.fragments.MessageAttachmentsFragment;
 import cz.nic.datovka.fragments.MessageDetailFragment;
 import cz.nic.datovka.fragments.MessageDownloadProgressFragment;
 
@@ -29,10 +31,12 @@ public class MessageDetailActivity  extends FragmentActivity {
 		this.folder = i.getIntExtra(FOLDER,0);
 		
 		MessageDetailFragment mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
+		MessageAttachmentsFragment maf = MessageAttachmentsFragment.newInstance(this.messageId, this.folder);
 		
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.message_detail_activity, mdf);
+		ft.replace(R.id.message_attachment_activity, maf);
 		ft.commit();
 	}
 	

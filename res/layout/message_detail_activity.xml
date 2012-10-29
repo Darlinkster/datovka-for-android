@@ -7,8 +7,17 @@
     <LinearLayout
         android:id="@+id/message_detail_activity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/message_attachment_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/message_detail_activity"
+        android:layout_above="@+id/download_attachment_button"
         android:orientation="vertical" >
     </LinearLayout>
 

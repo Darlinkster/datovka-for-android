@@ -49,6 +49,11 @@
             android:authorities="cz.nic.datovka.contentproviders.sentmessagescontentprovider"
             android:exported="false" >
         </provider>
+        <provider
+            android:name=".contentProviders.AttachmentsContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.attachmentscontentprovider"
+            android:exported="false" >
+        </provider>
 
         <service android:name=".services.MessageDownloadService" >
         </service> 

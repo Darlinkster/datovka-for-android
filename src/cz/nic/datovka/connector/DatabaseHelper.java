@@ -144,13 +144,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			RECIPIENT_REF_NUMBER, SENT_MESSAGE_IS_READ, SENT_MESSAGE_ATTACHMENT_SIZE };
 
 	// protected static final String ORDER_BY = ACCOUNT_ID + " DESC";
-
+	
+	public static final String ATTACHMENTS_TB_NAME = "attachments";
+	public static final String ATTACHMENTS_MSG_ID = "attachment_msg_id";
+	public static final String ATTACHMENTS_MSG_FOLDER_ID = "attachment_msg_folder_id";
+	public static final String ATTACHMENTS_ID = "_id";
+	public static final String ATTACHMENTS_PATH = "attachment_path";
+	public static final String[] attachments_columns = {ATTACHMENTS_MSG_ID, ATTACHMENTS_MSG_FOLDER_ID, ATTACHMENTS_ID, ATTACHMENTS_PATH};
+	
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		db.execSQL("CREATE TABLE " + ATTACHMENTS_TB_NAME + " (" 
+				+ ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
+				+ ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
+				+ ATTACHMENTS_MSG_FOLDER_ID + " INTEGER NOT NULL,"
+				+ ATTACHMENTS_PATH + " TEXT NOT NULL);");
+		
 		db.execSQL("CREATE TABLE " + MSGBOX_TB_NAME + " (" 
 				+ MSGBOX_ID	+ " INTEGER PRIMARY KEY,"
 				+ MSGBOX_ISDS_ID + " INTEGER ,"
