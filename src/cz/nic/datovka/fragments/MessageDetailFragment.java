@@ -15,6 +15,7 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
+import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class MessageDetailFragment extends Fragment {
 	public static final String ID = "id";
@@ -80,7 +81,8 @@ public class MessageDetailFragment extends Fragment {
 		
 		annotation.setText(message.getString(annotationColId));
 		messageId.setText(message.getString(messageIdColId));
-		date.setText(message.getString(messageDateColId));
+		date.setText(AndroidUtils.FromXmlToHumanReadableDateWithTime(message
+				.getString(messageDateColId)));
 		sender.setText(message.getString(senderRecipientColId));
 		senderAddress.setText(message.getString(senderRecipientAddressColId));
 		messageType.setText(message.getString(messageTypeColId));

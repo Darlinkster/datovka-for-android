@@ -38,4 +38,11 @@ public class AndroidUtils {
 		
 		return sdf.format(dateObj);
 	}
+	
+	public static String FromXmlToHumanReadableDateWithTime(String date){
+		Date dateObj = IsoDate.stringToDate(date, IsoDate.DATE_TIME);
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd. MM. yyyy");
+		
+		return sdf.format(dateObj);
+	}
 }
