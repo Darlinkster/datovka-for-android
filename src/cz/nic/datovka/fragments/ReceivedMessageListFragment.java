@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.ModifiedSimpleCursorAdapter;
+import cz.nic.datovka.contentProviders.MessageListCursorAdapter;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
@@ -78,7 +78,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 		
 		getLoaderManager().initLoader(0, null, this);
 		
-		adapter = new ModifiedSimpleCursorAdapter(context,
+		adapter = new MessageListCursorAdapter(context,
 				R.layout.message_list_fragment, null, from, to,
 				DatabaseHelper.RECEIVED_MESSAGE_IS_READ, 
 				getResources().getColor(R.color.gray), 

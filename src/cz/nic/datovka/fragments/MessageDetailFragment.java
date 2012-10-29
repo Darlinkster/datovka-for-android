@@ -3,21 +3,26 @@ package cz.nic.datovka.fragments;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MessageListCursorAdapter;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
-public class MessageDetailFragment extends Fragment {
+public class MessageDetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
+	private SimpleCursorAdapter adapter;
 	public static final String ID = "id";
 	public static final String FOLDER = "folder";
 	private static final int INBOX = 0;
@@ -38,11 +43,12 @@ public class MessageDetailFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Cursor message = getMessageCursor();
-		setMessageRead();
+		
+		//Cursor message = getMessageCursor();
+		//setMessageRead();
 		
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
-
+/*
 		TextView annotation = (TextView) v.findViewById(R.id.message_annotation);
 		TextView messageId = (TextView) v.findViewById(R.id.message_id);
 		TextView date = (TextView) v.findViewById(R.id.message_date);
@@ -87,7 +93,20 @@ public class MessageDetailFragment extends Fragment {
 		senderAddress.setText(message.getString(senderRecipientAddressColId));
 		messageType.setText(message.getString(messageTypeColId));
 		messageAttachmentSize.setText("Velikost prilohy: " + message.getInt(messageAttachmentSizeColId)+"kB");
-
+		
+*/
+		String[] from = { DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION,
+				DatabaseHelper.SENDER_NAME,
+				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE };
+		
+		int[] to = { R.id.message_annotation, R.id.message_sender,
+				R.id.message_date };
+		
+		getLoaderManager().initLoader(0, null, this);
+		
+		adapter = new SimpleCursorAdapter(getActivity(), R.layout.message_detail_fragment,null, from, to, 0);
+		
+		
 		return v;
 		
 	}
@@ -107,9 +126,12 @@ public class MessageDetailFragment extends Fragment {
 			projection = DatabaseHelper.sent_message_columns;
 		}
 		Cursor cursor = getActivity().getContentResolver().query(singleUri, projection, null, null, null);
-		cursor.moveToFirst();
 		
-		return cursor;
+		if(cursor.moveToFirst()){
+			return cursor;
+		}
+		// TODO
+		throw new RuntimeException("nic");
 	}
 	
 	private void setMessageRead(){
@@ -128,5 +150,35 @@ public class MessageDetailFragment extends Fragment {
 		}
 		
 		getActivity().getContentResolver().update(singleUri, value, null, null);
+	}
+
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		int folder = getArguments().getInt(FOLDER, 0);
+		long id = getArguments().getLong(ID, 0);
+		
+		String[] projection;
+		Uri uri;
+		if (folder == INBOX) {
+			uri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, id);
+			projection = DatabaseHelper.received_message_columns;
+		} else { // OUTBOX
+			uri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, id);
+			projection = DatabaseHelper.sent_message_columns;
+		}
+
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri,
+				projection, null, null, null);
+
+		return cursorLoader;
+	}
+
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		adapter.swapCursor(arg1);
+		
+	}
+
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		adapter.swapCursor(null);
+		
 	}
 }

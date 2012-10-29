@@ -9,12 +9,12 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
 
-public class ModifiedSimpleCursorAdapter extends SimpleCursorAdapter{
+public class MessageListCursorAdapter extends SimpleCursorAdapter{
 	private String readColName;
 	private int readColor;
 	private int unReadColor;
 
-	public ModifiedSimpleCursorAdapter(Context context, int layout, Cursor c,
+	public MessageListCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, String readColName, int readColor, int unReadColor, int flags) {
 		super(context, layout, c, from, to, flags);
 		this.readColName = readColName;
