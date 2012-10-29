@@ -243,7 +243,7 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 			throws IOException {
 		String name = name(envelope, attachment);
 		File output = new File(directory, name);
-		insertAttachmentToDb(directory + name);
+		insertAttachmentToDb(directory, name);
 		attachment.setContents(new FileContent(output));
 		return new FileOutputStream(output);
 	}
@@ -255,11 +255,12 @@ public class MessageDownloadService extends IntentService implements AttachmentS
         return prefix + "_" + description;
     }
 	
-	private void insertAttachmentToDb(String path){
+	private void insertAttachmentToDb(String path, String filename){
 		ContentValues value = new ContentValues();
 		value.put(DatabaseHelper.ATTACHMENTS_MSG_ID, messageId);
 		value.put(DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID, folder);
 		value.put(DatabaseHelper.ATTACHMENTS_PATH, path);
+		value.put(DatabaseHelper.ATTACHMENTS_FILENAME, filename);
 		getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
 	}
 }

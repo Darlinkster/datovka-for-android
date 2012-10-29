@@ -36,7 +36,7 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 		
 		int folder = getArguments().getInt(FOLDER, 0);
 		
-		String[] from = { DatabaseHelper.ATTACHMENTS_MSG_ID, DatabaseHelper.ATTACHMENTS_PATH };
+		String[] from = { DatabaseHelper.ATTACHMENTS_FILENAME, DatabaseHelper.ATTACHMENTS_PATH };
 		int[] to = { R.id.attachment_item_filename, R.id.attachment_path };
 		
 		getLoaderManager().initLoader(0, null, this);
@@ -50,10 +50,11 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 		
 		String[] projection = DatabaseHelper.attachments_columns;
 		Uri uri = AttachmentsContentProvider.CONTENT_URI;
+		String selection = DatabaseHelper.ATTACHMENTS_ID + "=? and " + DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID + "=?";
 		
 
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri,
-				projection, null, null, null);
+				projection, selection, new String[]{Long.toString(id), Integer.toString(folder)}, null);
 
 		return cursorLoader;
 	}
