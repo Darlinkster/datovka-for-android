@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Iterator;
 import java.util.List;
 
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
@@ -61,7 +62,7 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		PROGRAM_FOLDER = Environment.getExternalStorageDirectory().getPath() + "/Datovka/";
+		PROGRAM_FOLDER = Environment.getExternalStorageDirectory().getPath() + "/Datovka";
 		messageId = intent.getLongExtra(MSG_ID, 0);
 		folder = intent.getIntExtra(FOLDER, 0);
 		ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER);
@@ -138,8 +139,13 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		// stáhneme přílohy ke zprávě
 		List<Attachment> attachments = downloadService.downloadMessage(envelope, this).getAttachments();
 		Hash hash = Connector.verifyMessage(envelope);
-		
-		
+		/*
+		Iterator<Attachment> messageIterator = attachments.iterator();
+		while(messageIterator.hasNext()){
+			Attachment attachment = messageIterator.next();
+			insertAttachmentToDb(attachment.get, filename)
+		}
+		*/
 		/*
 		String urlToDownload = "http://download.documentfoundation.org/libreoffice/stable/3.6.2/rpm/x86_64/LibO_3.6.2_Linux_x86-64_install-rpm_en-US.tar.gz";
 		try {
@@ -243,7 +249,7 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 			throws IOException {
 		String name = name(envelope, attachment);
 		File output = new File(directory, name);
-		insertAttachmentToDb(directory, name);
+		insertAttachmentToDb(directory, name, attachment.getMimeType());
 		attachment.setContents(new FileContent(output));
 		return new FileOutputStream(output);
 	}
@@ -255,12 +261,13 @@ public class MessageDownloadService extends IntentService implements AttachmentS
         return prefix + "_" + description;
     }
 	
-	private void insertAttachmentToDb(String path, String filename){
+	private void insertAttachmentToDb(String path, String filename, String mime){
 		ContentValues value = new ContentValues();
 		value.put(DatabaseHelper.ATTACHMENTS_MSG_ID, messageId);
 		value.put(DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID, folder);
-		value.put(DatabaseHelper.ATTACHMENTS_PATH, path);
+		value.put(DatabaseHelper.ATTACHMENTS_PATH, path + filename);
 		value.put(DatabaseHelper.ATTACHMENTS_FILENAME, filename);
+		value.put(DatabaseHelper.ATTACHMENTS_MIME, mime);
 		getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
 	}
 }

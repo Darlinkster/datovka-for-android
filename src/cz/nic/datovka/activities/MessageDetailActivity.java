@@ -1,11 +1,16 @@
 package cz.nic.datovka.activities;
 
+import java.io.File;
+
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.fragments.MessageAttachmentsFragment;
@@ -45,6 +50,22 @@ public class MessageDetailActivity  extends FragmentActivity {
 			
 			MessageDownloadProgressFragment mdpf = MessageDownloadProgressFragment.newInstance(this.messageId, this.folder);
 			mdpf.show(fm, null);
+		}
+	}
+	
+	public void attachmentClicked(View view){
+		
+		Intent intent = new Intent();
+		intent.setAction(android.content.Intent.ACTION_VIEW);
+		TextView pathTv = (TextView) view.findViewById(R.id.attachment_item_path);
+		TextView mimeTv = (TextView) view.findViewById(R.id.attachment_item_mime);
+		
+		File file = new File(pathTv.getText().toString());
+		intent.setDataAndType(Uri.fromFile(file), mimeTv.getText().toString());
+		try{
+			startActivity(intent);
+		}catch(RuntimeException e){
+			Toast.makeText(this, R.string.no_default_application, Toast.LENGTH_LONG).show();
 		}
 	}
 }

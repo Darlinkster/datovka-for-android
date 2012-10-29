@@ -151,7 +151,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String ATTACHMENTS_ID = "_id";
 	public static final String ATTACHMENTS_PATH = "attachment_path";
 	public static final String ATTACHMENTS_FILENAME = "attachment_filename";
-	public static final String[] attachments_columns = {ATTACHMENTS_MSG_ID, ATTACHMENTS_MSG_FOLDER_ID, ATTACHMENTS_ID, ATTACHMENTS_PATH, ATTACHMENTS_FILENAME};
+	public static final String ATTACHMENTS_MIME = "attachment_mime";
+	public static final String[] attachments_columns = {ATTACHMENTS_MSG_ID, ATTACHMENTS_MSG_FOLDER_ID, ATTACHMENTS_ID, ATTACHMENTS_PATH, ATTACHMENTS_FILENAME, ATTACHMENTS_MIME};
 	
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -164,6 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
 				+ ATTACHMENTS_MSG_FOLDER_ID + " INTEGER NOT NULL,"
 				+ ATTACHMENTS_PATH + " TEXT NOT NULL, " 
+				+ ATTACHMENTS_MIME + " TEXT, "
 				+ ATTACHMENTS_FILENAME + " TEXT NOT NULL);");
 		
 		db.execSQL("CREATE TABLE " + MSGBOX_TB_NAME + " (" 

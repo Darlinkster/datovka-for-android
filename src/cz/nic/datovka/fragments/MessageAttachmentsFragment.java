@@ -8,6 +8,8 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.View;
+import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
@@ -36,12 +38,14 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 		
 		int folder = getArguments().getInt(FOLDER, 0);
 		
-		String[] from = { DatabaseHelper.ATTACHMENTS_FILENAME, DatabaseHelper.ATTACHMENTS_PATH };
-		int[] to = { R.id.attachment_item_filename, R.id.attachment_path };
+		String[] from = { DatabaseHelper.ATTACHMENTS_FILENAME, DatabaseHelper.ATTACHMENTS_PATH, DatabaseHelper.ATTACHMENTS_MIME };
+		int[] to = { R.id.attachment_item_filename, R.id.attachment_item_path, R.id.attachment_item_mime };
 		
 		getLoaderManager().initLoader(0, null, this);
 		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item,null, from, to, 0);
 		setListAdapter(adapter);
+		
+		
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
@@ -68,4 +72,5 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 		adapter.swapCursor(null);
 		
 	}
+	
 }
