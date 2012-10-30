@@ -18,9 +18,6 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 	private SimpleCursorAdapter adapter;
 	public static final String ID = "id";
 	public static final String FOLDER = "folder";
-	private static final int INBOX = 0;
-	private static final int OUTBOX = 1;
-	private static final int IS_READ = 1;
 	
 	public static MessageAttachmentsFragment newInstance(long id, int folder) {
 		MessageAttachmentsFragment f = new MessageAttachmentsFragment();
@@ -36,8 +33,6 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		
-		int folder = getArguments().getInt(FOLDER, 0);
-		
 		String[] from = { DatabaseHelper.ATTACHMENTS_FILENAME, DatabaseHelper.ATTACHMENTS_PATH, DatabaseHelper.ATTACHMENTS_MIME };
 		int[] to = { R.id.attachment_item_filename, R.id.attachment_item_path, R.id.attachment_item_mime };
 		
@@ -50,15 +45,15 @@ public class MessageAttachmentsFragment extends ListFragment implements LoaderCa
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		int folder = getArguments().getInt(FOLDER, 0);
-		long id = getArguments().getLong(ID, 0);
+		long messageId = getArguments().getLong(ID, 0);
 		
 		String[] projection = DatabaseHelper.attachments_columns;
 		Uri uri = AttachmentsContentProvider.CONTENT_URI;
-		String selection = DatabaseHelper.ATTACHMENTS_ID + "=? and " + DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID + "=?";
-		
+		String selection = DatabaseHelper.ATTACHMENTS_MSG_ID + "=? and " + DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID + "=?";
+		String selectionArgs[] = new String[]{Long.toString(messageId), Integer.toString(folder)};
 
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri,
-				projection, selection, new String[]{Long.toString(id), Integer.toString(folder)}, null);
+				projection, selection, selectionArgs, null);
 
 		return cursorLoader;
 	}

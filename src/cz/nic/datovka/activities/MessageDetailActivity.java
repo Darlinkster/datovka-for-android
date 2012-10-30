@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import cz.nic.datovka.R;
-import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.fragments.MessageAttachmentsFragment;
 import cz.nic.datovka.fragments.MessageDetailFragment;
 import cz.nic.datovka.fragments.MessageDownloadProgressFragment;
