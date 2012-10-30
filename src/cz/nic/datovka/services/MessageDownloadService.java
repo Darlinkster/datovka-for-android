@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import android.app.IntentService;
 import android.content.ContentUris;
@@ -17,10 +16,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
-import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
-import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
 import cz.nic.datovka.connector.Connector;
@@ -38,7 +35,6 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 	
 	private static String PROGRAM_FOLDER;
 	private static final int INBOX = 0;
-	private static final int OUTBOX = 1;
 	
 	private String directory;
 	private long messageId;
@@ -113,16 +109,23 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(new File(destFolder, messageIsdsId + ".bin"));
-			downloadService.downloadSignedMessage(envelope, fos);
+			if(folder == INBOX){
+				downloadService.downloadSignedReceivedMessage(envelope, fos);
+			}
+			else{
+				downloadService.downloadSignedSentMessage(envelope, fos);
+			}
 			fos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// stáhneme přílohy ke zprávě
-		downloadService.downloadMessage(envelope, this);
-		Hash hash = Connector.verifyMessage(envelope);
+		// stáhneme přílohy k dosle zprávě
+		if(folder == INBOX){
+			downloadService.downloadMessage(envelope, this);
+			//Hash hash = Connector.verifyMessage(envelope);
+		}
 		/*
 		Iterator<Attachment> messageIterator = attachments.iterator();
 		while(messageIterator.hasNext()){

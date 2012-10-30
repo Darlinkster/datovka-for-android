@@ -48,6 +48,7 @@ import cz.nic.datovka.R.raw;
 import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
+import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedSentMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfSentMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetOwnerInfoFromLogin;
@@ -182,7 +183,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         return new Message(envelope, null, null, parser.getResult());
     }
 
-    public void downloadSignedMessage(MessageEnvelope envelope, OutputStream os) {
+    public void downloadSignedReceivedMessage(MessageEnvelope envelope, OutputStream os) {
         /*if (envelope.getType() != MessageType.RECEIVED) {
            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
         }*/
@@ -190,6 +191,17 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", envelope.getMessageID());
         DownloadSignedReceivedMessage parser = new DownloadSignedReceivedMessage(os);
+        this.postAndParseResponse(post, "dz", parser);
+    }
+    
+    public void downloadSignedSentMessage(MessageEnvelope envelope, OutputStream os) {
+        /*if (envelope.getType() != MessageType.RECEIVED) {
+           throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+        }*/
+        String resource = "/res/raw/download_signed_sent_message.xml";
+        String post = Utils.readResourceAsString(this.getClass(), resource);
+        post = post.replace("${ID}", envelope.getMessageID());
+        DownloadSignedSentMessage parser = new DownloadSignedSentMessage(os);
         this.postAndParseResponse(post, "dz", parser);
     }
 

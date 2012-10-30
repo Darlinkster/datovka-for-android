@@ -1,8 +1,8 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
-import android.util.Base64OutputStream;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
+import cz.nic.datovka.tinyDB.base64.Base64OutputStream;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
 import cz.nic.datovka.tinyDB.holders.OutputStreamHolder;
 
@@ -27,7 +27,7 @@ public class VerifyMessage extends AbstractResponseParser {
         if (super.match("dmHash")) { // tohle nás zajímá
             algorithm = attributes.getValue("algorithm");
             //Base64OutputStream bos = new Base64OutputStream(hash, false, 0, null);
-            Base64OutputStream bos = new Base64OutputStream(hash, 0);
+            Base64OutputStream bos = new Base64OutputStream(hash, 0, false);
             return new OutputStreamHolder(bos);
         }
         return null;
