@@ -34,14 +34,21 @@ public class AndroidUtils {
 	
 	public static String FromXmlToHumanReadableDate(String date){
 		Date dateObj = IsoDate.stringToDate(date, IsoDate.DATE_TIME);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd. MM. yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("d. M. yyyy");
 		
 		return sdf.format(dateObj);
 	}
 	
 	public static String FromXmlToHumanReadableDateWithTime(String date){
 		Date dateObj = IsoDate.stringToDate(date, IsoDate.DATE_TIME);
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd. MM. yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss d. M. yyyy");
+		
+		return sdf.format(dateObj);
+	}
+	
+	public static String FromXmlToHumanReadableTime(String date){
+		Date dateObj = IsoDate.stringToDate(date, IsoDate.DATE_TIME);
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
 		return sdf.format(dateObj);
 	}
