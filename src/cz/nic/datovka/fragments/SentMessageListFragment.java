@@ -34,6 +34,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		super.onActivityCreated(savedInstanceState);
 		updateList();
 		registerForContextMenu(getListView());
+		
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
@@ -78,8 +79,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		adapter = new MessageListCursorAdapter(context,
 				R.layout.message_list_fragment, null, from,
 				to, DatabaseHelper.SENT_MESSAGE_IS_READ, 
-				getResources().getColor(R.color.gray), 
-				getResources().getColor(R.color.dimwhite), 0);
+				0);
 		
 		adapter.setViewBinder(new ViewBinder() {
 
