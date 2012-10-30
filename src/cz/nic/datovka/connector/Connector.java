@@ -19,9 +19,10 @@ import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxServices;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 
 public class Connector {
-	public static int PRODUCTION = 0;
-	public static int TESTING = 1;
+	public static final int PRODUCTION = 0;
+	public static final int TESTING = 1;
 
+	private static final int MAX_MSG_COUNT = 1000;
 	private static DataBoxMessagesService messagesService;
 	private static DataBoxAccessService accessService;
 	private static DataBoxServices service;
@@ -38,42 +39,44 @@ public class Connector {
 		messagesService = service.getDataBoxMessagesService();
 		accessService = service.getDataBoxAccessService();
 	}
-	
-	public static boolean isOnline(){
-		if(service == null) return false;
+
+	public static boolean isOnline() {
+		if (service == null)
+			return false;
 		return true;
 	}
-	
-	public static DataBoxDownloadService getDownloadService(){
+
+	public static DataBoxDownloadService getDownloadService() {
 		return service.getDataBoxDownloadService();
 	}
 
-	public static UserInfo getUserInfo(){
+	public static UserInfo getUserInfo() {
 		if (accessService == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
-		
+
 		return accessService.GetUserInfoFromLogin();
 	}
-	
-	public static OwnerInfo getOwnerInfo(){
+
+	public static OwnerInfo getOwnerInfo() {
 		if (accessService == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
-		
+
 		return accessService.GetOwnerInfoFromLogin();
 	}
-	
-	public static GregorianCalendar getPasswordInfo(){
+
+	public static GregorianCalendar getPasswordInfo() {
 		if (accessService == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
-		
+
 		return accessService.GetPasswordInfo();
 	}
-	
+
 	public static List<MessageEnvelope> getRecievedMessageList() {
 		List<MessageEnvelope> recievedMessageList;
+		int offset = 0;
 		
 		if (messagesService == null) {
 			throw new IllegalStateException("Object not initialized");
@@ -86,14 +89,31 @@ public class Connector {
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
 		recievedMessageList = messagesService.getListOfReceivedMessages(
-				from.getTime(), now.getTime(), null, 0, 15);
+				from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
 
+		if(recievedMessageList.size() == MAX_MSG_COUNT){
+			while(true){
+				List<MessageEnvelope> recievedMessageListNext;
+				offset += MAX_MSG_COUNT;
+				recievedMessageListNext = messagesService.getListOfReceivedMessages(
+						from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
+				
+				if(recievedMessageListNext.size() > 0){
+					recievedMessageList.addAll(recievedMessageListNext);
+				}
+				else{
+					break;
+				}
+			}
+		}
+		
 		return recievedMessageList;
 	}
-	
+
 	public static List<MessageEnvelope> getSentMessageList() {
 		List<MessageEnvelope> sentMessageList;
-		
+		int offset = 0;
+
 		if (messagesService == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -104,35 +124,30 @@ public class Connector {
 		from.setTimeInMillis(0);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
-		sentMessageList = messagesService.getListOfSentMessages(
-				from.getTime(), now.getTime(), null, 0, 15);
+		sentMessageList = messagesService.getListOfSentMessages(from.getTime(),
+				now.getTime(), null, offset, MAX_MSG_COUNT);
 
+		if(sentMessageList.size() == MAX_MSG_COUNT){
+			while(true){
+				List<MessageEnvelope> sentMessageListNext;
+				offset += MAX_MSG_COUNT;
+				sentMessageListNext = messagesService.getListOfSentMessages(
+						from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
+				
+				if(sentMessageListNext.size() > 0){
+					sentMessageList.addAll(sentMessageListNext);
+				}
+				else{
+					break;
+				}
+			}
+		}
+			
 		return sentMessageList;
 	}
 
-	public static Hash verifyMessage(MessageEnvelope envelope){
+	public static Hash verifyMessage(MessageEnvelope envelope) {
 		return messagesService.verifyMessage(envelope);
 	}
-	
-	public static void getAttachments(int id) {
-	//	MessageEnvelope message = getMessageById(id);
-		//List<Attachment> attachments = downloadService.
-		
-		/*
-		FileAttachmentStorer storer = new FileAttachmentStorer(whereToPutFiles);
-		for (MessageEnvelope envelope : messages) {
-			// uložíme celou podepsanou zprávu
-			FileOutputStream fos = new FileOutputStream(new File(whereToPutFiles, envelope.getMessageID() + ".bin"));
-			try {
-				downloadService.downloadSignedMessage(envelope, fos);
-			} finally {
-				fos.close();
-			}
-			// stáhneme přílohy ke zprávě
-			List<Attachment> attachments = downloadService.downloadMessage(envelope, storer).getAttachments();
-			Hash hash = messagesService.verifyMessage(envelope);
-			print(envelope, attachments, hash);
-		}
-		*/
-	}
+
 }
