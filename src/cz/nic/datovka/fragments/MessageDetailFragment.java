@@ -6,28 +6,20 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class MessageDetailFragment extends Fragment {
-	private SimpleCursorAdapter adapter;
 	public static final String ID = "id";
 	public static final String FOLDER = "folder";
 	private static final int INBOX = 0;
-	private static final int OUTBOX = 1;
 	private static final int IS_READ = 1;
 
 	public static MessageDetailFragment newInstance(long id, int folder) {

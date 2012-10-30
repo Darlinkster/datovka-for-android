@@ -1,17 +1,21 @@
 package cz.nic.datovka.services;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Iterator;
 import java.util.List;
 
+import android.app.IntentService;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.ResultReceiver;
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
@@ -19,27 +23,12 @@ import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
 import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
-
-import android.app.IntentService;
-import android.app.Service;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.ResultReceiver;
 
 public class MessageDownloadService extends IntentService implements AttachmentStorer{
 	public static final int UPDATE_PROGRESS = 8344;
@@ -101,11 +90,7 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		
 		// If the download folder not exists create it
 		checkExternalStorage();
-		//File aaa = getExternalFilesDir(null);
-		//System.out.println("aaa " + aaa.getPath());
-		
 		directory = PROGRAM_FOLDER + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
-		//String downloadFolder = aaa.getPath() + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
 		File destFolder = new File(directory);
 		if(!destFolder.exists()){
 			if(!destFolder.mkdirs()){
@@ -124,7 +109,6 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		MessageEnvelope envelope = new MessageEnvelope();
 		envelope.setMessageID(Integer.toString(messageIsdsId));
 		
-		FileAttachmentStorer storer = new FileAttachmentStorer(destFolder);
 		// uložíme celou podepsanou zprávu
 		FileOutputStream fos = null;
 		try {
@@ -137,7 +121,7 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 			e.printStackTrace();
 		}
 		// stáhneme přílohy ke zprávě
-		List<Attachment> attachments = downloadService.downloadMessage(envelope, this).getAttachments();
+		downloadService.downloadMessage(envelope, this);
 		Hash hash = Connector.verifyMessage(envelope);
 		/*
 		Iterator<Attachment> messageIterator = attachments.iterator();

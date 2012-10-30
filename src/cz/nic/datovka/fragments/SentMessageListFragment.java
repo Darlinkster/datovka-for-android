@@ -2,7 +2,6 @@ package cz.nic.datovka.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessageListCursorAdapter;
-import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 

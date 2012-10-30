@@ -69,7 +69,6 @@ public class AddAccountService extends IntentService {
 				e.printStackTrace();
 			}
 
-			UserInfo uinfo = Connector.getUserInfo();
 			List<MessageEnvelope> recievedMessageList = Connector.getRecievedMessageList();
 			List<MessageEnvelope> sentMessageList = Connector.getSentMessageList();
 			GregorianCalendar cal = Connector.getPasswordInfo();

@@ -14,7 +14,6 @@ import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
-import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class AccountListFragment extends ListFragment implements
 		LoaderCallbacks<Cursor> {
