@@ -20,6 +20,7 @@ import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
+import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
@@ -115,7 +116,11 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 			else{
 				downloadService.downloadSignedSentMessage(envelope, fos);
 			}
+			fos.flush();
 			fos.close();
+			insertAttachmentToDb(directory + messageIsdsId + ".bin",
+					getResources().getString(R.string.signed_message_name),
+					"application/pkcs7+xml");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -126,6 +131,8 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 			downloadService.downloadMessage(envelope, this);
 			//Hash hash = Connector.verifyMessage(envelope);
 		}
+		
+		
 		/*
 		Iterator<Attachment> messageIterator = attachments.iterator();
 		while(messageIterator.hasNext()){
@@ -235,8 +242,9 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 	public OutputStream store(MessageEnvelope envelope, Attachment attachment)
 			throws IOException {
 		String name = name(envelope, attachment);
+		insertAttachmentToDb(directory + name, name, attachment.getMimeType());
+		
 		File output = new File(directory, name);
-		insertAttachmentToDb(directory, name, attachment.getMimeType());
 		attachment.setContents(new FileContent(output));
 		return new FileOutputStream(output);
 	}
@@ -252,7 +260,7 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		ContentValues value = new ContentValues();
 		value.put(DatabaseHelper.ATTACHMENTS_MSG_ID, messageId);
 		value.put(DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID, folder);
-		value.put(DatabaseHelper.ATTACHMENTS_PATH, path + filename);
+		value.put(DatabaseHelper.ATTACHMENTS_PATH, path);
 		value.put(DatabaseHelper.ATTACHMENTS_FILENAME, filename);
 		value.put(DatabaseHelper.ATTACHMENTS_MIME, mime);
 		getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
