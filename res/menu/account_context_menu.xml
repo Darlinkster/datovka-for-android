@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/account_info"
-        android:title="@string/account_info"
+        android:title="@string/account_menu_info"
         android:orderInCategory="100"
         android:showAsAction="never" />
    
     <item android:id="@+id/account_delete"
-        android:title="@string/account_delete"
+        android:title="@string/account_menu_delete"
         android:orderInCategory="200"
         android:showAsAction="never" />
 </menu>

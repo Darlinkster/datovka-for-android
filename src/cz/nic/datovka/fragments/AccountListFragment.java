@@ -1,7 +1,10 @@
 package cz.nic.datovka.fragments;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -12,10 +15,15 @@ import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
 import android.widget.Toast;
+import cz.abclinuxu.datoveschranky.common.entities.content.Content;
 import cz.nic.datovka.R;
+import cz.nic.datovka.activities.AccountActivity;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 
@@ -35,14 +43,13 @@ public class AccountListFragment extends ListFragment implements
 	}
 
 	public void updateList() {
-		Context context = getActivity();
 		
 		String[] from = { DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.USER_NAME };
 		int[] to = { R.id.account_item_owner, R.id.account_item_user };
 		
 		getLoaderManager().initLoader(0, null, this);
 		
-		adapter = new SimpleCursorAdapter(context,
+		adapter = new SimpleCursorAdapter(getActivity(),
 				R.layout.account_fragment, null, from,
 				to, 0);
 		
@@ -90,5 +97,28 @@ public class AccountListFragment extends ListFragment implements
 		super.onCreateContextMenu(menu, v, menuInfo);
 		final MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.account_context_menu, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.account_delete:
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+			
+			Cursor cursor = (Cursor) adapter.getItem(info.position);
+			int idColumnIndex = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
+			Long msgBoxId = cursor.getLong(idColumnIndex);
+			
+			Uri uri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
+			getActivity().getContentResolver().delete(uri, null, null);
+			//getActivity().getContentResolver().notifyChange(MsgBoxContentProvider.CONTENT_URI, null);
+			Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.account_info:
+			Toast.makeText(getActivity(), "infoinfo", Toast.LENGTH_SHORT).show();
+			return true;
+		}
+
+		return true;
 	}
 }
