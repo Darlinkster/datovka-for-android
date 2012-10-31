@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
+import android.widget.Toast;
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
@@ -27,6 +28,7 @@ import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
+import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
 public class MessageDownloadService extends IntentService implements AttachmentStorer{
 	public static final int UPDATE_PROGRESS = 8344;
@@ -102,7 +104,6 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		}
 		
 		//TODO get rid of the MessageEnvelope
-		DataBoxDownloadService downloadService = Connector.getDownloadService();
 		MessageEnvelope envelope = new MessageEnvelope();
 		envelope.setMessageID(Integer.toString(messageIsdsId));
 		
@@ -111,26 +112,33 @@ public class MessageDownloadService extends IntentService implements AttachmentS
 		try {
 			fos = new FileOutputStream(new File(destFolder, messageIsdsId + ".bin"));
 			if(folder == INBOX){
-				downloadService.downloadSignedReceivedMessage(envelope, fos);
+				Connector.downloadSignedReceivedMessage(envelope, fos);
 			}
 			else{
-				downloadService.downloadSignedSentMessage(envelope, fos);
+				Connector.downloadSignedSentMessage(envelope, fos);
 			}
 			fos.flush();
 			fos.close();
 			insertAttachmentToDb(directory + messageIsdsId + ".bin",
 					getResources().getString(R.string.signed_message_name),
 					"application/pkcs7+xml");
+			
+			// stáhneme přílohy k dosle zprávě
+			if(folder == INBOX){
+				Connector.downloadMessage(envelope, this);
+				//Hash hash = Connector.verifyMessage(envelope);
+			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (HttpException e) {
+			//TODO
+			String errorMessage = e.getMessage();
+			Toast.makeText(getApplicationContext(), "chyba " + errorMessage, Toast.LENGTH_LONG).show();
+			this.stopSelf();
 		}
-		// stáhneme přílohy k dosle zprávě
-		if(folder == INBOX){
-			downloadService.downloadMessage(envelope, this);
-			//Hash hash = Connector.verifyMessage(envelope);
-		}
+		
 		
 		
 		/*

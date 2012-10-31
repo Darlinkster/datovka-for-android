@@ -11,15 +11,17 @@
     <string name="add_account_button">Vytvořit účet</string>
     <string name="storno">Storno</string>
     <string name="account_created">Účet vytvořen</string>
-    <string name="account_not_created">Chyba při vytváření účtu</string>
-	<string name="test_environment_checkbox">Připojit k testovacímu prostředí?</string>
-	<string name="download_attachment_button">Stáhnout přílohy</string>
-	<string name="download_attachment_progress">Stahuji zprávy</string>
-	<string name="no_default_application">Nenalezena žádná aplikace podporujicí tento formát souboru!</string>
-	<string name="signed_message_name">Podepsaná zpráva</string>
-	<string name="account_menu_info">Detailní informace</string>
-	<string name="account_menu_delete">Smazat</string>
-	<string name="account_deleted">Účet smazán</string>
+    <string name="account_exists">Účet již existuje</string>
+    <string name="account_create_error">Chyba při vytváření účtu</string>
+    <string name="account_create_bad_login">Chybné přihlašovací informace</string>
+    <string name="test_environment_checkbox">Připojit k testovacímu prostředí?</string>
+    <string name="download_attachment_button">Stáhnout přílohy</string>
+    <string name="download_attachment_progress">Stahuji zprávy</string>
+    <string name="no_default_application">Nenalezena žádná aplikace podporujicí tento formát souboru!</string>
+    <string name="signed_message_name">Podepsaná zpráva</string>
+    <string name="account_menu_info">Detailní informace</string>
+    <string name="account_menu_delete">Smazat</string>
+    <string name="account_deleted">Účet smazán</string>
     
 	<string-array name="folder_spinner">
 	    <item>Přijaté</item>

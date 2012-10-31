@@ -26,8 +26,17 @@ public class AddAccountFragment extends DialogFragment {
 			 if(message.arg1 == AddAccountService.RESULT_OK) {
 				 Toast.makeText(context, R.string.account_created, Toast.LENGTH_SHORT).show();
 			 }
-			 else{
-				 Toast.makeText(context, R.string.account_not_created, Toast.LENGTH_SHORT).show();
+			
+			 else if(message.arg1 == AddAccountService.RESULT_EXISTS){
+				 Toast.makeText(context, R.string.account_exists, Toast.LENGTH_SHORT).show();
+			 }
+			
+			 else if(message.arg1 == AddAccountService.RESULT_ERR){
+				 Toast.makeText(context, R.string.account_create_error, Toast.LENGTH_SHORT).show();
+			 }
+			 
+			 else if(message.arg1 == AddAccountService.RESULT_BAD_LOGIN){
+				 Toast.makeText(context, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
 			 }
 		 }
 	 };

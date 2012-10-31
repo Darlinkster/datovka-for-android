@@ -1,5 +1,6 @@
 package cz.nic.datovka.connector;
 
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -11,20 +12,18 @@ import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxAccessService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxServices;
+import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.tinyDB.DataBoxManager;
+import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
 public class Connector {
 	public static final int PRODUCTION = 0;
 	public static final int TESTING = 1;
 
 	private static final int MAX_MSG_COUNT = 1000;
-	private static DataBoxMessagesService messagesService;
-	private static DataBoxAccessService accessService;
-	private static DataBoxServices service;
+	//private static DataBoxMessagesService messagesService;
+	//private static DataBoxAccessService accessService;
+	private static DataBoxManager service;
 
 	public static void connect(String login, String password, int environment,
 			Context context) throws Exception {
@@ -35,8 +34,8 @@ public class Connector {
 			config = new Config(DataBoxEnvironment.TEST);
 
 		service = DataBoxManager.login(config, login, password, context);
-		messagesService = service.getDataBoxMessagesService();
-		accessService = service.getDataBoxAccessService();
+		//messagesService = service.getDataBoxMessagesService();
+		//accessService = service.getDataBoxAccessService();
 	}
 
 	public static boolean isOnline() {
@@ -44,40 +43,48 @@ public class Connector {
 			return false;
 		return true;
 	}
-
-	public static DataBoxDownloadService getDownloadService() {
-		return service.getDataBoxDownloadService();
+	
+	public static void downloadSignedReceivedMessage(MessageEnvelope envelope, OutputStream fos) throws HttpException {
+		service.downloadSignedReceivedMessage(envelope, fos);
+	}
+	
+	public static void downloadSignedSentMessage(MessageEnvelope envelope, OutputStream fos) throws HttpException {
+		service.downloadSignedSentMessage(envelope, fos);
+	}
+	
+	public static void downloadMessage(MessageEnvelope envelope, AttachmentStorer storer) throws HttpException {
+		service.downloadMessage(envelope, storer);
 	}
 
-	public static UserInfo getUserInfo() {
-		if (accessService == null) {
+	public static UserInfo getUserInfo()throws HttpException {
+		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
 
-		return accessService.GetUserInfoFromLogin();
+		return service.GetUserInfoFromLogin()  ;
 	}
 
-	public static OwnerInfo getOwnerInfo() {
-		if (accessService == null) {
+	public static OwnerInfo getOwnerInfo()throws HttpException  {
+		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
 
-		return accessService.GetOwnerInfoFromLogin();
+		return service.GetOwnerInfoFromLogin() ;
 	}
 
-	public static GregorianCalendar getPasswordInfo() {
-		if (accessService == null) {
+	public static GregorianCalendar getPasswordInfo() throws HttpException {
+		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
 
-		return accessService.GetPasswordInfo();
+		return service.GetPasswordInfo() ;
 	}
 
-	public static List<MessageEnvelope> getRecievedMessageList() {
+	public static List<MessageEnvelope> getRecievedMessageList() throws HttpException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
-		if (messagesService == null) {
+		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
 
@@ -87,14 +94,14 @@ public class Connector {
 		from.setTimeInMillis(0);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
-		recievedMessageList = messagesService.getListOfReceivedMessages(
+		recievedMessageList = service.getListOfReceivedMessages(
 				from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
 
 		if(recievedMessageList.size() == MAX_MSG_COUNT){
 			while(true){
 				List<MessageEnvelope> recievedMessageListNext;
 				offset += MAX_MSG_COUNT;
-				recievedMessageListNext = messagesService.getListOfReceivedMessages(
+				recievedMessageListNext = service.getListOfReceivedMessages(
 						from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
 				
 				if(recievedMessageListNext.size() > 0){
@@ -109,11 +116,11 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public static List<MessageEnvelope> getSentMessageList() {
+	public static List<MessageEnvelope> getSentMessageList() throws HttpException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
-		if (messagesService == null) {
+		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
 
@@ -123,14 +130,14 @@ public class Connector {
 		from.setTimeInMillis(0);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
-		sentMessageList = messagesService.getListOfSentMessages(from.getTime(),
+		sentMessageList = service.getListOfSentMessages(from.getTime(),
 				now.getTime(), null, offset, MAX_MSG_COUNT);
 
 		if(sentMessageList.size() == MAX_MSG_COUNT){
 			while(true){
 				List<MessageEnvelope> sentMessageListNext;
 				offset += MAX_MSG_COUNT;
-				sentMessageListNext = messagesService.getListOfSentMessages(
+				sentMessageListNext = service.getListOfSentMessages(
 						from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
 				
 				if(sentMessageListNext.size() > 0){
@@ -145,8 +152,8 @@ public class Connector {
 		return sentMessageList;
 	}
 
-	public static Hash verifyMessage(MessageEnvelope envelope) {
-		return messagesService.verifyMessage(envelope);
+	public static Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
+		return service.verifyMessage(envelope);
 	}
 
 }

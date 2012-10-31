@@ -38,13 +38,10 @@ import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxAccessService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxDownloadService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxMessagesService;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxSearchService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxServices;
 import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxUploadService;
 import cz.nic.datovka.R.raw;
+import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
@@ -52,9 +49,9 @@ import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedSentMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfSentMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetOwnerInfoFromLogin;
+import cz.nic.datovka.tinyDB.responseparsers.GetPasswordInfo;
 import cz.nic.datovka.tinyDB.responseparsers.GetUserInfoFromLogin;
 import cz.nic.datovka.tinyDB.responseparsers.VerifyMessage;
-import cz.nic.datovka.tinyDB.responseparsers.GetPasswordInfo;
 
 
 
@@ -66,10 +63,8 @@ import cz.nic.datovka.tinyDB.responseparsers.GetPasswordInfo;
  * @author Vaclav Rosecky <xrosecky 'at' gmail 'dot' com>
  * 
  */
-public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadService, DataBoxServices, DataBoxAccessService {
+public class DataBoxManager{
     
-    private static final int MAX_REDIRECT_COUNT = 25;
-    private static final List<Integer> redirectionCodes = Arrays.asList(301, 302);
     private static final List<Integer> OKCodes = Arrays.asList(200, 304);
     protected final Config config;
     protected String authCookie = null;
@@ -98,7 +93,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         manager.loginImpl(userName, password, context);
         return manager;
     }
-
+/*
     public DataBoxDownloadService getDataBoxDownloadService() {
         return this;
     }
@@ -110,7 +105,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     public DataBoxAccessService getDataBoxAccessService() {
         return this;
     }
-    
+  */  
     public DeliveryInfo getDeliveryInfo(MessageEnvelope arg0) {
         throw new UnsupportedOperationException("Operace getDeliveryInfo neni touto " +
                 "knihovnou podporovana.");
@@ -131,7 +126,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 
     // metody z DataBoxMessages
     public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to,
-            EnumSet<MessageState> state, int offset, int limit) {
+            EnumSet<MessageState> state, int offset, int limit) throws HttpException  {
         
     	String resource = "/res/raw/get_list_of_received_messages.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -146,7 +141,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     }
 
     public List<MessageEnvelope> getListOfSentMessages(Date from,
-            Date to, EnumSet<MessageState> state,  int offset, int limit) {
+            Date to, EnumSet<MessageState> state,  int offset, int limit) throws HttpException  {
 
     	String resource = "/res/raw/get_list_of_sent_messages.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -160,7 +155,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         return result.getMessages();
     }
 
-    public Hash verifyMessage(MessageEnvelope envelope) {
+    public Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
         String resource = "/res/raw/verify_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", envelope.getMessageID());
@@ -171,7 +166,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 
     // metody z DataBoxDownload
     public Message downloadMessage(MessageEnvelope envelope,
-            AttachmentStorer storer) {
+            AttachmentStorer storer) throws HttpException  {
         //if (envelope.getType() != MessageType.RECEIVED) {
          //   throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
        // }
@@ -183,7 +178,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         return new Message(envelope, null, null, parser.getResult());
     }
 
-    public void downloadSignedReceivedMessage(MessageEnvelope envelope, OutputStream os) {
+    public void downloadSignedReceivedMessage(MessageEnvelope envelope, OutputStream os) throws HttpException  {
         /*if (envelope.getType() != MessageType.RECEIVED) {
            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
         }*/
@@ -194,7 +189,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         this.postAndParseResponse(post, "dz", parser);
     }
     
-    public void downloadSignedSentMessage(MessageEnvelope envelope, OutputStream os) {
+    public void downloadSignedSentMessage(MessageEnvelope envelope, OutputStream os) throws HttpException {
         /*if (envelope.getType() != MessageType.RECEIVED) {
            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
         }*/
@@ -207,7 +202,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 
     // metody z DataAccessService
     
-    public OwnerInfo GetOwnerInfoFromLogin(){
+    public OwnerInfo GetOwnerInfoFromLogin()throws HttpException {
     	String resource = "/res/raw/get_owner_info_from_login.xml";
     	String post = Utils.readResourceAsString(this.getClass(), resource);
     	GetOwnerInfoFromLogin parser = new  GetOwnerInfoFromLogin();
@@ -216,7 +211,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     	return parser.getOwnerInfo();
     }
     
-	public UserInfo GetUserInfoFromLogin(){
+	public UserInfo GetUserInfoFromLogin()throws HttpException {
 		String resource = "/res/raw/get_user_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetUserInfoFromLogin parser = new GetUserInfoFromLogin();
@@ -225,7 +220,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 		return parser.getUserInfo();
 	}
 	
-	public GregorianCalendar GetPasswordInfo(){
+	public GregorianCalendar GetPasswordInfo()throws HttpException {
 		String resource = "/res/raw/get_password_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetPasswordInfo parser = new GetPasswordInfo();
@@ -252,7 +247,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
      * @throws DataBoxException
      * 
      */
-    public void storeMessageAsXML(MessageEnvelope envelope, OutputStream os) {
+    public void storeMessageAsXML(MessageEnvelope envelope, OutputStream os) throws HttpException {
         if (envelope.getType() != MessageType.RECEIVED) {
             throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
         }
@@ -264,9 +259,6 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
 
     private void loginImpl(String username, String password, Context context) throws Exception {
         String userPassword = username + ":" + password;
-        //Base64 base64 = new Base64(0, null, false);
-        // základní HTTP autorizace
-        //authorization = "Basic " + new String(base64.encode(userPassword.getBytes()), "UTF-8");
        
         authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
       
@@ -281,7 +273,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
     }
 
     private void postAndParseResponse(String post, String prefix,
-            AbstractResponseParser rp) {
+            AbstractResponseParser rp) throws HttpException {
         HttpsURLConnection con = null;
         try {
             // udelame post
@@ -327,7 +319,7 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         }
     }
 
-    private void storeRequest(String request, String prefix, OutputStream os) {
+    private void storeRequest(String request, String prefix, OutputStream os) throws HttpException {
         HttpsURLConnection con = null;
         try {
             URL url = new URL(config.getServiceURL() + prefix);
@@ -344,13 +336,12 @@ public class DataBoxManager implements DataBoxMessagesService, DataBoxDownloadSe
         }
     }
 
-    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException{
-    	//System.out.println("HTTP CODE: " + con.getResponseCode());
+    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, HttpException{
     	if (!OKCodes.contains(con.getResponseCode())) {
             String message = String.format("Pozadavek selhal se stavovym kodem %d %s.",
                     con.getResponseCode(), con.getResponseMessage());
             logger.log(Level.SEVERE, message);
-            throw new DataBoxException(message);
+            throw new HttpException(con.getResponseMessage(), con.getResponseCode());
         }
     }
 
