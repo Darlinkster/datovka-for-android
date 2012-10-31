@@ -9,8 +9,12 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -26,8 +30,8 @@ public class AccountListFragment extends ListFragment implements
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		updateList();
 		registerForContextMenu(getListView());
+		updateList();
 	}
 
 	public void updateList() {
@@ -77,5 +81,14 @@ public class AccountListFragment extends ListFragment implements
 
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		adapter.swapCursor(null);
+	}
+	
+	@Override
+	public void onCreateContextMenu(final ContextMenu menu, final View v,
+			final ContextMenuInfo menuInfo)
+	{
+		super.onCreateContextMenu(menu, v, menuInfo);
+		final MenuInflater inflater = getActivity().getMenuInflater();
+		inflater.inflate(R.menu.account_context_menu, menu);
 	}
 }

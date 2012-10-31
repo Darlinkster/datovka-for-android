@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:orientation="vertical" >
+    android:longClickable="true"
+    android:orientation="vertical"
+     android:background="?android:attr/selectableItemBackground" >
 
     <TextView
         android:id="@+id/account_item_owner"
@@ -16,7 +18,7 @@
         android:singleLine="true"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:clickable="true" />
+        />
     
     <TextView
         android:id="@+id/account_item_user"
@@ -29,7 +31,7 @@
         android:singleLine="true"
         android:textSize="14sp"
         android:textStyle="normal"
-        android:clickable="true" />
+        />
     
 
 </LinearLayout>
