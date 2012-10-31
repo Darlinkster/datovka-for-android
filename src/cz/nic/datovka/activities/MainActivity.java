@@ -23,8 +23,10 @@ import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
+import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends FragmentActivity implements
 		OnItemSelectedListener, LoaderCallbacks<Cursor> {
@@ -87,8 +89,18 @@ public class MainActivity extends FragmentActivity implements
 				return false;
 			}
 		});
+		
 		account_spinner.setAdapter(account_adapter);
 		account_spinner.setOnItemSelectedListener(this);
+		
+		// There is no account, jump on the create account dialogfragment
+		int numberOfAccounts = getContentResolver().query(
+				MsgBoxContentProvider.CONTENT_URI,
+				DatabaseHelper.msgbox_columns, null, null, null).getCount();
+		if(numberOfAccounts < 1){
+			AddAccountFragment aaf = new AddAccountFragment();
+			aaf.show(fragmentManager, null);
+		}
 	}
 
 	@Override
@@ -163,7 +175,7 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	public void onNothingSelected(AdapterView<?> arg0) {
-
+		
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
