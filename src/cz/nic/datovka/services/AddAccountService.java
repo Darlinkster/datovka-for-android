@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.widget.Toast;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;

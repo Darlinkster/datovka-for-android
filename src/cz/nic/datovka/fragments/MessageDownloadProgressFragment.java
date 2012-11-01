@@ -2,6 +2,7 @@ package cz.nic.datovka.fragments;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,7 +45,12 @@ public class MessageDownloadProgressFragment extends DialogFragment {
 		
 		return mProgressDialog;
 	}
-
+	
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
+	}
+	
 	private class DownloadReceiver extends ResultReceiver {
 		public DownloadReceiver(Handler handler) {
 			super(handler);

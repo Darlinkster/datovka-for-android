@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import cz.abclinuxu.datoveschranky.common.impl.Utils;
-
-
 /**
  * Zapíše obsah elementu do OutputStreamu.
  * 
@@ -16,30 +13,38 @@ import cz.abclinuxu.datoveschranky.common.impl.Utils;
  */
 public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable {
 
-    private final OutputStream os;
-    private final BufferedWriter bw;
-        
-    public OutputStreamHolder(OutputStream os) {
-        this.os = os;
-        bw = new BufferedWriter(new OutputStreamWriter(os));
-    }
-    
-    public void write(char[] array, int start, int length) {
-        try {
-        	        	
-        	bw.write(array, start, length);
-            bw.flush();
-        } catch (IOException ioe) {
-            throw new RuntimeException("Nemohu zapisovat do bufferu", ioe);
-        }
-    }
-    
-    public OutputStream getResult() {
-        return os;
-    }
-    
-    public void close() {
-        Utils.close(bw, os);
-    }
+	private final OutputStream os;
+	private final BufferedWriter bw;
+
+	public OutputStreamHolder(OutputStream os) {
+		this.os = os;
+		bw = new BufferedWriter(new OutputStreamWriter(os));
+	}
+
+	public void write(char[] array, int start, int length) {
+		try {
+
+			bw.write(array, start, length);
+			bw.flush();
+		} catch (IOException ioe) {
+			// This is awful right? But how to handle message downloading
+			// service interruption?
+		}
+	}
+
+	public OutputStream getResult() {
+		return os;
+	}
+
+	public void close() {
+		try {
+			// Utils.close(bw, os);
+			bw.close();
+			os.close();
+		} catch (IOException e) {
+			// This is awful right? But how to handle message downloading
+			// service interruption?
+		}
+	}
 
 }
