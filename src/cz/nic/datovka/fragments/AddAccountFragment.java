@@ -2,6 +2,7 @@ package cz.nic.datovka.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,22 +21,27 @@ import cz.nic.datovka.services.AddAccountService;
 
 public class AddAccountFragment extends DialogFragment {
 	private static Context context;
+	private static ProgressDialog mProgressDialog;
 	
 	 private static Handler handler = new Handler() {
 		 public void handleMessage(Message message){
 			 if(message.arg1 == AddAccountService.RESULT_OK) {
+				 mProgressDialog.dismiss();
 				 Toast.makeText(context, R.string.account_created, Toast.LENGTH_SHORT).show();
 			 }
 			
 			 else if(message.arg1 == AddAccountService.RESULT_EXISTS){
+				 mProgressDialog.dismiss();
 				 Toast.makeText(context, R.string.account_exists, Toast.LENGTH_SHORT).show();
 			 }
 			
 			 else if(message.arg1 == AddAccountService.RESULT_ERR){
+				 mProgressDialog.dismiss();
 				 Toast.makeText(context, R.string.account_create_error, Toast.LENGTH_SHORT).show();
 			 }
 			 
 			 else if(message.arg1 == AddAccountService.RESULT_BAD_LOGIN){
+				 mProgressDialog.dismiss();
 				 Toast.makeText(context, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
 			 }
 		 }
@@ -81,6 +87,11 @@ public class AddAccountFragment extends DialogFragment {
 						// TODO END HACK
 						
 						getActivity().startService(intent);
+						
+						mProgressDialog = new ProgressDialog(getActivity());
+						mProgressDialog.setIndeterminate(true);
+						mProgressDialog.setMessage(getResources().getString(R.string.account_create_progress));
+						mProgressDialog.show();
 					}
 				});
 		builder.setNegativeButton(R.string.storno, null);

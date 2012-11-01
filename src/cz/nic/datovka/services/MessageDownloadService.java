@@ -2,7 +2,6 @@ package cz.nic.datovka.services;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.app.IntentService;
@@ -94,17 +93,16 @@ public class MessageDownloadService extends IntentService {
 		File destFolder = new File(directory);
 		if (!destFolder.exists()) {
 			if (!destFolder.mkdirs()) {
-				// TODO
 				try {
+					// TODO
 					throw new Exception("neco se po..");
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
 
-		// uložíme celou podepsanou zprávu
+		// Save the signed message
 		try {
 			GaugeFileOutputStream fos = new GaugeFileOutputStream(new File(destFolder, messageIsdsId + ".bin"),
 					receiver, UPDATE_PROGRESS, fileSize);
@@ -116,8 +114,7 @@ public class MessageDownloadService extends IntentService {
 			fos.flush();
 			fos.close();
 			insertAttachmentToDb(directory + messageIsdsId + ".bin",
-					getResources().getString(R.string.signed_message_name),
-					"application/pkcs7+xml");
+					getResources().getString(R.string.signed_message_name), "application/pkcs7+xml");
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
