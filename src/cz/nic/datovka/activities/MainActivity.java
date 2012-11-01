@@ -26,10 +26,8 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
-import cz.nic.datovka.services.MessageBoxRefreshService;
 
-public class MainActivity extends FragmentActivity implements
-		OnItemSelectedListener, LoaderCallbacks<Cursor> {
+public class MainActivity extends FragmentActivity implements OnItemSelectedListener, LoaderCallbacks<Cursor> {
 
 	private FragmentManager fragmentManager;
 	private SimpleCursorAdapter account_adapter;
@@ -51,11 +49,9 @@ public class MainActivity extends FragmentActivity implements
 		Spinner account_spinner = (Spinner) findViewById(R.id.account_spinner);
 
 		// folder spinner setup
-		ArrayAdapter<CharSequence> folder_adapter = ArrayAdapter
-				.createFromResource(this, R.array.folder_spinner,
-						android.R.layout.simple_spinner_item);
-		folder_adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		ArrayAdapter<CharSequence> folder_adapter = ArrayAdapter.createFromResource(this, R.array.folder_spinner,
+				android.R.layout.simple_spinner_item);
+		folder_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		folder_spinner.setAdapter(folder_adapter);
 		folder_spinner.setOnItemSelectedListener(this);
 
@@ -64,20 +60,16 @@ public class MainActivity extends FragmentActivity implements
 		int[] to = new int[] { android.R.id.text1 };
 		getSupportLoaderManager().initLoader(0, null, this);
 
-		account_adapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_spinner_item, null, from, to, 0);
-		account_adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		account_adapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, null, from, to, 0);
+		account_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		account_adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 				TextView tv = (TextView) view;
-				int indexMsgBoxId = cursor
-						.getColumnIndex(DatabaseHelper.MSGBOX_ID);
+				int indexMsgBoxId = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
 				// If the owner_firm_name is empty set that textview to
 				// owner_name
 				if (cursor.getString(colIndex).length() == 0) {
-					int indexOwnerName = cursor
-							.getColumnIndex(DatabaseHelper.OWNER_NAME);
+					int indexOwnerName = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
 					tv.setText(cursor.getString(indexOwnerName));
 					// Set msgbox ID as a tag
 					tv.setTag(cursor.getString(indexMsgBoxId));
@@ -89,15 +81,14 @@ public class MainActivity extends FragmentActivity implements
 				return false;
 			}
 		});
-		
+
 		account_spinner.setAdapter(account_adapter);
 		account_spinner.setOnItemSelectedListener(this);
-		
+
 		// There is no account, jump on the create account dialogfragment
-		int numberOfAccounts = getContentResolver().query(
-				MsgBoxContentProvider.CONTENT_URI,
+		int numberOfAccounts = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
 				DatabaseHelper.msgbox_columns, null, null, null).getCount();
-		if(numberOfAccounts < 1){
+		if (numberOfAccounts < 1) {
 			AddAccountFragment aaf = new AddAccountFragment();
 			aaf.show(fragmentManager, null);
 		}
@@ -138,16 +129,14 @@ public class MainActivity extends FragmentActivity implements
 			if (pos == INBOX) {
 				// Inbox
 				selectedFolder = pos;
-				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment
-						.getInstance(selectedMsgBoxID);
+				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
 				FragmentTransaction ft = fragmentManager.beginTransaction();
 				ft.replace(R.id.main_linearlayout, rmlf);
 				ft.commit();
 			} else if (pos == OUTBOX) {
 				// Outbox
 				selectedFolder = pos;
-				SentMessageListFragment smlf = SentMessageListFragment
-						.getInstance(selectedMsgBoxID);
+				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
 				FragmentTransaction ft = fragmentManager.beginTransaction();
 				ft.replace(R.id.main_linearlayout, smlf);
 				ft.commit();
@@ -158,15 +147,13 @@ public class MainActivity extends FragmentActivity implements
 			selectedMsgBoxID = (String) tv.getTag();
 			if (selectedFolder == INBOX) {
 				// Inbox
-				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment
-						.getInstance(selectedMsgBoxID);
+				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
 				FragmentTransaction ft = fragmentManager.beginTransaction();
 				ft.replace(R.id.main_linearlayout, rmlf);
 				ft.commit();
 			} else if (selectedFolder == OUTBOX) {
 				// Outbox
-				SentMessageListFragment smlf = SentMessageListFragment
-						.getInstance(selectedMsgBoxID);
+				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
 				FragmentTransaction ft = fragmentManager.beginTransaction();
 				ft.replace(R.id.main_linearlayout, smlf);
 				ft.commit();
@@ -175,15 +162,14 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	public void onNothingSelected(AdapterView<?> arg0) {
-		
+
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID,
-				DatabaseHelper.OWNER_NAME, DatabaseHelper.OWNER_FIRM_NAME,
-				DatabaseHelper.MSGBOX_ID };
-		CursorLoader cursorLoader = new CursorLoader(this,
-				MsgBoxContentProvider.CONTENT_URI, projection, null, null, null);
+		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME,
+				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.MSGBOX_ID };
+		CursorLoader cursorLoader = new CursorLoader(this, MsgBoxContentProvider.CONTENT_URI, projection, null, null,
+				null);
 
 		return cursorLoader;
 	}
