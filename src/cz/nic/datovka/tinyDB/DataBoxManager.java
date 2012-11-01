@@ -178,24 +178,18 @@ public class DataBoxManager{
         return new Message(envelope, null, null, parser.getResult());
     }
 
-    public void downloadSignedReceivedMessage(MessageEnvelope envelope, OutputStream os) throws HttpException  {
-        /*if (envelope.getType() != MessageType.RECEIVED) {
-           throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }*/
+    public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os) throws HttpException  {
         String resource = "/res/raw/download_signed_received_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
+        post = post.replace("${ID}", Integer.toString(messageIsdsId));
         DownloadSignedReceivedMessage parser = new DownloadSignedReceivedMessage(os);
         this.postAndParseResponse(post, "dz", parser);
     }
     
-    public void downloadSignedSentMessage(MessageEnvelope envelope, OutputStream os) throws HttpException {
-        /*if (envelope.getType() != MessageType.RECEIVED) {
-           throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }*/
+    public void downloadSignedSentMessage(int messageIsdsId, OutputStream os) throws HttpException {
         String resource = "/res/raw/download_signed_sent_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
+        post = post.replace("${ID}", Integer.toString(messageIsdsId));
         DownloadSignedSentMessage parser = new DownloadSignedSentMessage(os);
         this.postAndParseResponse(post, "dz", parser);
     }

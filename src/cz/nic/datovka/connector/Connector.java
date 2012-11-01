@@ -43,12 +43,12 @@ public class Connector {
 		return true;
 	}
 	
-	public static void downloadSignedReceivedMessage(MessageEnvelope envelope, OutputStream fos) throws HttpException {
-		service.downloadSignedReceivedMessage(envelope, fos);
+	public static void downloadSignedReceivedMessage(int messageIsdsId, OutputStream fos) throws HttpException {
+		service.downloadSignedReceivedMessage(messageIsdsId, fos);
 	}
 	
-	public static void downloadSignedSentMessage(MessageEnvelope envelope, OutputStream fos) throws HttpException {
-		service.downloadSignedSentMessage(envelope, fos);
+	public static void downloadSignedSentMessage(int messageIsdsId, OutputStream fos) throws HttpException {
+		service.downloadSignedSentMessage(messageIsdsId, fos);
 	}
 	
 	public static UserInfo getUserInfo()throws HttpException {

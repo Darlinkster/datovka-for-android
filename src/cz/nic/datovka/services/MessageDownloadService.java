@@ -106,19 +106,15 @@ public class MessageDownloadService extends IntentService {
 			}
 		}
 
-		// TODO get rid of the MessageEnvelope
-		MessageEnvelope envelope = new MessageEnvelope();
-		envelope.setMessageID(Integer.toString(messageIsdsId));
-
 		// uložíme celou podepsanou zprávu
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(new File(destFolder, messageIsdsId
 					+ ".bin"));
 			if (folder == INBOX) {
-				Connector.downloadSignedReceivedMessage(envelope, fos);
+				Connector.downloadSignedReceivedMessage(messageIsdsId, fos);
 			} else {
-				Connector.downloadSignedSentMessage(envelope, fos);
+				Connector.downloadSignedSentMessage(messageIsdsId, fos);
 			}
 			fos.flush();
 			fos.close();
