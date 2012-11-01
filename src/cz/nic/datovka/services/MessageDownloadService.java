@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
 import android.widget.Toast;
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
@@ -31,7 +30,6 @@ public class MessageDownloadService extends IntentService {
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
 
-	private static String PROGRAM_FOLDER;
 	private static final int INBOX = 0;
 
 	private String directory;
@@ -45,43 +43,43 @@ public class MessageDownloadService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		PROGRAM_FOLDER = Environment.getExternalStorageDirectory().getPath()
-				+ "/Datovka";
 		messageId = intent.getLongExtra(MSG_ID, 0);
 		folder = intent.getIntExtra(FOLDER, 0);
-		ResultReceiver receiver = (ResultReceiver) intent
-				.getParcelableExtra(RECEIVER);
+		ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER);
 
 		// Get ISDS ID and MSGBOX ID of the message
 		Uri singleUri;
 		String[] projection;
 		String IsdsIdColName;
 		String msgBoxIdColName;
+		String fileSizeColName;
 		if (folder == INBOX) {
-			singleUri = ContentUris.withAppendedId(
-					ReceivedMessagesContentProvider.CONTENT_URI, messageId);
-			projection = new String[] {
-					DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID,
-					DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID };
+			singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, messageId);
+			projection = new String[] { DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID,
+					DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE };
 			IsdsIdColName = DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID;
 			msgBoxIdColName = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID;
+			fileSizeColName = DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE;
 		} else {
-			singleUri = ContentUris.withAppendedId(
-					SentMessagesContentProvider.CONTENT_URI, messageId);
-			projection = new String[] { DatabaseHelper.SENT_MESSAGE_ISDS_ID,
-					DatabaseHelper.SENT_MESSAGE_MSGBOX_ID };
+			singleUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, messageId);
+			projection = new String[] { DatabaseHelper.SENT_MESSAGE_ISDS_ID, DatabaseHelper.SENT_MESSAGE_MSGBOX_ID,
+					DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE };
 			IsdsIdColName = DatabaseHelper.SENT_MESSAGE_ISDS_ID;
 			msgBoxIdColName = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID;
+			fileSizeColName = DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE;
 		}
-		Cursor msgCursor = getContentResolver().query(singleUri, projection,
-				null, null, null);
+		Cursor msgCursor = getContentResolver().query(singleUri, projection, null, null, null);
 		msgCursor.moveToFirst();
 
 		int isdsIdColIndex = msgCursor.getColumnIndex(IsdsIdColName);
 		int msgBoxIdColIndex = msgCursor.getColumnIndex(msgBoxIdColName);
+		int fileSizeColIndex = msgCursor.getColumnIndex(fileSizeColName);
 
 		messageIsdsId = msgCursor.getInt(isdsIdColIndex);
 		int msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
+		long fileSize = msgCursor.getInt(fileSizeColIndex) * 1024; // kB to bytes
+		fileSize *= 1.36f; // base64 makes the content bigger by 33%
+		fileSize += 20 * 1024; // 20 kB is the size of the envelope
 		msgCursor.close();
 
 		// Connect to WS
@@ -91,8 +89,8 @@ public class MessageDownloadService extends IntentService {
 
 		// If the download folder not exists create it
 		checkExternalStorage();
-		directory = PROGRAM_FOLDER + "/" + Integer.toString(messageIsdsId)
-				+ "_" + Long.toString(messageId) + "/";
+		String programFolder = Environment.getExternalStorageDirectory().getPath() + "/Datovka";
+		directory = programFolder + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
 		File destFolder = new File(directory);
 		if (!destFolder.exists()) {
 			if (!destFolder.mkdirs()) {
@@ -107,10 +105,9 @@ public class MessageDownloadService extends IntentService {
 		}
 
 		// uložíme celou podepsanou zprávu
-		FileOutputStream fos = null;
 		try {
-			fos = new FileOutputStream(new File(destFolder, messageIsdsId
-					+ ".bin"));
+			GaugeFileOutputStream fos = new GaugeFileOutputStream(new File(destFolder, messageIsdsId + ".bin"),
+					receiver, UPDATE_PROGRESS, fileSize);
 			if (folder == INBOX) {
 				Connector.downloadSignedReceivedMessage(messageIsdsId, fos);
 			} else {
@@ -129,61 +126,26 @@ public class MessageDownloadService extends IntentService {
 		} catch (HttpException e) {
 			// TODO
 			String errorMessage = e.getMessage();
-			Toast.makeText(getApplicationContext(), "chyba " + errorMessage,
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "chyba " + errorMessage, Toast.LENGTH_LONG).show();
 			this.stopSelf();
 		}
 
-		/*
-		 * Iterator<Attachment> messageIterator = attachments.iterator();
-		 * while(messageIterator.hasNext()){ Attachment attachment =
-		 * messageIterator.next(); insertAttachmentToDb(attachment.get,
-		 * filename) }
-		 */
-		/*
-		 * String urlToDownload =
-		 * "http://download.documentfoundation.org/libreoffice/stable/3.6.2/rpm/x86_64/LibO_3.6.2_Linux_x86-64_install-rpm_en-US.tar.gz"
-		 * ; try { URL url = new URL(urlToDownload); URLConnection connection =
-		 * url.openConnection(); connection.connect(); // this will be useful so
-		 * that you can show a typical 0-100% // progress bar int fileLength =
-		 * connection.getContentLength();
-		 * 
-		 * // download the file
-		 * 
-		 * InputStream input = new BufferedInputStream(url.openStream());
-		 * OutputStream output = new FileOutputStream(PROGRAM_FOLDER + "pokus");
-		 * 
-		 * 
-		 * byte data[] = new byte[1024]; long total = 0; int count; while
-		 * ((count = input.read(data)) != -1) { total += count; // publishing
-		 * the progress.... Bundle resultData = new Bundle();
-		 * resultData.putInt("progress", (int) (total * 100 / fileLength));
-		 * receiver.send(UPDATE_PROGRESS, resultData); output.write(data, 0,
-		 * count); }
-		 * 
-		 * output.flush(); output.close(); input.close(); } catch (IOException
-		 * e) { e.printStackTrace(); }
-		 */
+		// Send 100% to gauge, just for sure
 		Bundle resultData = new Bundle();
 		resultData.putInt("progress", 100);
 		receiver.send(UPDATE_PROGRESS, resultData);
 	}
 
 	private void connectToWs(int msgBoxId) {
-		Uri msgBoxUri = ContentUris.withAppendedId(
-				MsgBoxContentProvider.CONTENT_URI, msgBoxId);
-		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN,
-				DatabaseHelper.MSGBOX_PASSWORD, DatabaseHelper.MSGBOX_TEST_ENV };
-		Cursor msgBoxCursor = getContentResolver().query(msgBoxUri,
-				msgBoxProjection, null, null, null);
+		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
+		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
+				DatabaseHelper.MSGBOX_TEST_ENV };
+		Cursor msgBoxCursor = getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
 		msgBoxCursor.moveToFirst();
 
-		int loginIndex = msgBoxCursor
-				.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
-		int passwordIndex = msgBoxCursor
-				.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);
-		int envIndex = msgBoxCursor
-				.getColumnIndex(DatabaseHelper.MSGBOX_TEST_ENV);
+		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
+		int passwordIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);
+		int envIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TEST_ENV);
 		String login = msgBoxCursor.getString(loginIndex);
 		String password = msgBoxCursor.getString(passwordIndex);
 		int environment = msgBoxCursor.getInt(envIndex);

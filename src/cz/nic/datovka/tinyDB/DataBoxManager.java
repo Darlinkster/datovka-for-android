@@ -276,7 +276,7 @@ public class DataBoxManager{
             this.configure(con);
             con.getOutputStream().write(post.getBytes("UTF-8"));
             checkHttpResponseCode(con);
-          
+
             //DEBUG
           /*
             InputStreamReader bis = new InputStreamReader(con.getInputStream());
@@ -292,6 +292,7 @@ public class DataBoxManager{
             factory.setValidating(false);
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), new SimpleSAXParser(rp));
+
             // ověříme vrácený stav pri volani webove služby
             if (!rp.getStatus().ok()) {
                 String message = String.format("Pozadavek selhal chybou %s:%s",
@@ -300,14 +301,11 @@ public class DataBoxManager{
                 throw new DataBoxException(message);
             }
         } catch (SAXException sax) {
-            sax.printStackTrace();
-        	//throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
+        	throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
         } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-        	//throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
+        	throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
         } catch (IOException ioe) {
-        	ioe.printStackTrace();
-           // throw new DataBoxException("IO chyba pri cteni odpovedi.", ioe);
+            throw new DataBoxException("IO chyba pri cteni odpovedi.", ioe);
         } finally {
             close(con);
         }
