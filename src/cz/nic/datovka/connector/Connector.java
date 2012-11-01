@@ -12,7 +12,6 @@ import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
-import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
@@ -52,10 +51,6 @@ public class Connector {
 		service.downloadSignedSentMessage(envelope, fos);
 	}
 	
-	public static void downloadMessage(MessageEnvelope envelope, AttachmentStorer storer) throws HttpException {
-		service.downloadMessage(envelope, storer);
-	}
-
 	public static UserInfo getUserInfo()throws HttpException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
