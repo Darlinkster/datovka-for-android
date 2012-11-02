@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import cz.abclinuxu.datoveschranky.common.impl.Utils;
+
 /**
  * Zapíše obsah elementu do OutputStreamu.
  * 
@@ -27,8 +29,7 @@ public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable
 			bw.write(array, start, length);
 			bw.flush();
 		} catch (IOException ioe) {
-			// This is awful right? But how to handle message downloading
-			// service interruption?
+			throw new RuntimeException("Nemohu zapisovat do bufferu", ioe);
 		}
 	}
 
@@ -37,14 +38,7 @@ public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable
 	}
 
 	public void close() {
-		try {
-			// Utils.close(bw, os);
-			bw.close();
-			os.close();
-		} catch (IOException e) {
-			// This is awful right? But how to handle message downloading
-			// service interruption?
-		}
+			Utils.close(bw, os);
 	}
 
 }

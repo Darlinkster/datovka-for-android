@@ -14,17 +14,16 @@ import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class Connector {
 	public static final int PRODUCTION = 0;
 	public static final int TESTING = 1;
 
 	private static final int MAX_MSG_COUNT = 1000;
-	//private static DataBoxMessagesService messagesService;
-	//private static DataBoxAccessService accessService;
 	private static DataBoxManager service;
-
-	public static void connect(String login, String password, int environment,
+	
+	public void connect(String login, String password, int environment,
 			Context context) throws Exception {
 		Config config;
 		if (environment == PRODUCTION)
@@ -33,25 +32,23 @@ public class Connector {
 			config = new Config(DataBoxEnvironment.TEST);
 
 		service = DataBoxManager.login(config, login, password, context);
-		//messagesService = service.getDataBoxMessagesService();
-		//accessService = service.getDataBoxAccessService();
 	}
 
-	public static boolean isOnline() {
+	public boolean isOnline() {
 		if (service == null)
 			return false;
 		return true;
 	}
 	
-	public static void downloadSignedReceivedMessage(int messageIsdsId, OutputStream fos) throws HttpException {
+	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream fos) throws HttpException, StreamInterruptedException {
 		service.downloadSignedReceivedMessage(messageIsdsId, fos);
 	}
 	
-	public static void downloadSignedSentMessage(int messageIsdsId, OutputStream fos) throws HttpException {
+	public void downloadSignedSentMessage(int messageIsdsId, OutputStream fos) throws HttpException, StreamInterruptedException {
 		service.downloadSignedSentMessage(messageIsdsId, fos);
 	}
 	
-	public static UserInfo getUserInfo()throws HttpException {
+	public UserInfo getUserInfo()throws HttpException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -59,7 +56,7 @@ public class Connector {
 		return service.GetUserInfoFromLogin()  ;
 	}
 
-	public static OwnerInfo getOwnerInfo()throws HttpException  {
+	public OwnerInfo getOwnerInfo()throws HttpException  {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -67,7 +64,7 @@ public class Connector {
 		return service.GetOwnerInfoFromLogin() ;
 	}
 
-	public static GregorianCalendar getPasswordInfo() throws HttpException {
+	public GregorianCalendar getPasswordInfo() throws HttpException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -75,7 +72,7 @@ public class Connector {
 		return service.GetPasswordInfo() ;
 	}
 
-	public static List<MessageEnvelope> getRecievedMessageList() throws HttpException {
+	public List<MessageEnvelope> getRecievedMessageList() throws HttpException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
@@ -111,7 +108,7 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public static List<MessageEnvelope> getSentMessageList() throws HttpException  {
+	public List<MessageEnvelope> getSentMessageList() throws HttpException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
@@ -147,8 +144,11 @@ public class Connector {
 		return sentMessageList;
 	}
 
-	public static Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
+	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
 		return service.verifyMessage(envelope);
 	}
 
+	public void close(){
+		service.close();
+	}
 }

@@ -108,14 +108,14 @@ public class AddAccountService extends IntentService {
 		else
 			return false;
 	}
-	
+	Connector connector = new Connector();
 	private void createAccount(String login, String password, int testEnvironment){
 		try {
 			if(testEnvironment == 1){
-				Connector.connect(login, password, Connector.TESTING, getApplicationContext());
+				connector.connect(login, password, Connector.TESTING, getApplicationContext());
 			}
 			else{
-				Connector.connect(login, password, Connector.PRODUCTION, getApplicationContext());
+				connector.connect(login, password, Connector.PRODUCTION, getApplicationContext());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -128,11 +128,11 @@ public class AddAccountService extends IntentService {
 		UserInfo user = null;
 		OwnerInfo owner = null;
 		try {
-			recievedMessageList = Connector.getRecievedMessageList();
-			sentMessageList = Connector.getSentMessageList();
-			cal = Connector.getPasswordInfo();
-			user = Connector.getUserInfo();
-			owner = Connector.getOwnerInfo();
+			recievedMessageList = connector.getRecievedMessageList();
+			sentMessageList = connector.getSentMessageList();
+			cal = connector.getPasswordInfo();
+			user = connector.getUserInfo();
+			owner = connector.getOwnerInfo();
 		
 			String passwordExpiration;			
 			if(cal == null){

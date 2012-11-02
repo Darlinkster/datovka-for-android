@@ -26,9 +26,7 @@ import org.kobjects.base64.Base64;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
-import cz.abclinuxu.datoveschranky.common.entities.DeliveryInfo;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
-import cz.abclinuxu.datoveschranky.common.entities.Message;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.MessageState;
 import cz.abclinuxu.datoveschranky.common.entities.MessageType;
@@ -37,13 +35,10 @@ import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
-import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxSearchService;
-import cz.abclinuxu.datoveschranky.common.interfaces.DataBoxUploadService;
 import cz.nic.datovka.R.raw;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
-import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedSentMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
@@ -72,6 +67,9 @@ public class DataBoxManager{
     protected Logger logger = Logger.getLogger(this.getClass().getName());
     protected String authorization;
 
+    private HttpsURLConnection con;
+    private InputStream is;
+    
     private DataBoxManager(Config configuration) {
         this.config = configuration;
     }
@@ -94,18 +92,6 @@ public class DataBoxManager{
         return manager;
     }
 /*
-    public DataBoxDownloadService getDataBoxDownloadService() {
-        return this;
-    }
-
-    public DataBoxMessagesService getDataBoxMessagesService() {
-        return this;
-    }
-    
-    public DataBoxAccessService getDataBoxAccessService() {
-        return this;
-    }
-  */  
     public DeliveryInfo getDeliveryInfo(MessageEnvelope arg0) {
         throw new UnsupportedOperationException("Operace getDeliveryInfo neni touto " +
                 "knihovnou podporovana.");
@@ -123,7 +109,7 @@ public class DataBoxManager{
     public DataBoxUploadService getDataBoxUploadService() {
         throw new UnsupportedOperationException("Sluzba DataBoxUploadService neni pristupna.");
     }
-
+*/
     // metody z DataBoxMessages
     public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to,
             EnumSet<MessageState> state, int offset, int limit) throws HttpException  {
@@ -136,7 +122,11 @@ public class DataBoxManager{
         post = post.replace("${OFFSET}", String.valueOf(offset));
         post = post.replace("${LIMIT}", String.valueOf(limit));
         GetListOfReceivedMessages result = new GetListOfReceivedMessages();
-        this.postAndParseResponse(post, "dx", result);
+        try {
+			this.postAndParseResponse(post, "dx", result);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
         return result.getMessages();
     }
 
@@ -151,7 +141,11 @@ public class DataBoxManager{
         post = post.replace("${OFFSET}", String.valueOf(offset));
         post = post.replace("${LIMIT}", String.valueOf(limit));
         GetListOfSentMessages result = new GetListOfSentMessages(); 
-        this.postAndParseResponse(post, "dx", result);
+        try {
+			this.postAndParseResponse(post, "dx", result);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
         return result.getMessages();
     }
 
@@ -160,11 +154,16 @@ public class DataBoxManager{
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", envelope.getMessageID());
         VerifyMessage parser = new VerifyMessage();
-        this.postAndParseResponse(post, "dx", parser);
+        try {
+			this.postAndParseResponse(post, "dx", parser);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
         return parser.getResult();
     }
 
     // metody z DataBoxDownload
+    /*// We dont need this method
     public Message downloadMessage(MessageEnvelope envelope,
             AttachmentStorer storer) throws HttpException  {
         //if (envelope.getType() != MessageType.RECEIVED) {
@@ -177,8 +176,9 @@ public class DataBoxManager{
         this.postAndParseResponse(post, "dz", parser);
         return new Message(envelope, null, null, parser.getResult());
     }
-
-    public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os) throws HttpException  {
+*/
+	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os)
+			throws HttpException, StreamInterruptedException {
         String resource = "/res/raw/download_signed_received_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", Integer.toString(messageIsdsId));
@@ -186,7 +186,8 @@ public class DataBoxManager{
         this.postAndParseResponse(post, "dz", parser);
     }
     
-    public void downloadSignedSentMessage(int messageIsdsId, OutputStream os) throws HttpException {
+	public void downloadSignedSentMessage(int messageIsdsId, OutputStream os)
+			throws HttpException, StreamInterruptedException {
         String resource = "/res/raw/download_signed_sent_message.xml";
         String post = Utils.readResourceAsString(this.getClass(), resource);
         post = post.replace("${ID}", Integer.toString(messageIsdsId));
@@ -200,7 +201,11 @@ public class DataBoxManager{
     	String resource = "/res/raw/get_owner_info_from_login.xml";
     	String post = Utils.readResourceAsString(this.getClass(), resource);
     	GetOwnerInfoFromLogin parser = new  GetOwnerInfoFromLogin();
-    	this.postAndParseResponse(post, "DsManage", parser);
+    	try {
+			this.postAndParseResponse(post, "DsManage", parser);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
     	
     	return parser.getOwnerInfo();
     }
@@ -209,7 +214,11 @@ public class DataBoxManager{
 		String resource = "/res/raw/get_user_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetUserInfoFromLogin parser = new GetUserInfoFromLogin();
-		this.postAndParseResponse(post, "DsManage", parser);
+		try {
+			this.postAndParseResponse(post, "DsManage", parser);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		return parser.getUserInfo();
 	}
@@ -218,7 +227,11 @@ public class DataBoxManager{
 		String resource = "/res/raw/get_password_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetPasswordInfo parser = new GetPasswordInfo();
-		this.postAndParseResponse(post, "DsManage", parser);
+		try {
+			this.postAndParseResponse(post, "DsManage", parser);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		GregorianCalendar cal = new GregorianCalendar();
 		Date expirationDate = parser.getPasswordInfo().getPasswordExpiration();
@@ -265,10 +278,10 @@ public class DataBoxManager{
         sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
         this.socketFactory = sslcontext.getSocketFactory();
     }
-
+    
     private void postAndParseResponse(String post, String prefix,
-            AbstractResponseParser rp) throws HttpException {
-        HttpsURLConnection con = null;
+            AbstractResponseParser rp) throws HttpException, StreamInterruptedException {
+       // HttpsURLConnection con = null;
         try {
             // udelame post
             URL url = new URL(config.getServiceURL() + prefix);
@@ -291,7 +304,8 @@ public class DataBoxManager{
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setValidating(false);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), new SimpleSAXParser(rp));
+            is = con.getInputStream();
+            parser.parse(is, new SimpleSAXParser(rp));
 
             // ověříme vrácený stav pri volani webove služby
             if (!rp.getStatus().ok()) {
@@ -305,9 +319,10 @@ public class DataBoxManager{
         } catch (ParserConfigurationException pce) {
         	throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
         } catch (IOException ioe) {
-            throw new DataBoxException("IO chyba pri cteni odpovedi.", ioe);
+        	String message = "IOException, error while reading answer. The input stream may be closed by user decision.";
+        	throw new StreamInterruptedException(message);
         } finally {
-            close(con);
+            con.disconnect();
         }
     }
 
@@ -324,7 +339,7 @@ public class DataBoxManager{
         } catch (IOException ioe) {
             throw new DataBoxException("Nemohu ulozit zpravu", ioe);
         } finally {
-            close(con);
+            con.disconnect();
         }
     }
 
@@ -348,12 +363,18 @@ public class DataBoxManager{
         connect.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
         connect.setRequestProperty("Soapaction", "");
     }
-
-    private void close(HttpsURLConnection con) {
-        if (con != null) {
-            con.disconnect();
-        }
+    
+    public void close(){
+    	if(is != null){
+			try {
+				is.close();
+			} catch (IOException e) {
+				// TODO fuj
+			}
+		}
+		
+		if(con != null){
+			con.disconnect();
+		}
     }
-    
-    
 }

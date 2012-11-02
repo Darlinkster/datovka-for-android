@@ -3,6 +3,8 @@ package cz.nic.datovka.services;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import android.app.Service;
 import android.content.ContentUris;
@@ -24,6 +26,7 @@ import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class MessageDownloadService extends Service {
 	public static final int UPDATE_PROGRESS = 8344;
@@ -40,6 +43,8 @@ public class MessageDownloadService extends Service {
 	private ResultReceiver receiver;
 	private DaemonThread thread;
 	private GaugeFileOutputStream fos;
+	private Connector connector;
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -55,7 +60,11 @@ public class MessageDownloadService extends Service {
 	public void onDestroy() {
 
 		if (thread != null) {
-			thread.interrupt();
+			if(connector != null){
+				connector.close();
+				System.out.println("odpojeno");
+			}
+			
 			if (fos != null) {
 				try {
 					fos.flush();
@@ -64,8 +73,8 @@ public class MessageDownloadService extends Service {
 					e.printStackTrace();
 				}
 			}
-			thread = null;
 		}
+		super.onDestroy();
 	}
 
 	private class DaemonThread extends Thread {
@@ -107,9 +116,7 @@ public class MessageDownloadService extends Service {
 			msgCursor.close();
 
 			// Connect to WS
-			if (!Connector.isOnline()) {
-				connectToWs(msgBoxId);
-			}
+			connector = connectToWs(msgBoxId);
 
 			// If the download folder not exists create it
 			checkExternalStorage();
@@ -128,16 +135,22 @@ public class MessageDownloadService extends Service {
 			}
 
 			// Save the signed message
+			File outFileTmp = null;
 			try {
-				fos = new GaugeFileOutputStream(new File(destFolder, messageIsdsId + ".bin"), receiver,
-						UPDATE_PROGRESS, fileSize);
+				String outFileName = messageIsdsId + ".bin";
+				outFileTmp = new File(destFolder, outFileName + ".tmp");
+				fos = new GaugeFileOutputStream(outFileTmp, receiver, UPDATE_PROGRESS, fileSize);
+				
 				if (folder == INBOX) {
-					Connector.downloadSignedReceivedMessage(messageIsdsId, fos);
+					connector.downloadSignedReceivedMessage(messageIsdsId, fos);
 				} else {
-					Connector.downloadSignedSentMessage(messageIsdsId, fos);
+					connector.downloadSignedSentMessage(messageIsdsId, fos);
 				}
 				fos.flush();
 				fos.close();
+				
+				// It seems that the file is downloaded correctly, so remove the .tmp suffix and insert it to db
+				outFileTmp.renameTo(new File(destFolder, outFileName));
 				insertAttachmentToDb(directory + messageIsdsId + ".bin",
 						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder);
 
@@ -149,6 +162,12 @@ public class MessageDownloadService extends Service {
 				// TODO
 				String errorMessage = e.getMessage();
 				Toast.makeText(getApplicationContext(), "chyba " + errorMessage, Toast.LENGTH_LONG).show();
+			} catch (StreamInterruptedException e) {
+				// Probably user interrupted download the file, delete it.
+				if(outFileTmp != null && outFileTmp.exists()){
+					outFileTmp.delete();
+				}
+				logger.log(Level.WARNING, e.getMessage());
 			}
 
 			// Send 100% to gauge, just for sure
@@ -158,7 +177,8 @@ public class MessageDownloadService extends Service {
 		}
 	}
 
-	private void connectToWs(int msgBoxId) {
+	private Connector connectToWs(int msgBoxId) {
+		Connector conn = new Connector();
 		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
 				DatabaseHelper.MSGBOX_TEST_ENV };
@@ -173,11 +193,12 @@ public class MessageDownloadService extends Service {
 		int environment = msgBoxCursor.getInt(envIndex);
 		msgBoxCursor.close();
 		try {
-			Connector.connect(login, password, environment, getApplicationContext());
+			conn.connect(login, password, environment, getApplicationContext());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+		return conn;
 	}
 
 	private void checkExternalStorage() {
