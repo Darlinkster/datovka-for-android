@@ -62,7 +62,7 @@ public class MessageDownloadService extends Service {
 		if (thread != null) {
 			if(connector != null){
 				connector.close();
-				System.out.println("odpojeno");
+				//System.out.println("odpojeno");
 			}
 			
 			if (fos != null) {
