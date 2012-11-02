@@ -50,8 +50,13 @@
             android:exported="false" >
         </provider>
         <provider
-            android:name=".contentProviders.AttachmentsContentProvider"
-            android:authorities="cz.nic.datovka.contentproviders.attachmentscontentprovider"
+            android:name=".contentProviders.RecvAttachmentsContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.recvattachments"
+            android:exported="false" >
+        </provider>
+        <provider
+            android:name=".contentProviders.SentAttachmentsContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.sentattachments"
             android:exported="false" >
         </provider>
 

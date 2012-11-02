@@ -130,7 +130,7 @@ public class MessageDetailFragment extends Fragment {
 			return cursor;
 		}
 		// TODO
-		throw new RuntimeException("nic");
+		throw new RuntimeException("nic nenalezeno");
 	}
 
 	private void setMessageRead() {

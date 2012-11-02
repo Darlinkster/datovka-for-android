@@ -145,28 +145,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	// protected static final String ORDER_BY = ACCOUNT_ID + " DESC";
 	
-	public static final String ATTACHMENTS_TB_NAME = "attachments";
-	public static final String ATTACHMENTS_MSG_ID = "attachment_msg_id";
-	public static final String ATTACHMENTS_MSG_FOLDER_ID = "attachment_msg_folder_id";
-	public static final String ATTACHMENTS_ID = "_id";
-	public static final String ATTACHMENTS_PATH = "attachment_path";
-	public static final String ATTACHMENTS_FILENAME = "attachment_filename";
-	public static final String ATTACHMENTS_MIME = "attachment_mime";
-	public static final String[] attachments_columns = {ATTACHMENTS_MSG_ID, ATTACHMENTS_MSG_FOLDER_ID, ATTACHMENTS_ID, ATTACHMENTS_PATH, ATTACHMENTS_FILENAME, ATTACHMENTS_MIME};
-	
+	public static final String RECV_ATTACHMENTS_TB_NAME = "recv_attachments";
+	public static final String RECV_ATTACHMENTS_MSG_ID = "attachment_msg_id";
+	public static final String RECV_ATTACHMENTS_ID = "_id";
+	public static final String RECV_ATTACHMENTS_PATH = "attachment_path";
+	public static final String RECV_ATTACHMENTS_FILENAME = "attachment_filename";
+	public static final String RECV_ATTACHMENTS_MIME = "attachment_mime";
+	public static final String[] recv_attachments_columns = { RECV_ATTACHMENTS_MSG_ID,
+			RECV_ATTACHMENTS_ID, RECV_ATTACHMENTS_PATH, RECV_ATTACHMENTS_FILENAME, RECV_ATTACHMENTS_MIME };
+
+	public static final String SENT_ATTACHMENTS_TB_NAME = "sent_attachments";
+	public static final String SENT_ATTACHMENTS_MSG_ID = "attachment_msg_id";
+	public static final String SENT_ATTACHMENTS_ID = "_id";
+	public static final String SENT_ATTACHMENTS_PATH = "attachment_path";
+	public static final String SENT_ATTACHMENTS_FILENAME = "attachment_filename";
+	public static final String SENT_ATTACHMENTS_MIME = "attachment_mime";
+	public static final String[] sent_attachments_columns = { SENT_ATTACHMENTS_MSG_ID,
+			SENT_ATTACHMENTS_ID, SENT_ATTACHMENTS_PATH, SENT_ATTACHMENTS_FILENAME, SENT_ATTACHMENTS_MIME };
+
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE " + ATTACHMENTS_TB_NAME + " (" 
-				+ ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
-				+ ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
-				+ ATTACHMENTS_MSG_FOLDER_ID + " INTEGER NOT NULL,"
-				+ ATTACHMENTS_PATH + " TEXT NOT NULL, " 
-				+ ATTACHMENTS_MIME + " TEXT, "
-				+ ATTACHMENTS_FILENAME + " TEXT NOT NULL);");
+		db.execSQL("CREATE TABLE " + SENT_ATTACHMENTS_TB_NAME + " (" 
+				+ SENT_ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
+				+ SENT_ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
+				+ SENT_ATTACHMENTS_PATH + " TEXT NOT NULL, " 
+				+ SENT_ATTACHMENTS_MIME + " TEXT, "
+				+ SENT_ATTACHMENTS_FILENAME + " TEXT NOT NULL, "
+				+ " FOREIGN KEY (" + SENT_ATTACHMENTS_MSG_ID + ") REFERENCES " + SENT_MESSAGE_TB_NAME + " (" + SENT_MESSAGE_ID + ") ON DELETE CASCADE );");
+		
+		db.execSQL("CREATE TABLE " + RECV_ATTACHMENTS_TB_NAME + " (" 
+				+ RECV_ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
+				+ RECV_ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
+				+ RECV_ATTACHMENTS_PATH + " TEXT NOT NULL, " 
+				+ RECV_ATTACHMENTS_MIME + " TEXT, "
+				+ RECV_ATTACHMENTS_FILENAME + " TEXT NOT NULL);"
+				+ " FOREIGN KEY (" + RECV_ATTACHMENTS_MSG_ID + ") REFERENCES " + RECEIVED_MESSAGE_TB_NAME + " (" + RECEIVED_MESSAGE_ID + ") ON DELETE CASCADE );");
 		
 		db.execSQL("CREATE TABLE " + MSGBOX_TB_NAME + " (" 
 				+ MSGBOX_ID	+ " INTEGER PRIMARY KEY,"
@@ -240,7 +257,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SENDER_DATABOX_TYPE + " TEXT, "
 				+ SENDER_IDENT + " TEXT, "
 				+ SENDER_REF_NUMBER + " TEXT, "
-				+ " FOREIGN KEY (" + RECEIVED_MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + "));");
+				+ " FOREIGN KEY (" + RECEIVED_MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
 		
 		db.execSQL("CREATE TABLE " + SENT_MESSAGE_TB_NAME + " ("
 				+ SENT_MESSAGE_ID + " INTEGER PRIMARY KEY,"
@@ -262,7 +279,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ RECIPIENT_ISDS_ID + " INTEGER NOT NULL," 
 				+ RECIPIENT_NAME + " TEXT NOT NULL,"
 				+ RECIPIENT_ADDRESS + " TEXT, " 
-				+ " FOREIGN KEY (" + SENT_MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + "));");
+				+ " FOREIGN KEY (" + SENT_MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
 		
 	}
 	
@@ -274,4 +291,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		
 		onCreate(db);
 	}
+	
+	@Override
+	public void onOpen(SQLiteDatabase db) {
+	    super.onOpen(db);
+	    if (!db.isReadOnly()) {
+	        // Enable foreign key constraints
+	        db.execSQL("PRAGMA foreign_keys=ON;");
+	    }
+	}
+	
 }

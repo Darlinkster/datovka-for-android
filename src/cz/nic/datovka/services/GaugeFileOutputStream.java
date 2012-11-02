@@ -39,11 +39,11 @@ public class GaugeFileOutputStream extends FileOutputStream {
 		resultData.putInt("progress", status);
 		receiver.send(receiverIdent, resultData); 
 		
-		
+		/*
 		if(laststatus < status){
 			System.out.println("expect: " + expectedFileSize + " total: " + total + " status: " + status);
 			laststatus = status;
-		}
+		}*/
 	}
 	
 	@Override

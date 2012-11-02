@@ -18,9 +18,10 @@ import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
+import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
+import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
@@ -52,7 +53,6 @@ public class MessageDownloadService extends Service {
 
 	@Override
 	public void onDestroy() {
-		System.out.println("koncim servis");
 
 		if (thread != null) {
 			thread.interrupt();
@@ -139,7 +139,7 @@ public class MessageDownloadService extends Service {
 				fos.flush();
 				fos.close();
 				insertAttachmentToDb(directory + messageIsdsId + ".bin",
-						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml");
+						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -175,7 +175,6 @@ public class MessageDownloadService extends Service {
 		try {
 			Connector.connect(login, password, environment, getApplicationContext());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -214,14 +213,22 @@ public class MessageDownloadService extends Service {
 		}
 	}
 
-	private void insertAttachmentToDb(String path, String filename, String mime) {
+	private void insertAttachmentToDb(String path, String filename, String mime, int msgBoxId) {
 		ContentValues value = new ContentValues();
-		value.put(DatabaseHelper.ATTACHMENTS_MSG_ID, messageId);
-		value.put(DatabaseHelper.ATTACHMENTS_MSG_FOLDER_ID, folder);
-		value.put(DatabaseHelper.ATTACHMENTS_PATH, path);
-		value.put(DatabaseHelper.ATTACHMENTS_FILENAME, filename);
-		value.put(DatabaseHelper.ATTACHMENTS_MIME, mime);
-		getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
+		if(msgBoxId == INBOX){
+			value.put(DatabaseHelper.RECV_ATTACHMENTS_MSG_ID, messageId);
+			value.put(DatabaseHelper.RECV_ATTACHMENTS_PATH, path);
+			value.put(DatabaseHelper.RECV_ATTACHMENTS_FILENAME, filename);
+			value.put(DatabaseHelper.RECV_ATTACHMENTS_MIME, mime);
+			getContentResolver().insert(RecvAttachmentsContentProvider.CONTENT_URI, value);
+		}
+		else{
+			value.put(DatabaseHelper.SENT_ATTACHMENTS_MSG_ID, messageId);
+			value.put(DatabaseHelper.SENT_ATTACHMENTS_PATH, path);
+			value.put(DatabaseHelper.SENT_ATTACHMENTS_FILENAME, filename);
+			value.put(DatabaseHelper.SENT_ATTACHMENTS_MIME, mime);
+			getContentResolver().insert(SentAttachmentsContentProvider.CONTENT_URI, value);
+		}
 	}
 
 	@Override

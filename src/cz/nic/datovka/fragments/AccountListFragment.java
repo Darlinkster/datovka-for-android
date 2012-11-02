@@ -21,6 +21,10 @@ import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
+import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
+import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
+import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 
 public class AccountListFragment extends ListFragment implements LoaderCallbacks<Cursor> {
 	private SimpleCursorAdapter adapter;
@@ -98,10 +102,8 @@ public class AccountListFragment extends ListFragment implements LoaderCallbacks
 			int idColumnIndex = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
 			Long msgBoxId = cursor.getLong(idColumnIndex);
 
-			Uri uri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
-			getActivity().getContentResolver().delete(uri, null, null);
-			// getActivity().getContentResolver().notifyChange(MsgBoxContentProvider.CONTENT_URI,
-			// null);
+			deleteAccount(msgBoxId);
+			
 			Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.account_info:
@@ -110,5 +112,15 @@ public class AccountListFragment extends ListFragment implements LoaderCallbacks
 		}
 
 		return true;
+	}
+	
+	private void deleteAccount(Long msgBoxId){
+		Uri userUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
+		getActivity().getContentResolver().delete(userUri, null, null);
+		getActivity().getContentResolver().notifyChange(SentMessagesContentProvider.CONTENT_URI, null);
+		getActivity().getContentResolver().notifyChange(ReceivedMessagesContentProvider.CONTENT_URI, null);
+		getActivity().getContentResolver().notifyChange(RecvAttachmentsContentProvider.CONTENT_URI, null);
+		getActivity().getContentResolver().notifyChange(SentAttachmentsContentProvider.CONTENT_URI, null);
+		
 	}
 }
