@@ -38,6 +38,7 @@ import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
+import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.R.raw;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
@@ -151,11 +152,10 @@ public class DataBoxManager {
 
 	// metody z DataBoxDownload
 
-	public List<Attachment> parseSignedReceivedMessage(File outputDir, int messageIsdsId, InputStream input) {
+	public List<Attachment> parseSignedReceivedMessage(AttachmentStorer storer, int messageIsdsId, InputStream input) {
 		MessageEnvelope envelope = new MessageEnvelope();
 		envelope.setMessageID(Integer.toString(messageIsdsId));
-		FileAttachmentStorer fas = new FileAttachmentStorer(outputDir);
-		DownloadReceivedMessage rp = new DownloadReceivedMessage(envelope, fas);
+		DownloadReceivedMessage rp = new DownloadReceivedMessage(envelope, storer);
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(false);
@@ -168,10 +168,6 @@ public class DataBoxManager {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-			// String message =
-			// "Parser error, probably it's skipping the signature at the beginning of the bin file. "
-			// + e.getMessage();
-			// logger.log(Level.WARNING, message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

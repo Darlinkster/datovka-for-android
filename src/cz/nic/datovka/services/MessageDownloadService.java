@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +15,6 @@ import org.bouncycastle.cms.CMSSignedData;
 
 import android.app.Service;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,14 +23,12 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.widget.Toast;
-import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
-import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
@@ -162,25 +157,16 @@ public class MessageDownloadService extends Service {
 				// It seems that the file is downloaded correctly, so remove the .tmp suffix and insert it to db
 				File outFile = new File(destFolder, outFileName); 
 				outFileTmp.renameTo(outFile);
-				insertAttachmentToDb(directory + outFileName,
-						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder);
+				DatabaseTools.insertAttachmentToDb(directory + outFileName,
+						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder,
+						messageId, getApplicationContext());
 				
 				// Parse the signed message and extract attachments
 				InputStream input = new FileInputStream(outFile);
 				CMSSignedData signeddata = new CMSSignedData(input);
 				CMSProcessable data = signeddata.getSignedContent();
 				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
-				List<Attachment> attachments = connector.parseSignedReceivedMessage(destFolder, messageIsdsId, asn1is);
-				
-				Iterator<Attachment> iter = attachments.iterator();
-				while(iter.hasNext()){
-					Attachment att = iter.next();
-					
-					insertAttachmentToDb(directory + messageIsdsId + "_" + att.getDescription(),
-							att.getDescription(), att.getMimeType(), folder);
-				}
-				
-				
+				connector.parseSignedReceivedMessage(destFolder, folder, messageId, getApplicationContext(), asn1is, messageIsdsId);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -261,24 +247,6 @@ public class MessageDownloadService extends Service {
 				e.printStackTrace();
 			}
 
-		}
-	}
-
-	private void insertAttachmentToDb(String path, String filename, String mime, int msgBoxId) {
-		ContentValues value = new ContentValues();
-		if(msgBoxId == INBOX){
-			value.put(DatabaseHelper.RECV_ATTACHMENTS_MSG_ID, messageId);
-			value.put(DatabaseHelper.RECV_ATTACHMENTS_PATH, path);
-			value.put(DatabaseHelper.RECV_ATTACHMENTS_FILENAME, filename);
-			value.put(DatabaseHelper.RECV_ATTACHMENTS_MIME, mime);
-			getContentResolver().insert(RecvAttachmentsContentProvider.CONTENT_URI, value);
-		}
-		else{
-			value.put(DatabaseHelper.SENT_ATTACHMENTS_MSG_ID, messageId);
-			value.put(DatabaseHelper.SENT_ATTACHMENTS_PATH, path);
-			value.put(DatabaseHelper.SENT_ATTACHMENTS_FILENAME, filename);
-			value.put(DatabaseHelper.SENT_ATTACHMENTS_MIME, mime);
-			getContentResolver().insert(SentAttachmentsContentProvider.CONTENT_URI, value);
 		}
 	}
 
