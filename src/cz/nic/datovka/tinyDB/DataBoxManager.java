@@ -38,7 +38,6 @@ import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
-import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.R.raw;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
@@ -53,138 +52,104 @@ import cz.nic.datovka.tinyDB.responseparsers.GetPasswordInfo;
 import cz.nic.datovka.tinyDB.responseparsers.GetUserInfoFromLogin;
 import cz.nic.datovka.tinyDB.responseparsers.VerifyMessage;
 
-
-
-
 /**
- * Tato třída umožnuje přihlášení k datové schránce a základní operace s ní, tzn.
- * stažení přijatých zpráv a stažení přijaté zprávy včetně příloh.
+ * Tato třída umožnuje přihlášení k datové schránce a základní operace s ní,
+ * tzn. stažení přijatých zpráv a stažení přijaté zprávy včetně příloh.
  * 
  * @author Vaclav Rosecky <xrosecky 'at' gmail 'dot' com>
  * 
  */
-public class DataBoxManager{
-    
-    private static final List<Integer> OKCodes = Arrays.asList(200, 304);
-    protected final Config config;
-    protected String authCookie = null;
-    protected SSLSocketFactory socketFactory = null;
-    protected Logger logger = Logger.getLogger(this.getClass().getName());
-    protected String authorization;
+public class DataBoxManager {
 
-    private HttpsURLConnection con;
-    private InputStream is;
-    
-    private DataBoxManager(Config configuration) {
-        this.config = configuration;
-    }
+	private static final List<Integer> OKCodes = Arrays.asList(200, 304);
+	protected final Config config;
+	protected String authCookie = null;
+	protected SSLSocketFactory socketFactory = null;
+	protected Logger logger = Logger.getLogger(this.getClass().getName());
+	protected String authorization;
 
-    /**
-     * Realizuje přihlášení do datové schránky pod daným uživatelským jménem
-     * a heslem a při úspěšném přihlášení vrátí příslušnou instanci ISDSManageru
-     * poskytující služby k této schránce.
-     * 
-     * @param userName   jméno uživatele
-     * @param password   heslo uživatele
-     * @throws DataBoxException   při přihlašování do DS došlo k chybě. Důvodem může
-     * být špatné heslo či uživatelské jméno, zacyklení při přesměrování či absence
-     * autorizační cookie.
-     * 
-     */
-    public static DataBoxManager login(Config config, String userName, String password, Context context) throws Exception {
-        DataBoxManager manager = new DataBoxManager(config);
-        manager.loginImpl(userName, password, context);
-        return manager;
-    }
-/*
-    public DeliveryInfo getDeliveryInfo(MessageEnvelope arg0) {
-        throw new UnsupportedOperationException("Operace getDeliveryInfo neni touto " +
-                "knihovnou podporovana.");
-    }
+	private HttpsURLConnection con;
+	private InputStream is;
 
-    public DataBoxSearchService getDataBoxSearchService() {
-        throw new UnsupportedOperationException("Sluzba DataBoxSearchService neni pristupna.");
-    }
+	private DataBoxManager(Config configuration) {
+		this.config = configuration;
+	}
 
-    public void markMessageAsDownloaded(MessageEnvelope env) {
-        throw new UnsupportedOperationException("Operace markMessageAsDownloaded neni " +
-                "touto knihovnou podporovana.");
-    }
+	/**
+	 * Realizuje přihlášení do datové schránky pod daným uživatelským jménem a
+	 * heslem a při úspěšném přihlášení vrátí příslušnou instanci ISDSManageru
+	 * poskytující služby k této schránce.
+	 * 
+	 * @param userName
+	 *            jméno uživatele
+	 * @param password
+	 *            heslo uživatele
+	 * @throws DataBoxException
+	 *             při přihlašování do DS došlo k chybě. Důvodem může být špatné
+	 *             heslo či uživatelské jméno, zacyklení při přesměrování či
+	 *             absence autorizační cookie.
+	 * 
+	 */
+	public static DataBoxManager login(Config config, String userName, String password, Context context)
+			throws Exception {
+		DataBoxManager manager = new DataBoxManager(config);
+		manager.loginImpl(userName, password, context);
+		return manager;
+	}
 
-    public DataBoxUploadService getDataBoxUploadService() {
-        throw new UnsupportedOperationException("Sluzba DataBoxUploadService neni pristupna.");
-    }
-*/
-    // metody z DataBoxMessages
-    public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to,
-            EnumSet<MessageState> state, int offset, int limit) throws HttpException  {
-        
-    	String resource = "/res/raw/get_list_of_received_messages.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        
-        post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
-        post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
-        post = post.replace("${OFFSET}", String.valueOf(offset));
-        post = post.replace("${LIMIT}", String.valueOf(limit));
-        GetListOfReceivedMessages result = new GetListOfReceivedMessages();
-        try {
+	// metody z DataBoxMessages
+	public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to, EnumSet<MessageState> state, int offset,
+			int limit) throws HttpException {
+
+		String resource = "/res/raw/get_list_of_received_messages.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+
+		post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
+		post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
+		post = post.replace("${OFFSET}", String.valueOf(offset));
+		post = post.replace("${LIMIT}", String.valueOf(limit));
+		GetListOfReceivedMessages result = new GetListOfReceivedMessages();
+		try {
 			this.postAndParseResponse(post, "dx", result);
 		} catch (StreamInterruptedException e) {
 			e.printStackTrace();
 		}
-        return result.getMessages();
-    }
+		return result.getMessages();
+	}
 
-    public List<MessageEnvelope> getListOfSentMessages(Date from,
-            Date to, EnumSet<MessageState> state,  int offset, int limit) throws HttpException  {
+	public List<MessageEnvelope> getListOfSentMessages(Date from, Date to, EnumSet<MessageState> state, int offset,
+			int limit) throws HttpException {
 
-    	String resource = "/res/raw/get_list_of_sent_messages.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        
-        post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
-        post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
-        post = post.replace("${OFFSET}", String.valueOf(offset));
-        post = post.replace("${LIMIT}", String.valueOf(limit));
-        GetListOfSentMessages result = new GetListOfSentMessages(); 
-        try {
+		String resource = "/res/raw/get_list_of_sent_messages.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+
+		post = post.replace("${DATE_FROM}", AndroidUtils.toXmlDate(from));
+		post = post.replace("${DATE_TO}", AndroidUtils.toXmlDate(to));
+		post = post.replace("${OFFSET}", String.valueOf(offset));
+		post = post.replace("${LIMIT}", String.valueOf(limit));
+		GetListOfSentMessages result = new GetListOfSentMessages();
+		try {
 			this.postAndParseResponse(post, "dx", result);
 		} catch (StreamInterruptedException e) {
 			e.printStackTrace();
 		}
-        return result.getMessages();
-    }
+		return result.getMessages();
+	}
 
-    public Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
-        String resource = "/res/raw/verify_message.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
-        VerifyMessage parser = new VerifyMessage();
-        try {
+	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException {
+		String resource = "/res/raw/verify_message.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		post = post.replace("${ID}", envelope.getMessageID());
+		VerifyMessage parser = new VerifyMessage();
+		try {
 			this.postAndParseResponse(post, "dx", parser);
 		} catch (StreamInterruptedException e) {
 			e.printStackTrace();
 		}
-        return parser.getResult();
-    }
+		return parser.getResult();
+	}
 
- /*   // metody z DataBoxDownload
-    // We dont need this method
-	public Message downloadMessage(MessageEnvelope envelope, AttachmentStorer storer) throws HttpException {
-		// if (envelope.getType() != MessageType.RECEIVED) {
-		// throw new
-		// UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-		// }
-		
-		String resource = "/res/raw/download_received_message.xml";
-		String post = Utils.readResourceAsString(this.getClass(), resource);
-		
-		post = post.replace("${ID}", envelope.getMessageID());
-		DownloadReceivedMessage parser = new DownloadReceivedMessage(envelope, storer);
-		
-		this.postAndParseResponse(post, "dz", parser);
-		return new Message(envelope, null, null, parser.getResult());
-	}*/
-    
+	// metody z DataBoxDownload
 
 	public List<Attachment> parseSignedReceivedMessage(File outputDir, int messageIsdsId, InputStream input) {
 		MessageEnvelope envelope = new MessageEnvelope();
@@ -194,62 +159,64 @@ public class DataBoxManager{
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(false);
-		
+
 		try {
 			SAXParser parser = factory.newSAXParser();
 			parser.parse(input, new SimpleSAXParser(rp));
-			
+
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-			//String message = "Parser error, probably it's skipping the signature at the beginning of the bin file. " + e.getMessage();
-			//logger.log(Level.WARNING, message);
+			// String message =
+			// "Parser error, probably it's skipping the signature at the beginning of the bin file. "
+			// + e.getMessage();
+			// logger.log(Level.WARNING, message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
+
 		return rp.getResult();
 	}
 
-    public void parseSignedSentMessage(int messageIsdsId, OutputStream os){
-    	
-    }
-    
-	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os)
-			throws HttpException, StreamInterruptedException {
-        String resource = "/res/raw/download_signed_received_message.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", Integer.toString(messageIsdsId));
-        DownloadSignedReceivedMessage parser = new DownloadSignedReceivedMessage(os);
-        this.postAndParseResponse(post, "dz", parser);
-    }
-    
-	public void downloadSignedSentMessage(int messageIsdsId, OutputStream os)
-			throws HttpException, StreamInterruptedException {
-        String resource = "/res/raw/download_signed_sent_message.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", Integer.toString(messageIsdsId));
-        DownloadSignedSentMessage parser = new DownloadSignedSentMessage(os);
-        this.postAndParseResponse(post, "dz", parser);
-    }
+	public void parseSignedSentMessage(int messageIsdsId, OutputStream os) {
 
-    // metody z DataAccessService
-    
-    public OwnerInfo GetOwnerInfoFromLogin()throws HttpException {
-    	String resource = "/res/raw/get_owner_info_from_login.xml";
-    	String post = Utils.readResourceAsString(this.getClass(), resource);
-    	GetOwnerInfoFromLogin parser = new  GetOwnerInfoFromLogin();
-    	try {
+	}
+
+	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os) throws HttpException,
+			StreamInterruptedException {
+		String resource = "/res/raw/download_signed_received_message.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		post = post.replace("${ID}", Integer.toString(messageIsdsId));
+		DownloadSignedReceivedMessage parser = new DownloadSignedReceivedMessage(os);
+		this.postAndParseResponse(post, "dz", parser);
+	}
+
+	public void downloadSignedSentMessage(int messageIsdsId, OutputStream os) throws HttpException,
+			StreamInterruptedException {
+		String resource = "/res/raw/download_signed_sent_message.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		post = post.replace("${ID}", Integer.toString(messageIsdsId));
+		DownloadSignedSentMessage parser = new DownloadSignedSentMessage(os);
+		this.postAndParseResponse(post, "dz", parser);
+	}
+
+	// metody z DataAccessService
+
+	public OwnerInfo GetOwnerInfoFromLogin() throws HttpException {
+		String resource = "/res/raw/get_owner_info_from_login.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		GetOwnerInfoFromLogin parser = new GetOwnerInfoFromLogin();
+		try {
 			this.postAndParseResponse(post, "DsManage", parser);
 		} catch (StreamInterruptedException e) {
 			e.printStackTrace();
 		}
-    	
-    	return parser.getOwnerInfo();
-    }
-    
-	public UserInfo GetUserInfoFromLogin()throws HttpException {
+
+		return parser.getOwnerInfo();
+	}
+
+	public UserInfo GetUserInfoFromLogin() throws HttpException {
 		String resource = "/res/raw/get_user_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetUserInfoFromLogin parser = new GetUserInfoFromLogin();
@@ -258,11 +225,11 @@ public class DataBoxManager{
 		} catch (StreamInterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return parser.getUserInfo();
 	}
-	
-	public GregorianCalendar GetPasswordInfo()throws HttpException {
+
+	public GregorianCalendar GetPasswordInfo() throws HttpException {
 		String resource = "/res/raw/get_password_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetPasswordInfo parser = new GetPasswordInfo();
@@ -271,148 +238,138 @@ public class DataBoxManager{
 		} catch (StreamInterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		GregorianCalendar cal = new GregorianCalendar();
 		Date expirationDate = parser.getPasswordInfo().getPasswordExpiration();
-		
-		if(expirationDate != null){
+
+		if (expirationDate != null) {
 			cal.setTime(expirationDate);
-		}
-		else{
+		} else {
 			cal = null;
 		}
 		return cal;
 	}
-    
-    /**
-     * Stáhne přijatou zprávu včetně SOAP obálky a příloh jako XML soubor. Vhodné pouze
-     * pro debugovací účely, ne pro záholování.
-     * 
-     * @param envelope  obálka zprávy, která se má stáhnout
-     * @param os        kam přijde uložit
-     * @throws DataBoxException
-     * 
-     */
-    public void storeMessageAsXML(MessageEnvelope envelope, OutputStream os) throws HttpException {
-        if (envelope.getType() != MessageType.RECEIVED) {
-            throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-        }
-        String resource = "/res/raw/download_received_message.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
-        this.storeRequest(post, "dz", os);
-    }
 
-    private void loginImpl(String username, String password, Context context) throws Exception {
-        String userPassword = username + ":" + password;
-       
-        authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
-      
-        KeyStore keyStore = KeyStore.getInstance("BKS");
-        SSLContext sslcontext = SSLContext.getInstance("TLS");
-        
-        InputStream keyStoreStream = context.getResources().openRawResource(raw.key_store);
-        keyStore.load(keyStoreStream,"kiasdhkjsdh@$@R%.S1257".toCharArray());
-        
-        sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
-        this.socketFactory = sslcontext.getSocketFactory();
-    }
-    
-    private void postAndParseResponse(String post, String prefix,
-            AbstractResponseParser rp) throws HttpException, StreamInterruptedException {
-        try {
-            // udelame post
-            URL url = new URL(config.getServiceURL() + prefix);
-            con = (HttpsURLConnection) url.openConnection();
-            this.configure(con);
-            con.getOutputStream().write(post.getBytes("UTF-8"));
-            checkHttpResponseCode(con);
+	/**
+	 * Stáhne přijatou zprávu včetně SOAP obálky a příloh jako XML soubor.
+	 * Vhodné pouze pro debugovací účely, ne pro záholování.
+	 * 
+	 * @param envelope
+	 *            obálka zprávy, která se má stáhnout
+	 * @param os
+	 *            kam přijde uložit
+	 * @throws DataBoxException
+	 * 
+	 */
+	public void storeMessageAsXML(MessageEnvelope envelope, OutputStream os) throws HttpException {
+		if (envelope.getType() != MessageType.RECEIVED) {
+			throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+		}
+		String resource = "/res/raw/download_received_message.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		post = post.replace("${ID}", envelope.getMessageID());
+		this.storeRequest(post, "dz", os);
+	}
 
-            //DEBUG
-          /*
-            InputStreamReader bis = new InputStreamReader(con.getInputStream());
-            BufferedReader br = new BufferedReader(bis);
-            
-            String line = null;
-            while((line = br.readLine()) != null) {
-              System.out.println(line);
-            }
-           */
-            // zparsujeme výsledek SAX parserem
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setValidating(false);
-            SAXParser parser = factory.newSAXParser();
-            is = con.getInputStream();
-            parser.parse(is, new SimpleSAXParser(rp));
+	private void loginImpl(String username, String password, Context context) throws Exception {
+		String userPassword = username + ":" + password;
 
-            // ověříme vrácený stav pri volani webove služby
-            if (!rp.getStatus().ok()) {
-                String message = String.format("Pozadavek selhal chybou %s:%s",
-                        rp.getStatus().getStatusCode(), rp.getStatus().getStatusMesssage());
-                logger.log(Level.SEVERE, message);
-                throw new DataBoxException(message);
-            }
-        } catch (SAXException sax) {
-        	throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
-        } catch (ParserConfigurationException pce) {
-        	throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
-        } catch (IOException ioe) {
-        	String message = "IOException, error while reading answer. The input stream may be closed by user decision.";
-        	throw new StreamInterruptedException(message);
-        } finally {
-            con.disconnect();
-        }
-    }
+		authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
 
-    private void storeRequest(String request, String prefix, OutputStream os) throws HttpException {
-        HttpsURLConnection con = null;
-        try {
-            URL url = new URL(config.getServiceURL() + prefix);
-            con = (HttpsURLConnection) url.openConnection();
-            this.configure(con);
-            con.getOutputStream().write(request.getBytes("UTF-8"));
-            this.checkHttpResponseCode(con);
-            InputStream is = con.getInputStream();
-            Utils.copy(is, os);
-        } catch (IOException ioe) {
-            throw new DataBoxException("Nemohu ulozit zpravu", ioe);
-        } finally {
-            con.disconnect();
-        }
-    }
+		KeyStore keyStore = KeyStore.getInstance("BKS");
+		SSLContext sslcontext = SSLContext.getInstance("TLS");
 
-    private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, HttpException{
-    	if (!OKCodes.contains(con.getResponseCode())) {
-            String message = String.format("Pozadavek selhal se stavovym kodem %d %s.",
-                    con.getResponseCode(), con.getResponseMessage());
-            logger.log(Level.SEVERE, message);
-            throw new HttpException(con.getResponseMessage(), con.getResponseCode());
-        }
-    }
+		InputStream keyStoreStream = context.getResources().openRawResource(raw.key_store);
+		keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
 
-    private void configure(HttpsURLConnection connect) throws ProtocolException {
-    	  	
-    	
-        connect.setSSLSocketFactory(socketFactory);
-        connect.setRequestProperty("Authorization", authorization);
-        // connect.setRequestProperty("Cookie", authCookie);
-        connect.setRequestMethod("POST");
-        connect.setDoOutput(true);
-        connect.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-        connect.setRequestProperty("Soapaction", "");
-    }
-    
-    public void close(){
-    	if(is != null){
+		sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
+		this.socketFactory = sslcontext.getSocketFactory();
+	}
+
+	private void postAndParseResponse(String post, String prefix, AbstractResponseParser rp) throws HttpException,
+			StreamInterruptedException {
+		try {
+			// udelame post
+			URL url = new URL(config.getServiceURL() + prefix);
+			con = (HttpsURLConnection) url.openConnection();
+			this.configure(con);
+			con.getOutputStream().write(post.getBytes("UTF-8"));
+			checkHttpResponseCode(con);
+
+			// zparsujeme výsledek SAX parserem
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			factory.setValidating(false);
+			SAXParser parser = factory.newSAXParser();
+			is = con.getInputStream();
+			parser.parse(is, new SimpleSAXParser(rp));
+
+			// ověříme vrácený stav pri volani webove služby
+			if (!rp.getStatus().ok()) {
+				String message = String.format("Pozadavek selhal chybou %s:%s", rp.getStatus().getStatusCode(), rp
+						.getStatus().getStatusMesssage());
+				logger.log(Level.SEVERE, message);
+				throw new DataBoxException(message);
+			}
+		} catch (SAXException sax) {
+			throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
+		} catch (ParserConfigurationException pce) {
+			throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
+		} catch (IOException ioe) {
+			String message = "IOException, error while reading answer. The input stream may be closed by user decision.";
+			throw new StreamInterruptedException(message);
+		} finally {
+			con.disconnect();
+		}
+	}
+
+	private void storeRequest(String request, String prefix, OutputStream os) throws HttpException {
+		HttpsURLConnection con = null;
+		try {
+			URL url = new URL(config.getServiceURL() + prefix);
+			con = (HttpsURLConnection) url.openConnection();
+			this.configure(con);
+			con.getOutputStream().write(request.getBytes("UTF-8"));
+			this.checkHttpResponseCode(con);
+			InputStream is = con.getInputStream();
+			Utils.copy(is, os);
+		} catch (IOException ioe) {
+			throw new DataBoxException("Nemohu ulozit zpravu", ioe);
+		} finally {
+			con.disconnect();
+		}
+	}
+
+	private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, HttpException {
+		if (!OKCodes.contains(con.getResponseCode())) {
+			String message = String.format("Pozadavek selhal se stavovym kodem %d %s.", con.getResponseCode(),
+					con.getResponseMessage());
+			logger.log(Level.SEVERE, message);
+			throw new HttpException(con.getResponseMessage(), con.getResponseCode());
+		}
+	}
+
+	private void configure(HttpsURLConnection connect) throws ProtocolException {
+
+		connect.setSSLSocketFactory(socketFactory);
+		connect.setRequestProperty("Authorization", authorization);
+		// connect.setRequestProperty("Cookie", authCookie);
+		connect.setRequestMethod("POST");
+		connect.setDoOutput(true);
+		connect.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+		connect.setRequestProperty("Soapaction", "");
+	}
+
+	public void close() {
+		if (is != null) {
 			try {
 				is.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		if(con != null){
+
+		if (con != null) {
 			con.disconnect();
 		}
-    }
+	}
 }
