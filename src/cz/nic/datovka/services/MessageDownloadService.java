@@ -166,7 +166,7 @@ public class MessageDownloadService extends Service {
 				CMSSignedData signeddata = new CMSSignedData(input);
 				CMSProcessable data = signeddata.getSignedContent();
 				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
-				connector.parseSignedReceivedMessage(destFolder, folder, messageId, getApplicationContext(), asn1is, messageIsdsId);
+				connector.parseSignedMessage(destFolder, folder, messageId, getApplicationContext(), asn1is, messageIsdsId);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();

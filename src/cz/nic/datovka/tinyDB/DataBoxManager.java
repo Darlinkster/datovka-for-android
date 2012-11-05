@@ -152,7 +152,7 @@ public class DataBoxManager {
 
 	// metody z DataBoxDownload
 
-	public List<Attachment> parseSignedReceivedMessage(AttachmentStorer storer, int messageIsdsId, InputStream input) {
+	public void parseSignedMessage(AttachmentStorer storer, int messageIsdsId, InputStream input) {
 		MessageEnvelope envelope = new MessageEnvelope();
 		envelope.setMessageID(Integer.toString(messageIsdsId));
 		DownloadReceivedMessage rp = new DownloadReceivedMessage(envelope, storer);
@@ -172,7 +172,6 @@ public class DataBoxManager {
 			e.printStackTrace();
 		}
 
-		return rp.getResult();
 	}
 
 	public void parseSignedSentMessage(int messageIsdsId, OutputStream os) {

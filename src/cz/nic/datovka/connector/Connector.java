@@ -151,10 +151,10 @@ public class Connector {
 		return service.verifyMessage(envelope);
 	}
 	
-	public List<Attachment>  parseSignedReceivedMessage(File outputDir, int folder, Long messageId, Context ctx, InputStream input, int messageIsdsId){
+	public void  parseSignedMessage(File outputDir, int folder, Long messageId, Context ctx, InputStream input, int messageIsdsId){
 		FileAttachmentStorerWithDBInsertion faswd = new FileAttachmentStorerWithDBInsertion(outputDir, folder, messageId, ctx);
 		
-		return service.parseSignedReceivedMessage(faswd, messageIsdsId, input);
+		service.parseSignedMessage(faswd, messageIsdsId, input);
 	}
 
 	public void close(){
