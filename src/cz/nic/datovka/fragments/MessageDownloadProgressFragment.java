@@ -48,6 +48,7 @@ public class MessageDownloadProgressFragment extends DialogFragment {
 	
 	@Override
 	public void onDismiss(DialogInterface dialog) {
+		super.onDismiss(dialog);
 		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
 	}
 	
