@@ -83,7 +83,7 @@ public class RecvAttachmentsContentProvider  extends ContentProvider{
 
 		switch (uriType) {
 		case RECV_ATTACHMENT:
-			id = sqlDB.insert(DatabaseHelper.RECV_ATTACHMENTS_TB_NAME, null, values);
+			id = sqlDB.insertWithOnConflict(DatabaseHelper.RECV_ATTACHMENTS_TB_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 			break;
 
 		default:

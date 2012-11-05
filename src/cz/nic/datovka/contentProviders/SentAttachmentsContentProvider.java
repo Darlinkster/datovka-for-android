@@ -83,7 +83,7 @@ public class SentAttachmentsContentProvider  extends ContentProvider{
 
 		switch (uriType) {
 		case SENT_ATTACHMENT:
-			id = sqlDB.insert(DatabaseHelper.SENT_ATTACHMENTS_TB_NAME, null, values);
+			id = sqlDB.insertWithOnConflict(DatabaseHelper.SENT_ATTACHMENTS_TB_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 			break;
 
 		default:
