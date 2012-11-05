@@ -29,7 +29,7 @@ public class DownloadSignedSentMessage extends AbstractResponseParser {
     public OutputHolder startElementImpl(String elName, Attributes attributes) {
         if ("dmSignature".equals(elName)) {
         	Base64OutputStream bos = new Base64OutputStream(output, 0, false);
-            OutputHolder input = new OutputStreamHolder(output);
+            OutputHolder input = new OutputStreamHolder(bos);
             return input;
 
         }

@@ -7,5 +7,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/ISDSCommon-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/bcmail-jdk15-1.44.jar"/>
+	<classpathentry kind="lib" path="libs/bcprov-jdk15-1.44.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

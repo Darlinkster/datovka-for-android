@@ -1,11 +1,14 @@
 package cz.nic.datovka.connector;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.Context;
+import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
@@ -21,7 +24,7 @@ public class Connector {
 	public static final int TESTING = 1;
 
 	private static final int MAX_MSG_COUNT = 1000;
-	private static DataBoxManager service;
+	private DataBoxManager service;
 	
 	public void connect(String login, String password, int environment,
 			Context context) throws Exception {
@@ -146,6 +149,10 @@ public class Connector {
 
 	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
 		return service.verifyMessage(envelope);
+	}
+	
+	public List<Attachment>  parseSignedReceivedMessage(File outputDir, int messageIsdsId, InputStream input){
+		return service.parseSignedReceivedMessage(outputDir, messageIsdsId, input);
 	}
 
 	public void close(){

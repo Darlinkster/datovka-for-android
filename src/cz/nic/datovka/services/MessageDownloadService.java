@@ -1,10 +1,19 @@
 package cz.nic.datovka.services;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSSignedData;
 
 import android.app.Service;
 import android.content.ContentUris;
@@ -17,12 +26,13 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.widget.Toast;
+import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
+import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -38,14 +48,14 @@ public class MessageDownloadService extends Service {
 
 	private String directory;
 	private long messageId;
-	private int messageIsdsId;
 	private int folder;
 	private ResultReceiver receiver;
 	private DaemonThread thread;
 	private GaugeFileOutputStream fos;
 	private Connector connector;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-
+	
+	
 	@Override
 	public void onStart(Intent intent, int startId) {
 		messageId = intent.getLongExtra(MSG_ID, 0);
@@ -107,7 +117,7 @@ public class MessageDownloadService extends Service {
 			int msgBoxIdColIndex = msgCursor.getColumnIndex(msgBoxIdColName);
 			int fileSizeColIndex = msgCursor.getColumnIndex(fileSizeColName);
 
-			messageIsdsId = msgCursor.getInt(isdsIdColIndex);
+			int messageIsdsId = msgCursor.getInt(isdsIdColIndex);
 			int msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
 			long fileSize = msgCursor.getInt(fileSizeColIndex) * 1024; // kB to
 																		// bytes
@@ -150,9 +160,27 @@ public class MessageDownloadService extends Service {
 				fos.close();
 				
 				// It seems that the file is downloaded correctly, so remove the .tmp suffix and insert it to db
-				outFileTmp.renameTo(new File(destFolder, outFileName));
-				insertAttachmentToDb(directory + messageIsdsId + ".bin",
+				File outFile = new File(destFolder, outFileName); 
+				outFileTmp.renameTo(outFile);
+				insertAttachmentToDb(directory + outFileName,
 						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder);
+				
+				// Parse the signed message and extract attachments
+				InputStream input = new FileInputStream(outFile);
+				CMSSignedData signeddata = new CMSSignedData(input);
+				CMSProcessable data = signeddata.getSignedContent();
+				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
+				List<Attachment> attachments = connector.parseSignedReceivedMessage(destFolder, messageIsdsId, asn1is);
+				
+				Iterator<Attachment> iter = attachments.iterator();
+				while(iter.hasNext()){
+					Attachment att = iter.next();
+					
+					insertAttachmentToDb(directory + messageIsdsId + "_" + att.getDescription(),
+							att.getDescription(), att.getMimeType(), folder);
+				}
+				
+				
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -168,6 +196,8 @@ public class MessageDownloadService extends Service {
 					outFileTmp.delete();
 				}
 				logger.log(Level.WARNING, e.getMessage());
+			} catch (CMSException e) {
+				e.printStackTrace();
 			}
 
 			// Send 100% to gauge, just for sure

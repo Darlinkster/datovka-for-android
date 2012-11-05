@@ -1,5 +1,6 @@
 package cz.nic.datovka.tinyDB;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,6 +27,7 @@ import org.kobjects.base64.Base64;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
+import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.MessageState;
@@ -34,11 +36,14 @@ import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
+import cz.abclinuxu.datoveschranky.common.impl.FileAttachmentStorer;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
+import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.R.raw;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
+import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedSentMessage;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
@@ -162,21 +167,55 @@ public class DataBoxManager{
         return parser.getResult();
     }
 
-    // metody z DataBoxDownload
-    /*// We dont need this method
-    public Message downloadMessage(MessageEnvelope envelope,
-            AttachmentStorer storer) throws HttpException  {
-        //if (envelope.getType() != MessageType.RECEIVED) {
-         //   throw new UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
-       // }
-        String resource = "/res/raw/download_received_message.xml";
-        String post = Utils.readResourceAsString(this.getClass(), resource);
-        post = post.replace("${ID}", envelope.getMessageID());
-        DownloadReceivedMessage parser = new DownloadReceivedMessage(envelope, storer);
-        this.postAndParseResponse(post, "dz", parser);
-        return new Message(envelope, null, null, parser.getResult());
+ /*   // metody z DataBoxDownload
+    // We dont need this method
+	public Message downloadMessage(MessageEnvelope envelope, AttachmentStorer storer) throws HttpException {
+		// if (envelope.getType() != MessageType.RECEIVED) {
+		// throw new
+		// UnsupportedOperationException("Stahnout lze pouze prijatou zpravu");
+		// }
+		
+		String resource = "/res/raw/download_received_message.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		
+		post = post.replace("${ID}", envelope.getMessageID());
+		DownloadReceivedMessage parser = new DownloadReceivedMessage(envelope, storer);
+		
+		this.postAndParseResponse(post, "dz", parser);
+		return new Message(envelope, null, null, parser.getResult());
+	}*/
+    
+
+	public List<Attachment> parseSignedReceivedMessage(File outputDir, int messageIsdsId, InputStream input) {
+		MessageEnvelope envelope = new MessageEnvelope();
+		envelope.setMessageID(Integer.toString(messageIsdsId));
+		FileAttachmentStorer fas = new FileAttachmentStorer(outputDir);
+		DownloadReceivedMessage rp = new DownloadReceivedMessage(envelope, fas);
+
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		factory.setValidating(false);
+		
+		try {
+			SAXParser parser = factory.newSAXParser();
+			parser.parse(input, new SimpleSAXParser(rp));
+			
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+			//String message = "Parser error, probably it's skipping the signature at the beginning of the bin file. " + e.getMessage();
+			//logger.log(Level.WARNING, message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+		return rp.getResult();
+	}
+
+    public void parseSignedSentMessage(int messageIsdsId, OutputStream os){
+    	
     }
-*/
+    
 	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os)
 			throws HttpException, StreamInterruptedException {
         String resource = "/res/raw/download_signed_received_message.xml";
@@ -281,7 +320,6 @@ public class DataBoxManager{
     
     private void postAndParseResponse(String post, String prefix,
             AbstractResponseParser rp) throws HttpException, StreamInterruptedException {
-       // HttpsURLConnection con = null;
         try {
             // udelame post
             URL url = new URL(config.getServiceURL() + prefix);
@@ -369,7 +407,7 @@ public class DataBoxManager{
 			try {
 				is.close();
 			} catch (IOException e) {
-				// TODO fuj
+				e.printStackTrace();
 			}
 		}
 		
