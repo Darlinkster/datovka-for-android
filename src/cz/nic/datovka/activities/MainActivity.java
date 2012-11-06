@@ -12,6 +12,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.View;
@@ -94,6 +95,19 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		TitlePageIndicator titleIndicator = (TitlePageIndicator) findViewById(R.id.pagertitles);
 		titleIndicator.setViewPager(mPager);
+		titleIndicator.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(int arg0) {
+				selectedFolder = arg0;
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {	}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {	}
+		});
 
 		actionBar.setListNavigationCallbacks(account_adapter, this);
 
@@ -115,6 +129,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
 
+		
 		return false;
 	}
  
