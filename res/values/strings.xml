@@ -23,6 +23,9 @@
     <string name="account_menu_info">Detailní informace</string>
     <string name="account_menu_delete">Smazat</string>
     <string name="account_deleted">Účet smazán</string>
+    <string name="inbox">Přijaté</string>
+    <string name="outbox">Odeslané</string>
+    
     
 	<string-array name="folder_spinner">
 	    <item>Přijaté</item>

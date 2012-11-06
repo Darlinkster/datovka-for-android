@@ -1,25 +1,31 @@
 package cz.nic.datovka.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TabPageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
+
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -27,33 +33,31 @@ import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
 
-public class MainActivity extends FragmentActivity implements OnItemSelectedListener, LoaderCallbacks<Cursor> {
+public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener,
+		LoaderCallbacks<Cursor> {
 
-	private FragmentManager fragmentManager;
-	private SimpleCursorAdapter account_adapter;
-	private String selectedMsgBoxID;
-	private int selectedFolder;
+	private static SimpleCursorAdapter account_adapter;
+	private static String selectedMsgBoxID;
+
+	private static int selectedFolder = 0;
 
 	private static final int INBOX = 0;
 	private static final int OUTBOX = 1;
+
+	private FragmentManager fragmentManager;
+	private MyAdapter mAdapter;
+	private ViewPager mPager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
 		fragmentManager = getSupportFragmentManager();
+		ActionBar actionBar = getSupportActionBar();
 
-		Spinner folder_spinner = (Spinner) findViewById(R.id.folder_spinner);
-		Spinner account_spinner = (Spinner) findViewById(R.id.account_spinner);
-
-		// folder spinner setup
-		ArrayAdapter<CharSequence> folder_adapter = ArrayAdapter.createFromResource(this, R.array.folder_spinner,
-				android.R.layout.simple_spinner_item);
-		folder_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		folder_spinner.setAdapter(folder_adapter);
-		folder_spinner.setOnItemSelectedListener(this);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
 		// account spinner setup
 		String[] from = new String[] { DatabaseHelper.OWNER_FIRM_NAME };
@@ -71,6 +75,7 @@ public class MainActivity extends FragmentActivity implements OnItemSelectedList
 				if (cursor.getString(colIndex).length() == 0) {
 					int indexOwnerName = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
 					tv.setText(cursor.getString(indexOwnerName));
+					tv.setTextColor(getResources().getColor(R.color.dimwhite));
 					// Set msgbox ID as a tag
 					tv.setTag(cursor.getString(indexMsgBoxId));
 					return true;
@@ -78,12 +83,19 @@ public class MainActivity extends FragmentActivity implements OnItemSelectedList
 
 				// Set msgbox ID as a tag
 				tv.setTag(cursor.getString(indexMsgBoxId));
+				tv.setTextColor(getResources().getColor(R.color.dimwhite));
 				return false;
 			}
 		});
 
-		account_spinner.setAdapter(account_adapter);
-		account_spinner.setOnItemSelectedListener(this);
+		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getApplicationContext());
+		mPager = (ViewPager) findViewById(R.id.boxpager);
+		mPager.setAdapter(mAdapter);
+
+		TitlePageIndicator titleIndicator = (TitlePageIndicator) findViewById(R.id.pagertitles);
+		titleIndicator.setViewPager(mPager);
+
+		actionBar.setListNavigationCallbacks(account_adapter, this);
 
 		// There is no account, jump on the create account dialogfragment
 		int numberOfAccounts = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
@@ -92,11 +104,23 @@ public class MainActivity extends FragmentActivity implements OnItemSelectedList
 			AddAccountFragment aaf = new AddAccountFragment();
 			aaf.show(fragmentManager, null);
 		}
+
 	}
 
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		TextView tv = (TextView) account_adapter.getView(itemPosition, null, null);
+		selectedMsgBoxID = (String) tv.getTag();
+
+		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getApplicationContext());
+		mPager = (ViewPager) findViewById(R.id.boxpager);
+		mPager.setAdapter(mAdapter);
+
+		return false;
+	}
+ 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_main, menu);
+		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -124,47 +148,6 @@ public class MainActivity extends FragmentActivity implements OnItemSelectedList
 		startActivity(i);
 	}
 
-	public void onItemSelected(AdapterView<?> parent, View row, int pos, long id) {
-		if (parent.getId() == R.id.folder_spinner) {
-			if (pos == INBOX) {
-				// Inbox
-				selectedFolder = pos;
-				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
-				FragmentTransaction ft = fragmentManager.beginTransaction();
-				ft.replace(R.id.main_linearlayout, rmlf);
-				ft.commit();
-			} else if (pos == OUTBOX) {
-				// Outbox
-				selectedFolder = pos;
-				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
-				FragmentTransaction ft = fragmentManager.beginTransaction();
-				ft.replace(R.id.main_linearlayout, smlf);
-				ft.commit();
-			}
-		} else if (parent.getId() == R.id.account_spinner) {
-			// Get msgbox ID from textview tag
-			TextView tv = (TextView) row;
-			selectedMsgBoxID = (String) tv.getTag();
-			if (selectedFolder == INBOX) {
-				// Inbox
-				ReceivedMessageListFragment rmlf = ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
-				FragmentTransaction ft = fragmentManager.beginTransaction();
-				ft.replace(R.id.main_linearlayout, rmlf);
-				ft.commit();
-			} else if (selectedFolder == OUTBOX) {
-				// Outbox
-				SentMessageListFragment smlf = SentMessageListFragment.getInstance(selectedMsgBoxID);
-				FragmentTransaction ft = fragmentManager.beginTransaction();
-				ft.replace(R.id.main_linearlayout, smlf);
-				ft.commit();
-			}
-		}
-	}
-
-	public void onNothingSelected(AdapterView<?> arg0) {
-
-	}
-
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME,
 				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.MSGBOX_ID };
@@ -181,4 +164,51 @@ public class MainActivity extends FragmentActivity implements OnItemSelectedList
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		account_adapter.swapCursor(null);
 	}
+
+	public static class MyAdapter extends FragmentPagerAdapter {
+		private FragmentManager fm;
+
+		private static String[] TITLES;
+		private static int NUM_TITLES;
+		
+		public MyAdapter(FragmentManager fm, String selectedMsgBoxID, Context ctx) {
+			super(fm);
+			this.fm = fm;
+			
+			TITLES = new String[] { ctx.getResources().getString(R.string.inbox),
+					ctx.getResources().getString(R.string.outbox) };
+			NUM_TITLES = TITLES.length;
+		}
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			switch (position) {
+			case 0:
+				return ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
+			case 1:
+				return SentMessageListFragment.getInstance(selectedMsgBoxID);
+			default:
+				return null;
+			}
+		}
+
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			super.destroyItem(container, position, object);
+			FragmentTransaction bt = fm.beginTransaction();
+			bt.remove((Fragment) object);
+			bt.commit();
+		}
+		
+		@Override
+		public CharSequence getPageTitle(int position) {
+            return TITLES[position % NUM_TITLES].toUpperCase();
+        }
+	}
+
 }
