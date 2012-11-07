@@ -24,7 +24,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import cz.nic.datovka.R;
@@ -42,8 +41,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 	private static int selectedFolder = 0;
 
-	private static final int INBOX = 0;
-	private static final int OUTBOX = 1;
+	//private static final int INBOX = 0;
+	//private static final int OUTBOX = 1;
 
 	private FragmentManager fragmentManager;
 	private MyAdapter mAdapter;
