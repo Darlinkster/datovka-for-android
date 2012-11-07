@@ -40,20 +40,18 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String[] projection = new String[] {
-				DatabaseHelper.RECEIVED_MESSAGE_ID,
-				DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID,
+		String[] projection = new String[] { DatabaseHelper.RECEIVED_MESSAGE_ID,
+				DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, 
 				DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION,
-				DatabaseHelper.SENDER_NAME,
+				DatabaseHelper.SENDER_NAME, 
 				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE,
-				DatabaseHelper.RECEIVED_MESSAGE_IS_READ};
-		
-		String selectionArgs = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID
-				+ " = " + getArguments().getString(MSGBOXID);
+				DatabaseHelper.RECEIVED_MESSAGE_IS_READ };
 
-		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				ReceivedMessagesContentProvider.CONTENT_URI, projection,
-				selectionArgs, null, DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE + " DESC");
+		String selection = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID + "=?";
+		String[] selectionArgs = { getArguments().getString(MSGBOXID) };
+
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), ReceivedMessagesContentProvider.CONTENT_URI,
+				projection, selection, selectionArgs, DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE + " DESC");
 
 		return cursorLoader;
 	}

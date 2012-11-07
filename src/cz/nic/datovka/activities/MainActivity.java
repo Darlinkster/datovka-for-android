@@ -32,7 +32,6 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
-import cz.nic.datovka.services.AddAccountService;
 import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener,
@@ -87,11 +86,21 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 				return false;
 			}
 		});
+		actionBar.setListNavigationCallbacks(account_adapter, this);
+		
+		// Set selected account list item after screen rotation
+		// Magic numbers - Because database indexes starting from 1, but actionbar spinner indexes from 0
+		if (selectedMsgBoxID != null) {
+			actionBar.setSelectedNavigationItem(Integer.parseInt(selectedMsgBoxID) - 1);
+		}
+		else {
+			selectedMsgBoxID = Long.toString(actionBar.getSelectedNavigationIndex() + 1);
+		}
 
 		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getApplicationContext());
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
-
+		
 		TitlePageIndicator titleIndicator = (TitlePageIndicator) findViewById(R.id.pagertitles);
 		titleIndicator.setViewPager(mPager);
 		titleIndicator.setOnPageChangeListener(new OnPageChangeListener() {
@@ -110,12 +119,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-
-		actionBar.setListNavigationCallbacks(account_adapter, this);
-		// Set selected account list item after screen rotation
-		if (selectedMsgBoxID != null) {
-			actionBar.setSelectedNavigationItem(Integer.parseInt(selectedMsgBoxID) - 1);
-		}
 
 		// There is no account, jump on the create account dialogfragment
 		int numberOfAccounts = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
@@ -196,10 +199,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		private static String[] TITLES;
 		private static int NUM_TITLES;
-
-		public MyAdapter(FragmentManager fm, String selectedMsgBoxID, Context ctx) {
+		private static String msgBoxID;
+		
+		public MyAdapter(FragmentManager fm, String msgBoxID, Context ctx) {
 			super(fm);
 			this.fm = fm;
+			this.msgBoxID = msgBoxID;
 
 			TITLES = new String[] { ctx.getResources().getString(R.string.inbox),
 					ctx.getResources().getString(R.string.outbox) };
@@ -215,9 +220,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return ReceivedMessageListFragment.getInstance(selectedMsgBoxID);
+				return ReceivedMessageListFragment.getInstance(msgBoxID);
 			case 1:
-				return SentMessageListFragment.getInstance(selectedMsgBoxID);
+				return SentMessageListFragment.getInstance(msgBoxID);
 			default:
 				return null;
 			}

@@ -38,8 +38,8 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String selectionArgs = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + " = "
-				+ getArguments().getString(MSGBOXID);
+		String selection = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + "=?";
+		String[] selectionArgs = { getArguments().getString(MSGBOXID) };
 		
 		String[] projection = new String[] {
 				DatabaseHelper.SENT_MESSAGE_MSGBOX_ID,
@@ -51,7 +51,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SentMessagesContentProvider.CONTENT_URI, projection,
-				selectionArgs, null, DatabaseHelper.SENT_MESSAGE_SENT_DATE + " DESC");
+				selection, selectionArgs, DatabaseHelper.SENT_MESSAGE_SENT_DATE + " DESC");
 
 		return cursorLoader;
 	}
