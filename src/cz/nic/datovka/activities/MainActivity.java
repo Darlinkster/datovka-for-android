@@ -59,7 +59,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
-
+		
 		// account spinner setup
 		String[] from = new String[] { DatabaseHelper.OWNER_FIRM_NAME };
 		int[] to = new int[] { android.R.id.text1 };
@@ -99,6 +99,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			
 			@Override
 			public void onPageSelected(int arg0) {
+				// Folder was changed from INBOX to OUTBOX or vice-versa
 				selectedFolder = arg0;
 			}
 			
@@ -110,6 +111,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		});
 
 		actionBar.setListNavigationCallbacks(account_adapter, this);
+		// Set selected account list item after screen rotation
+		if (selectedMsgBoxID != null) {
+			actionBar.setSelectedNavigationItem(Integer.parseInt(selectedMsgBoxID) - 1);
+		}
 
 		// There is no account, jump on the create account dialogfragment
 		int numberOfAccounts = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
@@ -122,15 +127,16 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	}
 
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		// Another account was selected
 		TextView tv = (TextView) account_adapter.getView(itemPosition, null, null);
 		selectedMsgBoxID = (String) tv.getTag();
 
 		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getApplicationContext());
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
-
+		mPager.setCurrentItem(selectedFolder);
 		
-		return false;
+		return true;
 	}
  
 	@Override
