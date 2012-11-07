@@ -75,7 +75,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 				if (cursor.getString(colIndex).length() == 0) {
 					int indexOwnerName = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
 					tv.setText(cursor.getString(indexOwnerName));
-					tv.setTextColor(getResources().getColor(R.color.dimwhite));
 					// Set msgbox ID as a tag
 					tv.setTag(cursor.getString(indexMsgBoxId));
 					return true;
@@ -83,7 +82,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 				// Set msgbox ID as a tag
 				tv.setTag(cursor.getString(indexMsgBoxId));
-				tv.setTextColor(getResources().getColor(R.color.dimwhite));
 				return false;
 			}
 		});

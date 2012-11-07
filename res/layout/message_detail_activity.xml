@@ -12,6 +12,14 @@
         android:orientation="vertical" >
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/line"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:gravity="center_horizontal"
+        android:paddingTop="5dip" />
+    
     <LinearLayout
         android:id="@+id/message_attachment_activity"
         android:layout_width="match_parent"
@@ -19,12 +27,5 @@
         android:layout_weight="1"
         android:orientation="vertical" >
     </LinearLayout>
-
-    <Button
-        android:id="@+id/download_attachment_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="@string/download_attachment_button" />
 
 </LinearLayout>

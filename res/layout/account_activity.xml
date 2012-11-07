@@ -8,17 +8,7 @@
         android:id="@+id/account_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/add_account_button" 
         android:layout_alignParentTop="true" >
     </LinearLayout>
-
-    <Button
-        android:id="@+id/add_account_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:onClick="onClick"
-        android:text="@string/add_acount" >
-    </Button>
 
 </RelativeLayout>
