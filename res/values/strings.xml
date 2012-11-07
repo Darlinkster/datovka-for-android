@@ -25,6 +25,7 @@
     <string name="account_deleted">Účet smazán</string>
     <string name="inbox">Přijaté</string>
     <string name="outbox">Odeslané</string>
+    <string name="refresh_menu_btn">Obnovit</string>
     
     
 	<string-array name="folder_spinner">

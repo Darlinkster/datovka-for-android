@@ -51,7 +51,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SentMessagesContentProvider.CONTENT_URI, projection,
-				selectionArgs, null, null);
+				selectionArgs, null, DatabaseHelper.SENT_MESSAGE_SENT_DATE + " DESC");
 
 		return cursorLoader;
 	}

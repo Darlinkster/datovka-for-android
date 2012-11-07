@@ -7,13 +7,17 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
@@ -146,6 +150,80 @@ public class Connector {
 		return sentMessageList;
 	}
 
+	public List<MessageEnvelope> getRecievedMessageListFromDate(GregorianCalendar fromParam) throws HttpException {
+		List<MessageEnvelope> recievedMessageList;
+		int offset = 0;
+		
+		if (service == null) {
+			throw new IllegalStateException("Object not initialized");
+		}
+
+		GregorianCalendar now = new GregorianCalendar();
+		GregorianCalendar from = new GregorianCalendar();
+
+		// we need to push off the last message date
+		from.setTimeInMillis(fromParam.getTimeInMillis() + 1);
+		now.roll(Calendar.DAY_OF_YEAR, 1);
+
+		recievedMessageList = service.getListOfReceivedMessages(
+				from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
+
+		if(recievedMessageList.size() == MAX_MSG_COUNT){
+			while(true){
+				List<MessageEnvelope> recievedMessageListNext;
+				offset += MAX_MSG_COUNT;
+				recievedMessageListNext = service.getListOfReceivedMessages(
+						from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
+				
+				if(recievedMessageListNext.size() > 0){
+					recievedMessageList.addAll(recievedMessageListNext);
+				}
+				else{
+					break;
+				}
+			}
+		}
+		
+		return recievedMessageList;
+	}
+
+	public List<MessageEnvelope> getSentMessageListFromDate(GregorianCalendar fromParam) throws HttpException  {
+		List<MessageEnvelope> sentMessageList;
+		int offset = 0;
+
+		if (service == null) {
+			throw new IllegalStateException("Object not initialized");
+		}
+
+		GregorianCalendar now = new GregorianCalendar();
+		GregorianCalendar from = new GregorianCalendar();
+
+		// we need to push off the last message date
+		from.setTimeInMillis(fromParam.getTimeInMillis() + 1);
+		now.roll(Calendar.DAY_OF_YEAR, 1);
+
+		sentMessageList = service.getListOfSentMessages(from.getTime(),
+				now.getTime(), null, offset, MAX_MSG_COUNT);
+
+		if(sentMessageList.size() == MAX_MSG_COUNT){
+			while(true){
+				List<MessageEnvelope> sentMessageListNext;
+				offset += MAX_MSG_COUNT;
+				sentMessageListNext = service.getListOfSentMessages(
+						from.getTime(), now.getTime(), null, offset, MAX_MSG_COUNT);
+				
+				if(sentMessageListNext.size() > 0){
+					sentMessageList.addAll(sentMessageListNext);
+				}
+				else{
+					break;
+				}
+			}
+		}
+			
+		return sentMessageList;
+	}
+	
 	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
 		return service.verifyMessage(envelope);
 	}
@@ -158,5 +236,29 @@ public class Connector {
 
 	public void close(){
 		service.close();
+	}
+	
+	public static Connector connectToWs(long msgBoxId, Context ctx) {
+		Connector conn = new Connector();
+		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
+		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
+				DatabaseHelper.MSGBOX_TEST_ENV };
+		Cursor msgBoxCursor = ctx.getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
+		msgBoxCursor.moveToFirst();
+
+		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
+		int passwordIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);
+		int envIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TEST_ENV);
+		String login = msgBoxCursor.getString(loginIndex);
+		String password = msgBoxCursor.getString(passwordIndex);
+		int environment = msgBoxCursor.getInt(envIndex);
+		msgBoxCursor.close();
+		try {
+			conn.connect(login, password, environment, ctx);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return conn;
 	}
 }

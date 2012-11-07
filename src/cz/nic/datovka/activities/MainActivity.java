@@ -32,6 +32,8 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
+import cz.nic.datovka.services.AddAccountService;
+import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener,
 		LoaderCallbacks<Cursor> {
@@ -41,8 +43,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 	private static int selectedFolder = 0;
 
-	//private static final int INBOX = 0;
-	//private static final int OUTBOX = 1;
+	// private static final int INBOX = 0;
+	// private static final int OUTBOX = 1;
 
 	private FragmentManager fragmentManager;
 	private MyAdapter mAdapter;
@@ -58,7 +60,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
-		
+
 		// account spinner setup
 		String[] from = new String[] { DatabaseHelper.OWNER_FIRM_NAME };
 		int[] to = new int[] { android.R.id.text1 };
@@ -93,18 +95,20 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		TitlePageIndicator titleIndicator = (TitlePageIndicator) findViewById(R.id.pagertitles);
 		titleIndicator.setViewPager(mPager);
 		titleIndicator.setOnPageChangeListener(new OnPageChangeListener() {
-			
+
 			@Override
 			public void onPageSelected(int arg0) {
 				// Folder was changed from INBOX to OUTBOX or vice-versa
 				selectedFolder = arg0;
 			}
-			
+
 			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {	}
-			
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+
 			@Override
-			public void onPageScrollStateChanged(int arg0) {	}
+			public void onPageScrollStateChanged(int arg0) {
+			}
 		});
 
 		actionBar.setListNavigationCallbacks(account_adapter, this);
@@ -132,10 +136,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
 		mPager.setCurrentItem(selectedFolder);
-		
+
 		return true;
 	}
- 
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
@@ -151,9 +155,13 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		case R.id.menu_settings:
 			Toast.makeText(this, "nastaveni", Toast.LENGTH_SHORT).show();
 			return true;
+		case R.id.refresh_all:
+			Intent intent = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
+			startService(intent);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public void itemClicked(View view) {
@@ -188,11 +196,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		private static String[] TITLES;
 		private static int NUM_TITLES;
-		
+
 		public MyAdapter(FragmentManager fm, String selectedMsgBoxID, Context ctx) {
 			super(fm);
 			this.fm = fm;
-			
+
 			TITLES = new String[] { ctx.getResources().getString(R.string.inbox),
 					ctx.getResources().getString(R.string.outbox) };
 			NUM_TITLES = TITLES.length;
@@ -222,11 +230,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			bt.remove((Fragment) object);
 			bt.commit();
 		}
-		
+
 		@Override
 		public CharSequence getPageTitle(int position) {
-            return TITLES[position % NUM_TITLES].toUpperCase();
-        }
+			return TITLES[position % NUM_TITLES].toUpperCase();
+		}
 	}
 
 }

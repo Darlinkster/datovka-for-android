@@ -53,7 +53,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				ReceivedMessagesContentProvider.CONTENT_URI, projection,
-				selectionArgs, null, null);
+				selectionArgs, null, DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE + " DESC");
 
 		return cursorLoader;
 	}

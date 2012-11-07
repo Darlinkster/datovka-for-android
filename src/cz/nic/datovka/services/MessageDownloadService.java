@@ -27,7 +27,6 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.connector.DatabaseTools;
-import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -113,7 +112,7 @@ public class MessageDownloadService extends Service {
 			int fileSizeColIndex = msgCursor.getColumnIndex(fileSizeColName);
 
 			int messageIsdsId = msgCursor.getInt(isdsIdColIndex);
-			int msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
+			long msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
 			long fileSize = msgCursor.getInt(fileSizeColIndex) * 1024; // kB to
 																		// bytes
 			fileSize *= 1.36f; // base64 makes the content bigger by 33%
@@ -121,7 +120,7 @@ public class MessageDownloadService extends Service {
 			msgCursor.close();
 
 			// Connect to WS
-			connector = connectToWs(msgBoxId);
+			connector = Connector.connectToWs(msgBoxId, getApplicationContext());
 
 			// If the download folder not exists create it
 			checkExternalStorage();
@@ -191,30 +190,6 @@ public class MessageDownloadService extends Service {
 			resultData.putInt("progress", 100);
 			receiver.send(UPDATE_PROGRESS, resultData);
 		}
-	}
-
-	private Connector connectToWs(int msgBoxId) {
-		Connector conn = new Connector();
-		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
-		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
-				DatabaseHelper.MSGBOX_TEST_ENV };
-		Cursor msgBoxCursor = getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
-		msgBoxCursor.moveToFirst();
-
-		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
-		int passwordIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);
-		int envIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TEST_ENV);
-		String login = msgBoxCursor.getString(loginIndex);
-		String password = msgBoxCursor.getString(passwordIndex);
-		int environment = msgBoxCursor.getInt(envIndex);
-		msgBoxCursor.close();
-		try {
-			conn.connect(login, password, environment, getApplicationContext());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return conn;
 	}
 
 	private void checkExternalStorage() {

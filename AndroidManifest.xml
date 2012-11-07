@@ -64,6 +64,8 @@
         </service> 
         <service android:name=".services.AddAccountService" >
         </service>
+        <service android:name=".services.MessageBoxRefreshService" >
+        </service>
     </application>
 
 </manifest>
