@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/add_account_menu_btn"
+        android:title="@string/add_account_button"
+        android:icon="@drawable/social_add_person"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom" />
+</menu>

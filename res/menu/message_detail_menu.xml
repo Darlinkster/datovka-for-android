@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/download_attachment_menu_btn"
+        android:icon="@drawable/attachment_download"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/download_attachment_button"/>
+
+</menu>

@@ -1,10 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
+        android:icon="@drawable/action_settings"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />
     <item android:id="@+id/menu_accounts"
         android:title="@string/menu_accounts"
+        android:icon="@drawable/social_cc_bcc"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />
 </menu>
