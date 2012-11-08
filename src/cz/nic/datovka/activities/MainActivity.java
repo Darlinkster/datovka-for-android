@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -32,6 +35,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
+import cz.nic.datovka.services.AddAccountService;
 import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener,
@@ -39,8 +43,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 	private static SimpleCursorAdapter account_adapter;
 	private static String selectedMsgBoxID;
-
 	private static int selectedFolder = 0;
+	private static Context context;
 
 	// private static final int INBOX = 0;
 	// private static final int OUTBOX = 1;
@@ -55,6 +59,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		fragmentManager = getSupportFragmentManager();
+		context = getApplicationContext();
 		ActionBar actionBar = getSupportActionBar();
 
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -159,7 +164,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			Toast.makeText(this, "nastaveni", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.refresh_all:
+			Messenger messenger = new Messenger(handler);
 			Intent intent = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
+			intent.putExtra(MessageBoxRefreshService.HANDLER, messenger);
 			startService(intent);
 			return true;
 		}
@@ -193,6 +200,18 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		account_adapter.swapCursor(null);
 	}
+	
+	private static Handler handler = new Handler() {
+		public void handleMessage(Message message) {
+			if(message.arg1 == 0){
+				Toast.makeText(context, R.string.no_new_messages, Toast.LENGTH_LONG).show();
+			}
+			else {
+				String newMessages = context.getResources().getString(R.string.new_messages_with_count, message.arg1);
+				Toast.makeText(context, newMessages, Toast.LENGTH_LONG).show();
+			}
+		}
+	};
 
 	public static class MyAdapter extends FragmentPagerAdapter {
 		private FragmentManager fm;

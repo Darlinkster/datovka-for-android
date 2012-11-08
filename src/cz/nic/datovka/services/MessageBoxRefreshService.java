@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -14,15 +15,29 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import android.app.Service;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.widget.Toast;
 
 public class MessageBoxRefreshService extends Service {
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
+	public static final String HANDLER = "handler";
+	
+	private Message message;
+	private Messenger messenger;
 	
 	public void onStart(Intent intent, int startId) {
+		Bundle extras = intent.getExtras();
+		messenger = (Messenger) extras.get(HANDLER);
+		message = Message.obtain();
+		
 		thread = new DaemonThread();
 		thread.start();
 	}
@@ -41,6 +56,8 @@ public class MessageBoxRefreshService extends Service {
 			int msgBoxIdColIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
 			int msgBoxCount = msgBoxCursor.getCount();
 			
+			// new message counter
+			int newMessageCounter = 0;
 			// Iterate over all Message Boxes IDs
 			for(int i = 0; i < msgBoxCount; i++){
 				// get msgbox id
@@ -118,6 +135,7 @@ public class MessageBoxRefreshService extends Service {
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 						
 						getContentResolver().insert(ReceivedMessagesContentProvider.CONTENT_URI, rcvdMessageValues);
+						newMessageCounter++;
 					}
 					
 					while(newOutboxMsgIterator.hasNext()){
@@ -152,6 +170,7 @@ public class MessageBoxRefreshService extends Service {
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 						
 						getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
+						newMessageCounter++;
 					}
 					
 				} catch (HttpException e) {
@@ -160,8 +179,20 @@ public class MessageBoxRefreshService extends Service {
 				
 			}
 			msgBoxCursor.close();
+			
+			message.arg1 = newMessageCounter;
+			try {
+				messenger.send(message);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			
 			//System.out.println("koncim");
+			
 		}
+		
+		
 	}
+	
 
 }

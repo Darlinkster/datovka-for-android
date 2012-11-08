@@ -26,6 +26,8 @@
     <string name="inbox">Přijaté</string>
     <string name="outbox">Odeslané</string>
     <string name="refresh_menu_btn">Obnovit</string>
+    <string name="no_new_messages">Nemáte žádné nové zprávy</string>
+    <string name="new_messages_with_count">Máte %1$d nových zpráv</string>
     
     
 	<string-array name="folder_spinner">
