@@ -223,7 +223,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		public MyAdapter(FragmentManager fm, String msgBoxID, Context ctx) {
 			super(fm);
 			this.fm = fm;
-			this.msgBoxID = msgBoxID;
+			MyAdapter.msgBoxID = msgBoxID;
 
 			TITLES = new String[] { ctx.getResources().getString(R.string.inbox),
 					ctx.getResources().getString(R.string.outbox) };
