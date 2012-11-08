@@ -58,9 +58,14 @@ public class AccountListFragment extends ListFragment implements LoaderCallbacks
 					if (cursor.getString(colIndex).length() == 0) {
 						int index = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
 						tv.setText(cursor.getString(index));
-						return true;
 					}
+					// Append ISDS ID
+					int isdsIDindex = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
+					String msgBoxIsdsID = cursor.getString(isdsIDindex);
+					tv.append(" (ID: " + msgBoxIsdsID + ")");
+					return true;
 				}
+				
 				return false;
 			}
 		});
@@ -70,7 +75,7 @@ public class AccountListFragment extends ListFragment implements LoaderCallbacks
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME,
-				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.USER_NAME };
+				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.USER_NAME, DatabaseHelper.MSGBOX_ISDS_ID };
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), MsgBoxContentProvider.CONTENT_URI, projection,
 				null, null, null);
 
