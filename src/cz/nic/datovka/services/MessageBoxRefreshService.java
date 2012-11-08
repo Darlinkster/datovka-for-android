@@ -90,7 +90,7 @@ public class MessageBoxRefreshService extends Service {
 				//System.out.println(lastOutboxMsgGregDate.toString());
 				
 				// Connect
-				Connector connector = Connector.connectToWs(msgBoxId, getApplicationContext());
+				Connector connector = Connector.connectToWs(msgBoxId);
 				try {
 					// get new messages
 					List<MessageEnvelope> newInboxMsg = connector.getRecievedMessageListFromDate(lastInboxMsgGregDate);

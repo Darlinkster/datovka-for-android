@@ -59,6 +59,10 @@ public class AccountListFragment extends ListFragment implements LoaderCallbacks
 						int index = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
 						tv.setText(cursor.getString(index));
 					}
+					else {
+						int index = cursor.getColumnIndex(DatabaseHelper.OWNER_FIRM_NAME);
+						tv.setText(cursor.getString(index));
+					}
 					// Append ISDS ID
 					int isdsIDindex = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
 					String msgBoxIsdsID = cursor.getString(isdsIDindex);

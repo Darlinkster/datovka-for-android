@@ -1,6 +1,5 @@
 package cz.nic.datovka.fragments;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -10,7 +9,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
@@ -34,9 +32,6 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		updateList();
-		ListView v = getListView();
-		registerForContextMenu(v);
-		//v.setSelector(R.drawable.message_listitem_background);
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
@@ -65,8 +60,6 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 	}
 	
 	public void updateList() {
-		Context context = getActivity();
-		
 		String[] from = { DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION,
 				DatabaseHelper.SENDER_NAME,
 				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE };
@@ -76,7 +69,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 		
 		getLoaderManager().initLoader(0, null, this);
 		
-		adapter = new MessageListCursorAdapter(context,
+		adapter = new MessageListCursorAdapter(getActivity(),
 				R.layout.message_list_fragment, null, from, to,
 				DatabaseHelper.RECEIVED_MESSAGE_IS_READ, 
 				0);

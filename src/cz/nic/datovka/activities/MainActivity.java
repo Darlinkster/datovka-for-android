@@ -1,6 +1,5 @@
 package cz.nic.datovka.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -37,14 +36,11 @@ import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
 import cz.nic.datovka.services.MessageBoxRefreshService;
 
-public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener,
-		LoaderCallbacks<Cursor> {
-
+public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener, LoaderCallbacks<Cursor> {
 	private static SimpleCursorAdapter account_adapter;
 	private static String selectedMsgBoxID;
 	private static int selectedFolder = 0;
-	private static Context context;
-
+	
 	// private static final int INBOX = 0;
 	// private static final int OUTBOX = 1;
 
@@ -58,7 +54,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		fragmentManager = getSupportFragmentManager();
-		context = getApplicationContext();
+		Application.ctx = getApplicationContext();
 		ActionBar actionBar = getSupportActionBar();
 
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -90,6 +86,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 				return false;
 			}
 		});
+		
 		actionBar.setListNavigationCallbacks(account_adapter, this);
 		
 		// Set selected account list item after screen rotation
@@ -101,7 +98,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			selectedMsgBoxID = Long.toString(actionBar.getSelectedNavigationIndex() + 1);
 		}
 
-		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getApplicationContext());
+		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, new String(getString(R.string.inbox)), new String(getString(R.string.outbox)));
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
 		
@@ -125,8 +122,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		});
 
 		// There is no account, jump on the create account dialogfragment
-		int numberOfAccounts = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
-				DatabaseHelper.msgbox_columns, null, null, null).getCount();
+		Cursor msgBoxes = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
+				DatabaseHelper.msgbox_columns, null, null, null);
+		int numberOfAccounts = msgBoxes.getCount();
+		msgBoxes.close();
 		if (numberOfAccounts < 1) {
 			AddAccountFragment aaf = new AddAccountFragment();
 			aaf.show(fragmentManager, null);
@@ -140,7 +139,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		TextView tv = (TextView) account_adapter.getView(itemPosition, null, null);
 		selectedMsgBoxID = (String) tv.getTag();
 
-		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getApplicationContext());
+		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getString(R.string.inbox), getString(R.string.outbox));
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
 		mPager.setCurrentItem(selectedFolder);
@@ -209,11 +208,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private static Handler handler = new Handler() {
 		public void handleMessage(Message message) {
 			if(message.arg1 == 0){
-				Toast.makeText(context, R.string.no_new_messages, Toast.LENGTH_LONG).show();
+				Toast.makeText(Application.ctx, R.string.no_new_messages, Toast.LENGTH_LONG).show();
 			}
 			else {
-				String newMessages = context.getResources().getString(R.string.new_messages_with_count, message.arg1);
-				Toast.makeText(context, newMessages, Toast.LENGTH_LONG).show();
+				String newMessages = new String(Application.ctx.getResources().getString(R.string.new_messages_with_count, message.arg1));
+				Toast.makeText(Application.ctx, newMessages, Toast.LENGTH_LONG).show();
 			}
 		}
 	};
@@ -226,13 +225,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		private static int NUM_TITLES;
 		private static String msgBoxID;
 		
-		public MyAdapter(FragmentManager fm, String msgBoxID, Context ctx) {
+		public MyAdapter(FragmentManager fm, String msgBoxID, String inbox, String outbox) {
 			super(fm);
 			this.fm = fm;
 			MyAdapter.msgBoxID = msgBoxID;
 
-			TITLES = new String[] { ctx.getResources().getString(R.string.inbox),
-					ctx.getResources().getString(R.string.outbox) };
+			TITLES = new String[] { inbox, outbox };
 			NUM_TITLES = TITLES.length;
 		}
 
@@ -266,5 +264,4 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			return TITLES[position % NUM_TITLES].toUpperCase();
 		}
 	}
-
 }

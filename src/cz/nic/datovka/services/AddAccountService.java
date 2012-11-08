@@ -112,10 +112,10 @@ public class AddAccountService extends IntentService {
 	private void createAccount(String login, String password, int testEnvironment){
 		try {
 			if(testEnvironment == 1){
-				connector.connect(login, password, Connector.TESTING, getApplicationContext());
+				connector.connect(login, password, Connector.TESTING);
 			}
 			else{
-				connector.connect(login, password, Connector.PRODUCTION, getApplicationContext());
+				connector.connect(login, password, Connector.PRODUCTION);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

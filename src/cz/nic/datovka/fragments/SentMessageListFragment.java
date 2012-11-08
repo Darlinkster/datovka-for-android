@@ -1,6 +1,5 @@
 package cz.nic.datovka.fragments;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -33,7 +32,6 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		updateList();
-		registerForContextMenu(getListView());
 		
 	}
 
@@ -65,7 +63,6 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 	}
 	
 	public void updateList() {
-		Context context = getActivity();
 		
 		String[] from = { DatabaseHelper.SENT_MESSAGE_ANNOTATION,
 				DatabaseHelper.RECIPIENT_NAME,
@@ -76,7 +73,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 		
 		getLoaderManager().initLoader(0, null, this);
 		
-		adapter = new MessageListCursorAdapter(context,
+		adapter = new MessageListCursorAdapter(getActivity(),
 				R.layout.message_list_fragment, null, from,
 				to, DatabaseHelper.SENT_MESSAGE_IS_READ, 
 				0);

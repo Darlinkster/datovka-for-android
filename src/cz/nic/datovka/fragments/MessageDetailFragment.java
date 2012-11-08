@@ -105,6 +105,7 @@ public class MessageDetailFragment extends Fragment {
 		messageAttachmentSize.setText("Velikost prilohy: "
 				+ message.getInt(messageAttachmentSizeColId) + "kB");
 		
+		message.close();
 		return v;
 	}
 

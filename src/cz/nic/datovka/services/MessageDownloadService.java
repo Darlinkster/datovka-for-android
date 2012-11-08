@@ -120,7 +120,7 @@ public class MessageDownloadService extends Service {
 			msgCursor.close();
 
 			// Connect to WS
-			connector = Connector.connectToWs(msgBoxId, getApplicationContext());
+			connector = Connector.connectToWs(msgBoxId);
 
 			// If the download folder not exists create it
 			checkExternalStorage();
@@ -158,14 +158,14 @@ public class MessageDownloadService extends Service {
 				outFileTmp.renameTo(outFile);
 				DatabaseTools.insertAttachmentToDb(directory + outFileName,
 						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder,
-						messageId, getApplicationContext());
+						messageId);
 				
 				// Parse the signed message and extract attachments
 				InputStream input = new FileInputStream(outFile);
 				CMSSignedData signeddata = new CMSSignedData(input);
 				CMSProcessable data = signeddata.getSignedContent();
 				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
-				connector.parseSignedMessage(destFolder, folder, messageId, getApplicationContext(), asn1is, messageIsdsId);
+				connector.parseSignedMessage(destFolder, folder, messageId, asn1is, messageIsdsId);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();

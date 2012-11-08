@@ -8,7 +8,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.ContentUris;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
@@ -17,6 +16,7 @@ import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -29,15 +29,14 @@ public class Connector {
 	private static final int MAX_MSG_COUNT = 1000;
 	private DataBoxManager service;
 	
-	public void connect(String login, String password, int environment,
-			Context context) throws Exception {
+	public void connect(String login, String password, int environment) throws Exception {
 		Config config;
 		if (environment == PRODUCTION)
 			config = new Config(DataBoxEnvironment.PRODUCTION);
 		else
 			config = new Config(DataBoxEnvironment.TEST);
 
-		service = DataBoxManager.login(config, login, password, context);
+		service = DataBoxManager.login(config, login, password, Application.ctx);
 	}
 
 	public boolean isOnline() {
@@ -228,8 +227,8 @@ public class Connector {
 		return service.verifyMessage(envelope);
 	}
 	
-	public void  parseSignedMessage(File outputDir, int folder, Long messageId, Context ctx, InputStream input, int messageIsdsId){
-		FileAttachmentStorerWithDBInsertion faswd = new FileAttachmentStorerWithDBInsertion(outputDir, folder, messageId, ctx);
+	public void  parseSignedMessage(File outputDir, int folder, Long messageId, InputStream input, int messageIsdsId){
+		FileAttachmentStorerWithDBInsertion faswd = new FileAttachmentStorerWithDBInsertion(outputDir, folder, messageId);
 		
 		service.parseSignedMessage(faswd, messageIsdsId, input);
 	}
@@ -238,12 +237,12 @@ public class Connector {
 		service.close();
 	}
 	
-	public static Connector connectToWs(long msgBoxId, Context ctx) {
+	public static Connector connectToWs(long msgBoxId) {
 		Connector conn = new Connector();
 		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
 				DatabaseHelper.MSGBOX_TEST_ENV };
-		Cursor msgBoxCursor = ctx.getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
+		Cursor msgBoxCursor = Application.ctx.getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
 		msgBoxCursor.moveToFirst();
 
 		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
@@ -254,7 +253,7 @@ public class Connector {
 		int environment = msgBoxCursor.getInt(envIndex);
 		msgBoxCursor.close();
 		try {
-			conn.connect(login, password, environment, ctx);
+			conn.connect(login, password, environment);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
