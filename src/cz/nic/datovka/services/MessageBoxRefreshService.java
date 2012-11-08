@@ -4,18 +4,8 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
-import cz.nic.datovka.R;
-import cz.nic.datovka.connector.Connector;
-import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
-import cz.nic.datovka.tinyDB.AndroidUtils;
-import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import android.app.Service;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -23,7 +13,14 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.widget.Toast;
+import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.connector.Connector;
+import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
+import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
+import cz.nic.datovka.tinyDB.AndroidUtils;
+import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
 public class MessageBoxRefreshService extends Service {
 	private DaemonThread thread;

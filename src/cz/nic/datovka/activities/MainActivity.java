@@ -35,7 +35,6 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.ReceivedMessageListFragment;
 import cz.nic.datovka.fragments.SentMessageListFragment;
-import cz.nic.datovka.services.AddAccountService;
 import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener,
@@ -135,6 +134,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 	}
 
+	// Listening on spinner with accounts. Recreates fragments in viewpager when account is switched.
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		// Another account was selected
 		TextView tv = (TextView) account_adapter.getView(itemPosition, null, null);
@@ -148,12 +148,14 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		return true;
 	}
 
+	// Constructs actionbar menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
+	// Clicking on actionbar menu icons
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -174,6 +176,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		return false;
 	}
 
+	// This method takes care about clicking on messages
 	public void itemClicked(View view) {
 		String id = (String) view.getTag();
 
@@ -184,6 +187,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		startActivity(i);
 	}
 
+	// Three methods for accounts content resolver 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME,
 				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.MSGBOX_ID };
@@ -201,6 +205,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		account_adapter.swapCursor(null);
 	}
 	
+	// Handler for handling messages from MessageBoxRefresh service 
 	private static Handler handler = new Handler() {
 		public void handleMessage(Message message) {
 			if(message.arg1 == 0){
@@ -213,6 +218,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		}
 	};
 
+	// Class for loading fragments to viewpager
 	public static class MyAdapter extends FragmentPagerAdapter {
 		private FragmentManager fm;
 
