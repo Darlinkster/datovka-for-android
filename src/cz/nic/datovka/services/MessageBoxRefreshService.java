@@ -3,6 +3,8 @@ package cz.nic.datovka.services;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import android.app.Service;
 import android.content.ContentValues;
@@ -26,11 +28,21 @@ public class MessageBoxRefreshService extends Service {
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	public static final String HANDLER = "handler";
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private Message message;
 	private Messenger messenger;
 	
 	public void onStart(Intent intent, int startId) {
+		if(intent == null || intent.getExtras() == null){
+			logger.log(Level.WARNING, "Service started with empty intent extras. Aborting.");
+			return;
+		}
+		if(thread != null && thread.isAlive()){
+			logger.log(Level.WARNING, "Service started but previous thread is still running. Aborting.");
+			return;
+		}
+		
 		Bundle extras = intent.getExtras();
 		messenger = (Messenger) extras.get(HANDLER);
 		message = Message.obtain();
