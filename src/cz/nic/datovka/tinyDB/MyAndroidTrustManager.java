@@ -77,15 +77,17 @@ public class MyAndroidTrustManager implements X509TrustManager {
 		}
 
 	*/	
-/*		
+		
 		//show me better solution how to trust someone on non-rooted android phone and i buy you a beer. 
 		int numberOfHits = 0;
 		for (int i = 0; i < certs.length; i++) {
 			X509Certificate cert = certs[i];
-		//	System.out.println("IDN: " + cert.getIssuerDN());
-		//	System.out.println("SDN: " + cert.getSubjectDN());
+			//System.out.println("IDN: " + cert.getIssuerDN());
+			//System.out.println("SDN: " + cert.getSubjectDN());
 			try {
 				String alias = ks.getCertificateAlias(cert);
+				ks.getCertificateAlias(cert);
+				//System.out.println("alias: " + alias);
 				if (alias != null) {
 					numberOfHits++;
 				}
@@ -93,12 +95,13 @@ public class MyAndroidTrustManager implements X509TrustManager {
 				e.printStackTrace();
 			}
 		}
-		if (numberOfHits != 3) {
+		if (numberOfHits != certs.length) {
+			//System.out.println("chyba cert");
 			throw new CertificateException("Not trusting this server. Number of hits: " + numberOfHits + " Number of certs: " + certs.length);
 		}
 		
 		//System.out.println("=============== checkServerTrusted " + certs + "  " + authType);
-*/
+
 	}
 
 	public X509Certificate[] getAcceptedIssuers() {
