@@ -19,6 +19,7 @@ import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.DataBoxManager;
+import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
@@ -45,15 +46,15 @@ public class Connector {
 		return true;
 	}
 	
-	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream fos) throws HttpException, StreamInterruptedException {
+	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream fos) throws HttpException, StreamInterruptedException, DSException {
 		service.downloadSignedReceivedMessage(messageIsdsId, fos);
 	}
 	
-	public void downloadSignedSentMessage(int messageIsdsId, OutputStream fos) throws HttpException, StreamInterruptedException {
+	public void downloadSignedSentMessage(int messageIsdsId, OutputStream fos) throws HttpException, StreamInterruptedException, DSException {
 		service.downloadSignedSentMessage(messageIsdsId, fos);
 	}
 	
-	public UserInfo getUserInfo()throws HttpException {
+	public UserInfo getUserInfo()throws HttpException, DSException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -61,7 +62,7 @@ public class Connector {
 		return service.GetUserInfoFromLogin()  ;
 	}
 
-	public OwnerInfo getOwnerInfo()throws HttpException  {
+	public OwnerInfo getOwnerInfo()throws HttpException, DSException  {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -69,7 +70,7 @@ public class Connector {
 		return service.GetOwnerInfoFromLogin() ;
 	}
 
-	public GregorianCalendar getPasswordInfo() throws HttpException {
+	public GregorianCalendar getPasswordInfo() throws HttpException, DSException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -77,7 +78,7 @@ public class Connector {
 		return service.GetPasswordInfo() ;
 	}
 
-	public List<MessageEnvelope> getRecievedMessageList() throws HttpException {
+	public List<MessageEnvelope> getRecievedMessageList() throws HttpException, DSException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
@@ -113,7 +114,7 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public List<MessageEnvelope> getSentMessageList() throws HttpException  {
+	public List<MessageEnvelope> getSentMessageList() throws HttpException, DSException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
@@ -149,7 +150,7 @@ public class Connector {
 		return sentMessageList;
 	}
 
-	public List<MessageEnvelope> getRecievedMessageListFromDate(GregorianCalendar fromParam) throws HttpException {
+	public List<MessageEnvelope> getRecievedMessageListFromDate(GregorianCalendar fromParam) throws HttpException, DSException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
@@ -186,7 +187,7 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public List<MessageEnvelope> getSentMessageListFromDate(GregorianCalendar fromParam) throws HttpException  {
+	public List<MessageEnvelope> getSentMessageListFromDate(GregorianCalendar fromParam) throws HttpException, DSException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
@@ -223,7 +224,7 @@ public class Connector {
 		return sentMessageList;
 	}
 	
-	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException  {
+	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException, DSException  {
 		return service.verifyMessage(envelope);
 	}
 	

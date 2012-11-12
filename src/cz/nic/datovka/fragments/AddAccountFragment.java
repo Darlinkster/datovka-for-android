@@ -43,6 +43,10 @@ public class AddAccountFragment extends DialogFragment {
 				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
 			}
+			else if (message.arg1 == AddAccountService.RESULT_DS_ERR) {
+				mProgressDialog.dismiss();
+				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
+			}
 		}
 	};
 

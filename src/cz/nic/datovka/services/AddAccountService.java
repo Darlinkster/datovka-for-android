@@ -21,6 +21,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
+import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
 public class AddAccountService extends IntentService {
@@ -32,6 +33,7 @@ public class AddAccountService extends IntentService {
 	public static final int RESULT_EXISTS = 101;
 	public static final int RESULT_BAD_LOGIN = 401;
 	public static final int RESULT_ERR = 99;
+	public static final int RESULT_DS_ERR = 999;
 	private static final int NOT_READ = 0;
 	
 	private Message message;
@@ -276,6 +278,9 @@ public class AddAccountService extends IntentService {
 				message.arg1 = RESULT_BAD_LOGIN;
 			} else
 				message.arg1 = RESULT_ERR;
+		} catch (DSException e) {
+				message.arg1 = RESULT_DS_ERR;
+				message.obj = (Object) e.getMessage();
 		} finally {
 			try {
 				messenger.send(message);

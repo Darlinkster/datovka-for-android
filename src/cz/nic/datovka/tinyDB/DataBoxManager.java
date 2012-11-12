@@ -37,6 +37,7 @@ import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.R.raw;
+import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
@@ -97,7 +98,7 @@ public class DataBoxManager {
 
 	// metody z DataBoxMessages
 	public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to, EnumSet<MessageState> state, int offset,
-			int limit) throws HttpException {
+			int limit) throws HttpException, DSException {
 
 		String resource = "/res/raw/get_list_of_received_messages.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -116,7 +117,7 @@ public class DataBoxManager {
 	}
 
 	public List<MessageEnvelope> getListOfSentMessages(Date from, Date to, EnumSet<MessageState> state, int offset,
-			int limit) throws HttpException {
+			int limit) throws HttpException, DSException {
 
 		String resource = "/res/raw/get_list_of_sent_messages.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -134,7 +135,7 @@ public class DataBoxManager {
 		return result.getMessages();
 	}
 
-	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException {
+	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException, DSException {
 		String resource = "/res/raw/verify_message.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", envelope.getMessageID());
@@ -176,7 +177,7 @@ public class DataBoxManager {
 	}
 
 	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os) throws HttpException,
-			StreamInterruptedException {
+			StreamInterruptedException, DSException {
 		String resource = "/res/raw/download_signed_received_message.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", Integer.toString(messageIsdsId));
@@ -185,7 +186,7 @@ public class DataBoxManager {
 	}
 
 	public void downloadSignedSentMessage(int messageIsdsId, OutputStream os) throws HttpException,
-			StreamInterruptedException {
+			StreamInterruptedException, DSException {
 		String resource = "/res/raw/download_signed_sent_message.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", Integer.toString(messageIsdsId));
@@ -195,7 +196,7 @@ public class DataBoxManager {
 
 	// metody z DataAccessService
 
-	public OwnerInfo GetOwnerInfoFromLogin() throws HttpException {
+	public OwnerInfo GetOwnerInfoFromLogin() throws HttpException, DSException {
 		String resource = "/res/raw/get_owner_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetOwnerInfoFromLogin parser = new GetOwnerInfoFromLogin();
@@ -208,7 +209,7 @@ public class DataBoxManager {
 		return parser.getOwnerInfo();
 	}
 
-	public UserInfo GetUserInfoFromLogin() throws HttpException {
+	public UserInfo GetUserInfoFromLogin() throws HttpException, DSException {
 		String resource = "/res/raw/get_user_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetUserInfoFromLogin parser = new GetUserInfoFromLogin();
@@ -221,7 +222,7 @@ public class DataBoxManager {
 		return parser.getUserInfo();
 	}
 
-	public GregorianCalendar GetPasswordInfo() throws HttpException {
+	public GregorianCalendar GetPasswordInfo() throws HttpException, DSException {
 		String resource = "/res/raw/get_password_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetPasswordInfo parser = new GetPasswordInfo();
@@ -279,7 +280,7 @@ public class DataBoxManager {
 	}
 
 	private void postAndParseResponse(String post, String prefix, AbstractResponseParser rp) throws HttpException,
-			StreamInterruptedException {
+			StreamInterruptedException, DSException {
 		try {
 			// udelame post
 			URL url = new URL(config.getServiceURL() + prefix);
@@ -297,10 +298,10 @@ public class DataBoxManager {
 
 			// ověříme vrácený stav pri volani webove služby
 			if (!rp.getStatus().ok()) {
-				String message = String.format("Pozadavek selhal chybou %s:%s", rp.getStatus().getStatusCode(), rp
-						.getStatus().getStatusMesssage());
-				logger.log(Level.SEVERE, message);
-				throw new DataBoxException(message);
+				//String message = String.format("Pozadavek selhal chybou %s:%s", rp.getStatus().getStatusCode(), rp.getStatus().getStatusMesssage());
+				//logger.log(Level.SEVERE, message);
+				throw new DSException(rp.getStatus().getStatusMesssage(), Integer.parseInt(rp.getStatus()
+						.getStatusCode()));
 			}
 		} catch (SAXException sax) {
 			throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);

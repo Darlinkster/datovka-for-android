@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.DialogFragment;
+import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.services.MessageDownloadService;
 
@@ -66,6 +67,11 @@ public class MessageDownloadProgressFragment extends DialogFragment {
 				if (progress == 100) {
 					mProgressDialog.dismiss();
 				}
+			}
+			else if(resultCode == MessageDownloadService.ERROR){
+				String msg = resultData.getString("error");
+				mProgressDialog.dismiss();
+				Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
 			}
 		}
 	}

@@ -22,9 +22,11 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
+import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
 public class MessageBoxRefreshService extends Service {
+	public static final int ERROR = -1;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	public static final String HANDLER = "handler";
@@ -182,26 +184,25 @@ public class MessageBoxRefreshService extends Service {
 						newMessageCounter++;
 					}
 					
+					message.arg1 = newMessageCounter;
 				} catch (HttpException e) {
 					e.printStackTrace();
+				} catch (DSException e) {
+					message.arg1 = ERROR;
+					message.obj = new String(e.getErrorCode() + ": " + e.getMessage());
 				}
 				
 			}
 			msgBoxCursor.close();
 			
-			message.arg1 = newMessageCounter;
 			try {
 				messenger.send(message);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 			
-			//System.out.println("koncim");
-			
 		}
 		
-		
 	}
-	
 
 }

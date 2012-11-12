@@ -22,18 +22,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
-import android.widget.Toast;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
+import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class MessageDownloadService extends Service {
 	public static final int UPDATE_PROGRESS = 8344;
+	public static final int ERROR = 8355;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
@@ -48,8 +49,7 @@ public class MessageDownloadService extends Service {
 	private GaugeFileOutputStream fos;
 	private Connector connector;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	
+
 	@Override
 	public void onStart(Intent intent, int startId) {
 		messageId = intent.getLongExtra(MSG_ID, 0);
@@ -64,11 +64,11 @@ public class MessageDownloadService extends Service {
 	public void onDestroy() {
 
 		if (thread != null) {
-			if(connector != null){
+			if (connector != null) {
 				connector.close();
-				//System.out.println("odpojeno");
+				// System.out.println("odpojeno");
 			}
-			
+
 			if (fos != null) {
 				try {
 					fos.flush();
@@ -140,11 +140,12 @@ public class MessageDownloadService extends Service {
 
 			// Save the signed message
 			File outFileTmp = null;
+			Bundle resultData = new Bundle();
 			try {
 				String outFileName = messageIsdsId + ".bin";
 				outFileTmp = new File(destFolder, outFileName + ".tmp");
 				fos = new GaugeFileOutputStream(outFileTmp, receiver, UPDATE_PROGRESS, fileSize);
-				
+
 				if (folder == INBOX) {
 					connector.downloadSignedReceivedMessage(messageIsdsId, fos);
 				} else {
@@ -152,83 +153,86 @@ public class MessageDownloadService extends Service {
 				}
 				fos.flush();
 				fos.close();
-				
-				// It seems that the file is downloaded correctly, so remove the .tmp suffix and insert it to db
-				File outFile = new File(destFolder, outFileName); 
+
+				// It seems that the file is downloaded correctly, so remove the
+				// .tmp suffix and insert it to db
+				File outFile = new File(destFolder, outFileName);
 				outFileTmp.renameTo(outFile);
 				DatabaseTools.insertAttachmentToDb(directory + outFileName,
 						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder,
 						messageId);
-				
+
 				// Parse the signed message and extract attachments
 				InputStream input = new FileInputStream(outFile);
 				CMSSignedData signeddata = new CMSSignedData(input);
 				CMSProcessable data = signeddata.getSignedContent();
 				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
-				connector.parseSignedMessage(destFolder, folder, messageId, asn1is, messageIsdsId); 
+				connector.parseSignedMessage(destFolder, folder, messageId, asn1is, messageIsdsId);
+
+				// Send 100% to gauge, just for sure
+				resultData.putInt("progress", 100);
+				receiver.send(UPDATE_PROGRESS, resultData);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (HttpException e) {
-				// TODO
 				String errorMessage = e.getMessage();
-				Toast.makeText(getApplicationContext(), "chyba " + errorMessage, Toast.LENGTH_LONG).show();
+				resultData.putString("error", errorMessage);
+				receiver.send(ERROR, resultData);
+				
 			} catch (StreamInterruptedException e) {
 				// Probably user interrupted download the file, delete it.
-				if(outFileTmp != null && outFileTmp.exists()){
+				if (outFileTmp != null && outFileTmp.exists()) {
 					outFileTmp.delete();
 				}
 				logger.log(Level.WARNING, e.getMessage());
 			} catch (CMSException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (DSException e) {
+				resultData.putString("error", e.getErrorCode() + ": " + e.getMessage());
+				receiver.send(ERROR, resultData);
+
 			}
-
-			// Send 100% to gauge, just for sure
-			Bundle resultData = new Bundle();
-			resultData.putInt("progress", 100);
-			receiver.send(UPDATE_PROGRESS, resultData);
-		}
-	}
-
-	private void checkExternalStorage() {
-
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			// We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			// Something else is wrong. It may be one of many other states, but
-			// all we need
-			// to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 
-		if (!mExternalStorageAvailable && !mExternalStorageWriteable) {
+		private void checkExternalStorage() {
 
-			try {
-				throw new Exception("External storage available: " + mExternalStorageAvailable + " writable: "
-						+ mExternalStorageWriteable);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			boolean mExternalStorageAvailable = false;
+			boolean mExternalStorageWriteable = false;
+			String state = Environment.getExternalStorageState();
+
+			if (Environment.MEDIA_MOUNTED.equals(state)) {
+				// We can read and write the media
+				mExternalStorageAvailable = mExternalStorageWriteable = true;
+			} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+				// We can only read the media
+				mExternalStorageAvailable = true;
+				mExternalStorageWriteable = false;
+			} else {
+				// Something else is wrong. It may be one of many other states,
+				// but
+				// all we need
+				// to know is we can neither read nor write
+				mExternalStorageAvailable = mExternalStorageWriteable = false;
 			}
 
+			if (!mExternalStorageAvailable && !mExternalStorageWriteable) {
+
+				try {
+					throw new Exception("External storage available: " + mExternalStorageAvailable + " writable: "
+							+ mExternalStorageWriteable);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
 		}
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
