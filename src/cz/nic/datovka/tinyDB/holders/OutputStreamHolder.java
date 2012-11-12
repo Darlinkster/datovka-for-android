@@ -32,7 +32,7 @@ public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable
 		
 		try {
 			bw.write(array, start, length);
-			bw.flush();
+			//bw.flush();
 		} catch (IOException ioe) {
 			logger.log(Level.SEVERE, "Cannot write to buffer. Maybe user cancel downloading of that file.");
 			closed = true;
