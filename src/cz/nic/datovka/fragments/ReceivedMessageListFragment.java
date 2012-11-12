@@ -32,6 +32,7 @@ public class ReceivedMessageListFragment extends ListFragment implements LoaderC
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		updateList();
+		this.setEmptyText(getString(R.string.empty_inbox_message));
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {

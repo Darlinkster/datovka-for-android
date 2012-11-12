@@ -32,7 +32,7 @@ public class SentMessageListFragment extends ListFragment implements LoaderCallb
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		updateList();
-		
+		this.setEmptyText(getString(R.string.empty_outbox_message));
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
