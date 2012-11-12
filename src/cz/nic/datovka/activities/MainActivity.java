@@ -47,6 +47,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private FragmentManager fragmentManager;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
+	private static AddAccountFragment aaf;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -127,8 +128,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		int numberOfAccounts = msgBoxes.getCount();
 		msgBoxes.close();
 		if (numberOfAccounts < 1) {
-			AddAccountFragment aaf = new AddAccountFragment();
-			aaf.show(fragmentManager, null);
+			if(aaf == null){
+				aaf = new AddAccountFragment();
+				aaf.show(fragmentManager, null);
+			}
 		}
 
 	}
