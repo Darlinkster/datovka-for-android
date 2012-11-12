@@ -6,8 +6,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/ISDSCommon-1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libs/bcmail-jdk15-1.44.jar"/>
-	<classpathentry kind="lib" path="libs/bcprov-jdk15-1.44.jar"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="libs/sc-light-jdk15on-1.47.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/scpkix-jdk15on-1.47.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/scprov-jdk15on-1.47.0.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

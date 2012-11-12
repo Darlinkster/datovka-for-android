@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
-import org.bouncycastle.cms.CMSSignedData;
+import org.spongycastle.asn1.ASN1InputStream;
+import org.spongycastle.cms.CMSException;
+import org.spongycastle.cms.CMSProcessable;
+import org.spongycastle.cms.CMSSignedData;
 
 import android.app.Service;
 import android.content.ContentUris;
@@ -165,7 +165,7 @@ public class MessageDownloadService extends Service {
 				CMSSignedData signeddata = new CMSSignedData(input);
 				CMSProcessable data = signeddata.getSignedContent();
 				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
-				connector.parseSignedMessage(destFolder, folder, messageId, asn1is, messageIsdsId);
+				connector.parseSignedMessage(destFolder, folder, messageId, asn1is, messageIsdsId); 
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -182,6 +182,7 @@ public class MessageDownloadService extends Service {
 				}
 				logger.log(Level.WARNING, e.getMessage());
 			} catch (CMSException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
