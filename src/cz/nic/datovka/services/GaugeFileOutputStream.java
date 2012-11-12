@@ -11,9 +11,11 @@ import android.os.ResultReceiver;
 public class GaugeFileOutputStream extends FileOutputStream {
 	private ResultReceiver receiver;
 	private long expectedFileSize;
-	private long total;
+	private volatile long total;
 	private int receiverIdent;
-	int laststatus;
+	private volatile int laststatus;
+	private volatile int status;
+	private Bundle resultData;
 	public GaugeFileOutputStream(File file, ResultReceiver receiver, int receiverIdent, long expectedFileSize) throws FileNotFoundException {
 		super(file);
 		this.receiver = receiver;
@@ -21,6 +23,7 @@ public class GaugeFileOutputStream extends FileOutputStream {
 		this.receiverIdent = receiverIdent;
 		laststatus = -1;
 		total = 0;
+		resultData = new Bundle();
 	}
 
 	@Override
@@ -28,21 +31,18 @@ public class GaugeFileOutputStream extends FileOutputStream {
 		super.write(b, off, len);
 		
 		total += len;
-		Bundle resultData = new Bundle();
-		int status;
 		
 		try{
 		 status = (int) (total * 100 / expectedFileSize);
 		} catch(ArithmeticException e){
 			status = 100;
 		}
-		resultData.putInt("progress", status);
-		receiver.send(receiverIdent, resultData); 
-		/*
+		
 		if(laststatus < status){
-			System.out.println("expect: " + expectedFileSize + " total: " + total + " status: " + status);
 			laststatus = status;
-		}*/
+			resultData.putInt("progress", status);
+			receiver.send(receiverIdent, resultData); 
+		}
 	}
 	
 	@Override
@@ -50,10 +50,14 @@ public class GaugeFileOutputStream extends FileOutputStream {
 		super.write(b);
 		
 		total += b.length;
-		Bundle resultData = new Bundle();
-		int status = (int) (total * 100 / expectedFileSize);
-		resultData.putInt("progress", status);
-		receiver.send(receiverIdent, resultData); 
+		status = (int) (total * 100 / expectedFileSize);
+		
+		
+		if(laststatus < status){
+			laststatus = status;
+			resultData.putInt("progress", status);
+			receiver.send(receiverIdent, resultData); 
+		}
 	}
 	
 }

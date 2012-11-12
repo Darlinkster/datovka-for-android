@@ -87,9 +87,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 				return false;
 			}
 		});
-		
 		actionBar.setListNavigationCallbacks(account_adapter, this);
-		
+				
 		// Set selected account list item after screen rotation
 		// Magic numbers - Because database indexes starting from 1, but actionbar spinner indexes from 0
 		if (selectedMsgBoxID != null) {
