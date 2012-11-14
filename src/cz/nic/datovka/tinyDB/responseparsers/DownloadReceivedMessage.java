@@ -3,8 +3,6 @@ package cz.nic.datovka.tinyDB.responseparsers;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.xml.sax.Attributes;
 
@@ -24,7 +22,7 @@ import cz.nic.datovka.tinyDB.holders.OutputStreamHolder;
 public class DownloadReceivedMessage extends AbstractResponseParser {
 
 	private Attachment attachment = null; // právě zpracovávaná příloha
-	private List<Attachment> attachments = new ArrayList<Attachment>();
+	//private List<Attachment> attachments = new ArrayList<Attachment>();
 	private AttachmentStorer storer = null;
 	private MessageEnvelope envelope = null;
 
@@ -37,15 +35,15 @@ public class DownloadReceivedMessage extends AbstractResponseParser {
 	@Override
 	public OutputHolder startElementImpl(String elName, Attributes attributes) {
 		if ("dmFile".equals(elName)) {
-			attachment = new Attachment();
+		/*	attachment = new Attachment();
 			attachment.setDescription(attributes.getValue("dmFileDescr"));
 			attachment.setMetaType(attributes.getValue("dmFileMetaType"));
-			attachment.setMimeType(attributes.getValue("dmMimeType"));
+			attachment.setMimeType(attributes.getValue("dmMimeType")); */
 		}
 		if ("dmEncodedContent".equals(elName)) {
 			try {
 				OutputStream os = storer.store(envelope, attachment);
-				attachments.add(attachment);
+				//attachments.add(attachment);
 				Base64OutputStream bos = new Base64OutputStream(os, 0, false);
 
 				OutputHolder input = new OutputStreamHolder(bos);
@@ -64,8 +62,9 @@ public class DownloadReceivedMessage extends AbstractResponseParser {
 			Utils.close((Closeable) handle);
 		}
 	}
-
+/*
 	public List<Attachment> getResult() {
 		return attachments;
 	}
+	*/
 }

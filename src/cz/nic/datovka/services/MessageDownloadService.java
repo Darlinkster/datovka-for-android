@@ -113,10 +113,9 @@ public class MessageDownloadService extends Service {
 
 			int messageIsdsId = msgCursor.getInt(isdsIdColIndex);
 			long msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
-			long fileSize = msgCursor.getInt(fileSizeColIndex) * 1024; // kB to
-																		// bytes
-			fileSize *= 1.36f; // base64 makes the content bigger by 33%
-			fileSize += 20 * 1024; // 20 kB is the size of the envelope
+			long fileSize = msgCursor.getInt(fileSizeColIndex) * 1024; // kB to bytes
+			fileSize *= 1.33f; // base64 makes the content bigger by 33%
+			//fileSize += 20 * 1024; // 20 kB is the size of the envelope
 			msgCursor.close();
 
 			// Connect to WS
@@ -161,7 +160,8 @@ public class MessageDownloadService extends Service {
 				DatabaseTools.insertAttachmentToDb(directory + outFileName,
 						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder,
 						messageId);
-
+				
+				System.out.println("stazeno");
 				// Parse the signed message and extract attachments
 				InputStream input = new FileInputStream(outFile);
 				CMSSignedData signeddata = new CMSSignedData(input);
