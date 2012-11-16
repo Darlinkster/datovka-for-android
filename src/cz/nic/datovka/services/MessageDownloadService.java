@@ -8,11 +8,6 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.spongycastle.asn1.ASN1InputStream;
-import org.spongycastle.cms.CMSException;
-import org.spongycastle.cms.CMSProcessable;
-import org.spongycastle.cms.CMSSignedData;
-
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -161,14 +156,20 @@ public class MessageDownloadService extends Service {
 						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder,
 						messageId);
 				
-				System.out.println("stazeno");
 				// Parse the signed message and extract attachments
 				InputStream input = new FileInputStream(outFile);
-				CMSSignedData signeddata = new CMSSignedData(input);
-				CMSProcessable data = signeddata.getSignedContent();
-				ASN1InputStream asn1is = new ASN1InputStream((byte[]) data.getContent());
-				connector.parseSignedMessage(destFolder, folder, messageId, asn1is, messageIsdsId);
-
+				CMSStripperInputStream csis = new CMSStripperInputStream(input);
+			/*	
+				FileOutputStream fos = new FileOutputStream(new File(destFolder, "bbb"));
+				int x;
+				while((x = csis.read()) != -1){
+					fos.write(x);
+				}
+				fos.close();
+				csis.close();
+				*/
+				connector.parseSignedMessage(destFolder, folder, messageId, csis, messageIsdsId);
+				
 				// Send 100% to gauge, just for sure
 				resultData.putInt("progress", 100);
 				receiver.send(UPDATE_PROGRESS, resultData);
@@ -188,8 +189,6 @@ public class MessageDownloadService extends Service {
 					outFileTmp.delete();
 				}
 				logger.log(Level.WARNING, e.getMessage());
-			} catch (CMSException e) {
-				e.printStackTrace();
 			} catch (DSException e) {
 				resultData.putString("error", e.getErrorCode() + ": " + e.getMessage());
 				receiver.send(ERROR, resultData);
