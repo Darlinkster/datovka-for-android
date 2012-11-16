@@ -33,6 +33,46 @@ public class CMSStripperInputStream extends InputStream {
 		}
 
 	}
+	
+	@Override
+	public int read(byte[] b) throws IOException{
+		if (start) {
+			readHeader();
+			if(loadData() == -1)
+				return -1;
+			start = false;
+		}
+		
+		int paramLength = b.length;
+		int bufferLength = buffer.length;
+		if(count < bufferLength){
+			int length = bufferLength - count;
+			if(paramLength <= length){
+				System.arraycopy(buffer, count, b, 0, paramLength);
+				count += paramLength;
+				return paramLength;
+			} else {
+				System.arraycopy(buffer, count, b, 0, length);
+				count += length;
+				return length;
+			}
+		} else {
+			if(loadData() == -1)
+				return -1;
+			bufferLength = buffer.length;
+			count = 0;
+			
+			if(paramLength <= bufferLength){
+				System.arraycopy(buffer, count, b, 0, paramLength);
+				count += paramLength;
+				return paramLength;
+			} else {
+				System.arraycopy(buffer, count, b, 0, bufferLength);
+				count += bufferLength;
+				return bufferLength;
+			}
+		}
+	}
 
 	private int loadData() throws IOException {
 		int contentLength = readOctetStringHeader();
@@ -51,7 +91,7 @@ public class CMSStripperInputStream extends InputStream {
 
 	private int readOctetStringHeader() throws IOException {
 		String hexByte;
-		int headerLength = 2; // default header size (for arrays smaller then
+		//int headerLength = 2; // default header size (for arrays smaller then
 								// 128B)
 		boolean hasStartByte = false;
 		boolean endTag = false;
@@ -81,7 +121,7 @@ public class CMSStripperInputStream extends InputStream {
 		} else {
 			int lengthBytesCount = firstLengthByte & 0x7f; // Mask the first
 															// bit.
-			headerLength += lengthBytesCount;
+			//headerLength += lengthBytesCount;
 			int contentLength = 0;
 
 			for (int i = 0; i < lengthBytesCount; i++) {
