@@ -47,7 +47,7 @@ public class MessageDetailFragment extends Fragment {
 		TextView acceptanceDate = (TextView) v.findViewById(R.id.message_acceptance_date);
 		TextView sender = (TextView) v.findViewById(R.id.message_sender);
 		TextView senderAddress = (TextView) v.findViewById(R.id.message_sender_address);
-		TextView messageType = (TextView) v.findViewById(R.id.message_type);
+		TextView messageStatus = (TextView) v.findViewById(R.id.message_type);
 		TextView messageAttachmentSize = (TextView) v.findViewById(R.id.message_attachment_size);
 
 		int annotationColId;
@@ -87,7 +87,21 @@ public class MessageDetailFragment extends Fragment {
 				AndroidUtils.FromXmlToHumanReadableDateWithTime(message.getString(messageAcceptanceDateColId))));
 		sender.setText(message.getString(senderRecipientColId));
 		senderAddress.setText(message.getString(senderRecipientAddressColId));
-		messageType.setText(Integer.toString(message.getInt(messageStatusColId)));
+		
+		int status = message.getInt(messageStatusColId);
+		switch(status) {
+			case 1:  messageStatus.setText(R.string.message_status_1); break;
+			case 2:  messageStatus.setText(R.string.message_status_2); break;
+			case 3:  messageStatus.setText(R.string.message_status_3); break;
+			case 4:  messageStatus.setText(R.string.message_status_4); break;
+			case 5:  messageStatus.setText(R.string.message_status_5); break;
+			case 6:  messageStatus.setText(R.string.message_status_6); break;
+			case 7:  messageStatus.setText(R.string.message_status_7); break;
+			case 8:  messageStatus.setText(R.string.message_status_8); break;
+			case 9:  messageStatus.setText(R.string.message_status_9); break;
+			case 10:  messageStatus.setText(R.string.message_status_10); break;
+			default:  messageStatus.setText(R.string.message_status_unknown); 
+		}
 		messageAttachmentSize.setText(getString(R.string.size_of_attachments, message.getInt(messageAttachmentSizeColId)));
 
 		message.close();

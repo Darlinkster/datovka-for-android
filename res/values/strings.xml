@@ -36,6 +36,18 @@
     <string name="acceptance_date">Datum přijetí: %1$s</string>
     <string name="delivery_date">Datum doručení: %1$s</string>
     
+    <string name="message_status_1">Zpráva byla podána.</string>
+    <string name="message_status_2">Podepsáno časovým razítkem.</string>
+    <string name="message_status_3">Zavirovaná zpráva.</string>
+    <string name="message_status_4">Zpráva dodána.</string>
+    <string name="message_status_5">Zpráva byla doručena fikci.</string>
+    <string name="message_status_6">Zpráva byla doručena.</string>
+    <string name="message_status_7">Zpráva byla přečtena.</string>
+    <string name="message_status_8">Zpráva je nedoručitelná, schránka již neexistuje.</string>
+    <string name="message_status_9">Zpráva smazána, obálka přesunuta do archivu.</string>
+    <string name="message_status_10">Zpráva je v dlouhodobém uložišti.</string>
+    <string name="message_status_unknown">Stav zprávy je neznámý.</string>
+    
     
 	<string-array name="folder_spinner">
 	    <item>Přijaté</item>
