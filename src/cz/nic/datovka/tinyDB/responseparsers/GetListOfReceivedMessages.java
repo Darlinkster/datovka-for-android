@@ -4,6 +4,7 @@ import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 
 import cz.abclinuxu.datoveschranky.common.entities.DataBox;
+import cz.abclinuxu.datoveschranky.common.entities.MessageState;
 import cz.abclinuxu.datoveschranky.common.entities.MessageType;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
@@ -22,7 +23,7 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
 
     static private final String[] wanting = {"dbIDSender", "dmSender", "dmSenderAddress",
         "dbIDRecipient", "dmRecipient", "dmRecipientAddress", "dmID", "dmAnnotation",
-        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize"
+        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize", "dmMessageStatus"
     };
     private HashMap<String, StringHolder> map = new HashMap<String, StringHolder>();
     private List<MessageEnvelope> messages = new ArrayList<MessageEnvelope>();
@@ -71,6 +72,11 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
             String delivered = map.get("dmDeliveryTime").toString();
             if (delivered != null && !delivered.equals("")) {
                 env.setDeliveryTime(AndroidUtils.toGregorianCalendar(delivered));
+            }
+            
+            String status = map.get("dmMessageStatus").toString();
+            if (status != null && !status.equals("")) {
+                env.setState(Integer.parseInt(status));
             }
             messages.add(env);
             this.fillMap(); // a jedeme dál

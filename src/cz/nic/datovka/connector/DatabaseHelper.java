@@ -128,6 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String SENT_MESSAGE_SENT_DATE = "sent_date";
 	public static final String SENT_MESSAGE_IS_READ = "is_read";
 	public static final String SENT_MESSAGE_ATTACHMENT_SIZE = "attachment_size";
+	public static final String SENT_MESSAGE_STATE = "msg_state";
 	public static final String RECIPIENT_DATABOX_TYPE = "recipient_databox_type";
 	public static final String RECIPIENT_IDENT = "recipient_ident";
 	public static final String RECIPIENT_REF_NUMBER = "recipient_ref_num";
@@ -141,7 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			SENT_MESSAGE_TYPE, SENT_MESSAGE_DM_TYPE, SENT_MESSAGE_TO_HANDS,
 			SENT_MESSAGE_ALLOW_SUBST_DELIVERY, SENT_MESSAGE_PERSONAL_DELIVERY,
 			SENT_MESSAGE_SENT_DATE, RECIPIENT_DATABOX_TYPE, RECIPIENT_IDENT,
-			RECIPIENT_REF_NUMBER, SENT_MESSAGE_IS_READ, SENT_MESSAGE_ATTACHMENT_SIZE };
+			RECIPIENT_REF_NUMBER, SENT_MESSAGE_IS_READ, SENT_MESSAGE_ATTACHMENT_SIZE, SENT_MESSAGE_STATE };
 
 	// protected static final String ORDER_BY = ACCOUNT_ID + " DESC";
 	
@@ -243,7 +244,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ RECEIVED_MESSAGE_TO_HANDS  + " TEXT, "
 				+ RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY  + " TEXT, "
 				+ RECEIVED_MESSAGE_PERSONAL_DELIVERY   + " TEXT, "
-				+ RECEIVED_MESSAGE_STATE  + " TEXT, "
+				+ RECEIVED_MESSAGE_STATE  + " INTEGER, "
 				+ RECEIVED_MESSAGE_LEGALTITLE_LAW  + " TEXT, "
 				+ RECEIVED_MESSAGE_LEGALTITLE_PAR  + " TEXT, "
 				+ RECEIVED_MESSAGE_LEGALTITLE_POINT  + " TEXT, "
@@ -273,6 +274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SENT_MESSAGE_SENT_DATE + " TEXT, "
 				+ SENT_MESSAGE_IS_READ + " INTEGER NOT NULL,"
 				+ SENT_MESSAGE_ATTACHMENT_SIZE + " INTEGER,"
+				+ SENT_MESSAGE_STATE  + " INTEGER, "
 				+ RECIPIENT_DATABOX_TYPE + " TEXT, "
 				+ RECIPIENT_IDENT + " TEXT, "
 				+ RECIPIENT_REF_NUMBER + " TEXT, "

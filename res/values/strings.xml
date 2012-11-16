@@ -30,6 +30,11 @@
     <string name="new_messages_with_count">Máte %1$d nových zpráv</string>
     <string name="empty_inbox_message">Nemáte žádné příchozí zprávy.</string>
     <string name="empty_outbox_message">Nemáte žádné odchozí zprávy.</string>
+    <string name="message_status">Stav zprávy:</string>
+    <string name="ID">ID: %1$s</string>
+    <string name="size_of_attachments">Velikost přílohy: %1$d kB</string>
+    <string name="acceptance_date">Datum přijetí: %1$s</string>
+    <string name="delivery_date">Datum doručení: %1$s</string>
     
     
 	<string-array name="folder_spinner">
