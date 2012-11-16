@@ -22,7 +22,7 @@ public class GetListOfSentMessages extends AbstractResponseParser {
 
     static private final String[] wanting = {"dmID", "dbIDSender", "dmSender", "dmSenderAddress",
     	"dmRecipientAddress", "dmRecipient", "dbIDRecipient", "dmAnnotation",
-        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize"
+        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize", "dmMessageStatus"
     };
     private HashMap<String, StringHolder> map = new HashMap<String, StringHolder>();
     private List<MessageEnvelope> messages = new ArrayList<MessageEnvelope>();
@@ -66,6 +66,10 @@ public class GetListOfSentMessages extends AbstractResponseParser {
             String attachmentSize = map.get("dmAttachmentSize").toString();
             if (attachmentSize != null && !attachmentSize.equals("")) {
             	env.setAttachmentSize(Integer.parseInt(attachmentSize));
+            }
+            String status = map.get("dmMessageStatus").toString();
+            if (status != null && !status.equals("")) {
+                env.setState(Integer.parseInt(status));
             }
             messages.add(env);
             this.fillMap(); // a jedeme dál
