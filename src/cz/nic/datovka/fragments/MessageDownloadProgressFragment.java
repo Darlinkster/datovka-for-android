@@ -56,7 +56,6 @@ public class MessageDownloadProgressFragment extends DialogFragment {
 		
 	@Override
 	public void onCancel(DialogInterface dialog) {
-		System.out.println("cancel");
 		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
 	}
 
