@@ -1,8 +1,10 @@
 package cz.nic.datovka.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -45,5 +47,12 @@ public class AccountActivity extends SherlockFragmentActivity {
 			return true;
 		}
 		return false;
+	}
+	
+	public void accountClicked(View view){
+		Long msgBoxId = Long.parseLong((String) view.getTag());
+		Intent intent = new Intent(this, AccountInfoActivity.class);
+		intent.putExtra(AccountInfoActivity.MSGBOX_ID, msgBoxId);
+		startActivity(intent);
 	}
 }

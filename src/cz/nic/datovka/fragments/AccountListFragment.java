@@ -71,9 +71,11 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 					int isdsIDindex = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
 					String msgBoxIsdsID = cursor.getString(isdsIDindex);
 					tv.append(" (ID: " + msgBoxIsdsID + ")");
+					// Set parent view tag to database id
+					int msgBoxId = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
+					((View) tv.getParent()).setTag(Long.toString(cursor.getLong(msgBoxId)));
 					return true;
-				}
-				
+				}				
 				return false;
 			}
 		});
