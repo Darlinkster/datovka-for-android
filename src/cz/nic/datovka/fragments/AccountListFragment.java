@@ -1,9 +1,7 @@
 package cz.nic.datovka.fragments;
 
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -24,11 +22,8 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import cz.nic.datovka.R;
 import cz.nic.datovka.activities.AccountInfoActivity;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
-import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 
 public class AccountListFragment extends SherlockListFragment implements LoaderCallbacks<Cursor> {
 	private SimpleCursorAdapter adapter;
@@ -116,7 +111,7 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 		
 		switch (item.getItemId()) {
 		case R.id.account_delete:
-			deleteAccount(msgBoxId);
+			DatabaseTools.deleteAccount(msgBoxId);
 			
 			Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_SHORT).show();
 			return true;
@@ -131,13 +126,5 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 		return true;
 	}
 	
-	private void deleteAccount(Long msgBoxId){
-		Uri userUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
-		getActivity().getContentResolver().delete(userUri, null, null);
-		getActivity().getContentResolver().notifyChange(SentMessagesContentProvider.CONTENT_URI, null);
-		getActivity().getContentResolver().notifyChange(ReceivedMessagesContentProvider.CONTENT_URI, null);
-		getActivity().getContentResolver().notifyChange(RecvAttachmentsContentProvider.CONTENT_URI, null);
-		getActivity().getContentResolver().notifyChange(SentAttachmentsContentProvider.CONTENT_URI, null);
-		
-	}
+	
 }

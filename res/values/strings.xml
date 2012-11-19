@@ -40,6 +40,7 @@
     <string name="msgbox_type">Typ schránky</string>
     <string name="owner_address">Adresa vlastníka účtu</string>
     <string name="passwd_expir_date">Datum expirace hesla</string>
+    <string name="remove_account_button">Odstranit účet</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

@@ -1,9 +1,14 @@
 package cz.nic.datovka.connector;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.net.Uri;
 import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
+import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 
 public class DatabaseTools {
 
@@ -26,5 +31,15 @@ public class DatabaseTools {
 			value.put(DatabaseHelper.SENT_ATTACHMENTS_MIME, mime);
 			Application.ctx.getContentResolver().insert(SentAttachmentsContentProvider.CONTENT_URI, value);
 		}
+	}
+	
+	public static synchronized void deleteAccount(Long msgBoxId){
+		Uri userUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
+		Application.ctx.getContentResolver().delete(userUri, null, null);
+		Application.ctx.getContentResolver().notifyChange(SentMessagesContentProvider.CONTENT_URI, null);
+		Application.ctx.getContentResolver().notifyChange(ReceivedMessagesContentProvider.CONTENT_URI, null);
+		Application.ctx.getContentResolver().notifyChange(RecvAttachmentsContentProvider.CONTENT_URI, null);
+		Application.ctx.getContentResolver().notifyChange(SentAttachmentsContentProvider.CONTENT_URI, null);
+		
 	}
 }
