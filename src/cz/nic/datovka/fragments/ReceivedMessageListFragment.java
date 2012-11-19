@@ -2,7 +2,6 @@ package cz.nic.datovka.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -10,13 +9,16 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.View;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockListFragment;
+
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessageListCursorAdapter;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
-public class ReceivedMessageListFragment extends ListFragment implements LoaderCallbacks<Cursor>{
+public class ReceivedMessageListFragment extends SherlockListFragment implements LoaderCallbacks<Cursor>{
 	private SimpleCursorAdapter adapter;
 	private static String MSGBOXID = "msgboxid";
 	

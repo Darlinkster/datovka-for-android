@@ -9,17 +9,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
 import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.services.AddAccountService;
 
-public class AddAccountFragment extends DialogFragment {
+public class AddAccountFragment extends SherlockDialogFragment {
 	private static ProgressDialog mProgressDialog;
 
 	private static Handler handler = new Handler() {

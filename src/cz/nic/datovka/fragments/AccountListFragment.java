@@ -4,7 +4,6 @@ import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,6 +17,9 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockListFragment;
+
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -26,7 +28,7 @@ import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 
-public class AccountListFragment extends ListFragment implements LoaderCallbacks<Cursor> {
+public class AccountListFragment extends SherlockListFragment implements LoaderCallbacks<Cursor> {
 	private SimpleCursorAdapter adapter;
 
 	public static AccountListFragment newInstance() {

@@ -7,13 +7,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
 import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.services.MessageDownloadService;
 
-public class MessageDownloadProgressFragment extends DialogFragment {
+public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	private static ProgressDialog mProgressDialog;
 	private static Handler handler;
 
