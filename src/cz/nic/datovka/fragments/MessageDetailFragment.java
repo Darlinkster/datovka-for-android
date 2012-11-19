@@ -1,5 +1,8 @@
 package cz.nic.datovka.fragments;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -21,7 +24,8 @@ public class MessageDetailFragment extends Fragment {
 	public static final String FOLDER = "folder";
 	private static final int INBOX = 0;
 	private static final int IS_READ = 1;
-
+	protected Logger logger = Logger.getLogger(this.getClass().getName());
+	
 	public static MessageDetailFragment newInstance(long id, int folder) {
 		MessageDetailFragment f = new MessageDetailFragment();
 		Bundle args = new Bundle();
@@ -100,7 +104,9 @@ public class MessageDetailFragment extends Fragment {
 			case 8:  messageStatus.setText(R.string.message_status_8); break;
 			case 9:  messageStatus.setText(R.string.message_status_9); break;
 			case 10:  messageStatus.setText(R.string.message_status_10); break;
-			default:  messageStatus.setText(R.string.message_status_unknown); 
+			default:	messageStatus.setText(R.string.message_status_unknown);
+						logger.log(Level.WARNING, "Unknown message status: " + status);
+						
 		}
 		messageAttachmentSize.setText(getString(R.string.size_of_attachments, message.getInt(messageAttachmentSizeColId)));
 
