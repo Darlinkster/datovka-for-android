@@ -37,6 +37,7 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
 		updateList();
+		this.setEmptyText(getString(R.string.empty_account_list));
 	}
 
 	public void updateList() {
