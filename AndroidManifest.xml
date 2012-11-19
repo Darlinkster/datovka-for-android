@@ -33,7 +33,11 @@
         </activity>
         <activity
             android:name=".activities.AccountActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_accounts" >
+        </activity>
+        <activity
+            android:name=".activities.AccountInfoActivity"
+            android:label="@string/title_activity_account_info" >
         </activity>
 
         <provider

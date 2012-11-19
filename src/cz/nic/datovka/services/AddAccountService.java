@@ -141,7 +141,7 @@ public class AddAccountService extends IntentService {
 				passwordExpiration = Integer.toString(-1);
 			}
 			else{
-				passwordExpiration = cal.toString();
+				passwordExpiration = Long.toString(cal.getTimeInMillis());
 			}
 			
 			

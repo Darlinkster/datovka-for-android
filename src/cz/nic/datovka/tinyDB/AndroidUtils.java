@@ -14,6 +14,7 @@ import org.kobjects.isodate.IsoDate;
  * 
  */
 public class AndroidUtils {
+	
 
 	public static String toXmlDate(Date date) {
 		String out = IsoDate.dateToString(date, IsoDate.DATE_TIME);
@@ -51,5 +52,13 @@ public class AndroidUtils {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
 		return sdf.format(dateObj);
+	}
+	
+	public static String FromEpochTimeToHumanReadableDateWithTime(long time){
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTimeInMillis(time);
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss d. M. yyyy");
+		
+		return sdf.format(gc.getTime());
 	}
 }

@@ -4,6 +4,8 @@
     <string name="menu_settings">Nastavení</string>
     <string name="menu_accounts">Účty</string>
     <string name="title_activity_main">Datovka</string>
+    <string name="title_activity_accounts">Účty</string>
+    <string name="title_activity_account_info">Informace o účtu</string>
     <string name="sender">Odesilatel:</string>
     <string name="add_acount">Přidat účet</string>
     <string name="username">Uživatelské jméno</string>
@@ -35,6 +37,9 @@
     <string name="size_of_attachments">Velikost přílohy: %1$d kB</string>
     <string name="acceptance_date">Datum přijetí: %1$s</string>
     <string name="delivery_date">Datum doručení: %1$s</string>
+    <string name="msgbox_type">Typ schránky</string>
+    <string name="owner_address">Adresa vlastníka účtu</string>
+    <string name="passwd_expir_date">Datum expirace hesla</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>
