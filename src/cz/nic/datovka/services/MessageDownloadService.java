@@ -47,6 +47,11 @@ public class MessageDownloadService extends Service {
 
 	@Override
 	public void onStart(Intent intent, int startId) {
+		if(intent == null || intent.getExtras() == null){
+			logger.log(Level.WARNING, "Message download service started with empty intent extras. Aborting.");
+			return;
+		}
+		
 		messageId = intent.getLongExtra(MSG_ID, 0);
 		folder = intent.getIntExtra(FOLDER, 0);
 		receiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER);
