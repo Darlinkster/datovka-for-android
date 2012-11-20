@@ -26,7 +26,7 @@ public class AccountInfoActivity extends SherlockFragmentActivity{
 		setContentView(R.layout.account_info_activity);
 		
 		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+		actionBar.setTitle(getText(R.string.title_activity_account_info));
 		
 		Intent i = getIntent();
 		this.msgBoxId = i.getLongExtra(MSGBOX_ID, 0);

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 
 import cz.nic.datovka.R;
@@ -47,8 +48,8 @@ public class MessageDetailFragment extends SherlockFragment {
 
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
 
-		TextView annotation = (TextView) v.findViewById(R.id.message_annotation);
-		TextView messageId = (TextView) v.findViewById(R.id.message_id);
+//		TextView annotation = (TextView) v.findViewById(R.id.message_annotation);
+//		TextView messageId = (TextView) v.findViewById(R.id.message_id);
 		TextView deliveryDate = (TextView) v.findViewById(R.id.message_delivery_date);
 		TextView acceptanceDate = (TextView) v.findViewById(R.id.message_acceptance_date);
 		TextView sender = (TextView) v.findViewById(R.id.message_sender);
@@ -86,8 +87,21 @@ public class MessageDetailFragment extends SherlockFragment {
 			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE);
 		}
 
-		annotation.setText(message.getString(annotationColId));
-		messageId.setText(getString(R.string.ID, message.getString(messageIdColId)));
+		ActionBar ab = getSherlockActivity().getSupportActionBar();
+	    View customView = inflater.inflate(R.layout.message_detail_actionbar, null);
+	    TextView annotationAB = (TextView) customView.findViewById(R.id.actionbar_annotation);
+	    TextView idAB = (TextView) customView.findViewById(R.id.actionbar_id);
+	    
+	    annotationAB.setText(message.getString(annotationColId));
+	    idAB.setText(getString(R.string.ID, message.getString(messageIdColId)));
+	    ab.setDisplayShowTitleEnabled(false);
+	    ab.setCustomView(customView);
+	    ab.setDisplayShowCustomEnabled(true);
+		
+		//getSherlockActivity().getSupportActionBar().setTitle(message.getString(annotationColId) +" "+getString(R.string.ID, message.getString(messageIdColId)));
+		//annotation.setText(message.getString(annotationColId));
+		//messageId.setText(getString(R.string.ID, message.getString(messageIdColId)));
+	    	    
 		deliveryDate.setText(getString(R.string.delivery_date, AndroidUtils.FromXmlToHumanReadableDateWithTime(message.getString(messageDeliveryDateColId))));
 		acceptanceDate.setText(getString(R.string.acceptance_date,
 				AndroidUtils.FromXmlToHumanReadableDateWithTime(message.getString(messageAcceptanceDateColId))));

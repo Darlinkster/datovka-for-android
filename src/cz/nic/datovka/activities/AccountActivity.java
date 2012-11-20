@@ -23,7 +23,7 @@ public class AccountActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.account_activity);
 
 		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+		actionBar.setTitle(getText(R.string.title_activity_accounts));
 
 		AccountListFragment af = AccountListFragment.newInstance();
 

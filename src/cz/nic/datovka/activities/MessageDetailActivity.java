@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -34,9 +33,6 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.message_detail_activity);
-		
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 		
 		Intent i = getIntent();
 		this.messageId = i.getLongExtra(ID, 0);
