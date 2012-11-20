@@ -1,5 +1,8 @@
 package cz.nic.datovka.fragments;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -22,6 +25,7 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	private static final String MSG_ID = "msgid";
 	private static final String FOLDER = "folder";
 	private static boolean runService = true;
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public static MessageDownloadProgressFragment newInstance(long messageId, int folder) {
 		MessageDownloadProgressFragment mdpf = new MessageDownloadProgressFragment();
@@ -45,6 +49,7 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 
 		if (runService) {
 			runService = false;
+			logger.log(Level.INFO, "Downloading service started");
 			Intent intent = new Intent(getActivity(), MessageDownloadService.class);
 			intent.putExtra(MessageDownloadService.FOLDER, folder);
 			intent.putExtra(MessageDownloadService.MSG_ID, messageId);
@@ -59,6 +64,7 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	@Override
 	public void onCancel(DialogInterface dialog) {
 		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
+		runService = true;
 	}
 
 	private static class DownloadReceiver extends ResultReceiver {
@@ -74,10 +80,12 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 				mProgressDialog.setProgress(progress);
 				if (progress == 100) {
 					mProgressDialog.dismiss();
+					runService = true;
 				}
 			} else if (resultCode == MessageDownloadService.ERROR) {
 				String msg = resultData.getString("error");
 				mProgressDialog.dismiss();
+				runService = true;
 				Toast.makeText(Application.ctx, msg, Toast.LENGTH_LONG).show();
 			}
 		}
