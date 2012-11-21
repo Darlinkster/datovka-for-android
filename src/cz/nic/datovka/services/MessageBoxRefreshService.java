@@ -31,6 +31,7 @@ public class MessageBoxRefreshService extends Service {
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
 	private static final int NOT_CHANGED = 0;
+	private static final int OUTBOX = 1;
 	public static final String HANDLER = "handler";
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -199,6 +200,21 @@ public class MessageBoxRefreshService extends Service {
 						getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
 						//newMessageCounter++;
 					}
+					
+					// Select all outbox messages with status lower than 6 and check if there is any status update
+					Cursor outboxMsgWithBadStatus = getContentResolver().query(SentMessagesContentProvider.CONTENT_URI,
+							new String[]{DatabaseHelper.SENT_MESSAGE_ID, DatabaseHelper.SENT_MESSAGE_STATE},
+							DatabaseHelper.SENT_MESSAGE_STATE + " < ?", new String[]{"6"}, null);
+					int outboxMsgIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ID);
+					Intent intent;
+					while(outboxMsgWithBadStatus.moveToNext()){
+						long id = outboxMsgWithBadStatus.getLong(outboxMsgIdColId);
+						intent = new Intent();
+						intent.putExtra(MessageStatusRefresher.FOLDER, OUTBOX);
+						intent.putExtra(MessageStatusRefresher.MSG_ID, id);
+						new MessageStatusRefresher(intent).start();
+					}
+					outboxMsgWithBadStatus.close();
 					
 					message.arg1 = newMessageCounter;
 				} catch (HttpException e) {
