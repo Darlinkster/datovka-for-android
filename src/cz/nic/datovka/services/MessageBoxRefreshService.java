@@ -81,8 +81,6 @@ public class MessageBoxRefreshService extends Service {
 						DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID + "=?", new String[] { Long.toString(msgBoxId) },
 						DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE);
 				int rcvdMsgBoxIdColIndex = inboxMsg.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE);
-				inboxMsg.moveToLast();
-				String lastInboxMsgDate = inboxMsg.getString(rcvdMsgBoxIdColIndex);
 								
 				// get last outbox message
 				Cursor outboxMsg = getContentResolver().query(SentMessagesContentProvider.CONTENT_URI,
@@ -90,25 +88,31 @@ public class MessageBoxRefreshService extends Service {
 						DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + "=?", new String[] { Long.toString(msgBoxId) },
 						DatabaseHelper.SENT_MESSAGE_SENT_DATE);
 				int sentMsgBoxIdColIndex = outboxMsg.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENT_DATE);
-				outboxMsg.moveToLast();
-				String lastOutboxMsgDate = outboxMsg.getString(sentMsgBoxIdColIndex);
+				
+				// convert dates
+				long lastInboxMsgTime;
+				long lastOutboxMsgTime;
+				if(inboxMsg.moveToLast()){
+					lastInboxMsgTime = AndroidUtils.toGregorianCalendar(inboxMsg.getString(rcvdMsgBoxIdColIndex)).getTimeInMillis();
+				} else {
+					lastInboxMsgTime = 0;
+				}
+				if(outboxMsg.moveToLast()){
+					lastOutboxMsgTime = AndroidUtils.toGregorianCalendar(outboxMsg.getString(sentMsgBoxIdColIndex)).getTimeInMillis();
+				}else {
+					lastOutboxMsgTime = 0;
+				}
 				
 				//close cursors
 				inboxMsg.close();
 				outboxMsg.close();
-				
-				// convert dates
-				GregorianCalendar lastInboxMsgGregDate = AndroidUtils.toGregorianCalendar(lastInboxMsgDate);
-				GregorianCalendar lastOutboxMsgGregDate = AndroidUtils.toGregorianCalendar(lastOutboxMsgDate);
-				//System.out.println(lastInboxMsgGregDate.toString());
-				//System.out.println(lastOutboxMsgGregDate.toString());
-				
+											
 				// Connect
 				Connector connector = Connector.connectToWs(msgBoxId);
 				try {
 					// get new messages
-					List<MessageEnvelope> newInboxMsg = connector.getRecievedMessageListFromDate(lastInboxMsgGregDate);
-					List<MessageEnvelope> newOutboxMsg = connector.getSentMessageListFromDate(lastOutboxMsgGregDate);
+					List<MessageEnvelope> newInboxMsg = connector.getRecievedMessageListFromDate(lastInboxMsgTime + 1);
+					List<MessageEnvelope> newOutboxMsg = connector.getSentMessageListFromDate(lastOutboxMsgTime + 1);
 					
 					// insert new messages to database
 					Iterator<MessageEnvelope> newInboxMsgIterator = newInboxMsg.iterator();
@@ -126,7 +130,11 @@ public class MessageBoxRefreshService extends Service {
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TO_HANDS, msgEnvelope.getToHands());
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(msgEnvelope.getAcceptanceTime().getTime()));
+						
+						GregorianCalendar recvAcceptanceDate = msgEnvelope.getAcceptanceTime();
+						if(recvAcceptanceDate != null)
+							rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
+						
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_IS_READ, NOT_READ);
 						//rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
@@ -161,7 +169,11 @@ public class MessageBoxRefreshService extends Service {
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TO_HANDS, msgEnvelope.getToHands());
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(msgEnvelope.getAcceptanceTime().getTime()));
+						
+						GregorianCalendar acceptanceDate = msgEnvelope.getAcceptanceTime();
+						if(acceptanceDate != null)
+							sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
+						
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, NOT_READ);
 						//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());

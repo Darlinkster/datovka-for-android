@@ -44,6 +44,7 @@ import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedReceivedMessage;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadSignedSentMessage;
+import cz.nic.datovka.tinyDB.responseparsers.GetDeliveryInfo;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfReceivedMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetListOfSentMessages;
 import cz.nic.datovka.tinyDB.responseparsers.GetOwnerInfoFromLogin;
@@ -89,16 +90,15 @@ public class DataBoxManager {
 	 *             absence autorizační cookie.
 	 * 
 	 */
-	public static DataBoxManager login(Config config, String userName, String password, Context context)
-			throws Exception {
+	public static DataBoxManager login(Config config, String userName, String password, Context context) throws Exception {
 		DataBoxManager manager = new DataBoxManager(config);
 		manager.loginImpl(userName, password, context);
 		return manager;
 	}
 
 	// metody z DataBoxMessages
-	public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to, EnumSet<MessageState> state, int offset,
-			int limit) throws HttpException, DSException {
+	public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to, EnumSet<MessageState> state, int offset, int limit) throws HttpException,
+			DSException {
 
 		String resource = "/res/raw/get_list_of_received_messages.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -116,8 +116,8 @@ public class DataBoxManager {
 		return result.getMessages();
 	}
 
-	public List<MessageEnvelope> getListOfSentMessages(Date from, Date to, EnumSet<MessageState> state, int offset,
-			int limit) throws HttpException, DSException {
+	public List<MessageEnvelope> getListOfSentMessages(Date from, Date to, EnumSet<MessageState> state, int offset, int limit) throws HttpException,
+			DSException {
 
 		String resource = "/res/raw/get_list_of_sent_messages.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -176,8 +176,7 @@ public class DataBoxManager {
 
 	}
 
-	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os) throws HttpException,
-			StreamInterruptedException, DSException {
+	public void downloadSignedReceivedMessage(int messageIsdsId, OutputStream os) throws HttpException, StreamInterruptedException, DSException {
 		String resource = "/res/raw/download_signed_received_message.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", Integer.toString(messageIsdsId));
@@ -185,8 +184,7 @@ public class DataBoxManager {
 		this.postAndParseResponse(post, "dz", parser);
 	}
 
-	public void downloadSignedSentMessage(int messageIsdsId, OutputStream os) throws HttpException,
-			StreamInterruptedException, DSException {
+	public void downloadSignedSentMessage(int messageIsdsId, OutputStream os) throws HttpException, StreamInterruptedException, DSException {
 		String resource = "/res/raw/download_signed_sent_message.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", Integer.toString(messageIsdsId));
@@ -243,6 +241,20 @@ public class DataBoxManager {
 		return cal;
 	}
 
+	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException {
+		String resource = "/res/raw/get_delivery_info.xml";
+		String post = Utils.readResourceAsString(this.getClass(), resource);
+		post = post.replace("${ID}", messageIsdsId);
+		GetDeliveryInfo parser = new GetDeliveryInfo();
+		try {
+			this.postAndParseResponse(post, "dx", parser);
+		} catch (StreamInterruptedException e) {
+			e.printStackTrace();
+		}
+
+		return parser.getDeliveryInfo();
+	}
+
 	/**
 	 * Stáhne přijatou zprávu včetně SOAP obálky a příloh jako XML soubor.
 	 * Vhodné pouze pro debugovací účely, ne pro záholování.
@@ -279,8 +291,7 @@ public class DataBoxManager {
 		this.socketFactory = sslcontext.getSocketFactory();
 	}
 
-	private void postAndParseResponse(String post, String prefix, AbstractResponseParser rp) throws HttpException,
-			StreamInterruptedException, DSException {
+	private void postAndParseResponse(String post, String prefix, AbstractResponseParser rp) throws HttpException, StreamInterruptedException, DSException {
 		try {
 			// udelame post
 			URL url = new URL(config.getServiceURL() + prefix);
@@ -294,15 +305,25 @@ public class DataBoxManager {
 			factory.setValidating(false);
 			SAXParser parser = factory.newSAXParser();
 			is = con.getInputStream();
+	
+			/*String a;
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			while((a = br.readLine()) != null){
+				
+				System.out.println(a);
+			}
+			*/
 			parser.parse(is, new SimpleSAXParser(rp));
 
 			// ověříme vrácený stav pri volani webove služby
 			if (!rp.getStatus().ok()) {
-				//String message = String.format("Pozadavek selhal chybou %s:%s", rp.getStatus().getStatusCode(), rp.getStatus().getStatusMesssage());
-				//logger.log(Level.SEVERE, message);
-				throw new DSException(rp.getStatus().getStatusMesssage(), Integer.parseInt(rp.getStatus()
-						.getStatusCode()));
-			}
+				// String message =
+				// String.format("Pozadavek selhal chybou %s:%s",
+				// rp.getStatus().getStatusCode(),
+				// rp.getStatus().getStatusMesssage());
+				// logger.log(Level.SEVERE, message);
+				throw new DSException(rp.getStatus().getStatusMesssage(), Integer.parseInt(rp.getStatus().getStatusCode()));
+			} 
 		} catch (SAXException sax) {
 			throw new DataBoxException("Chyba pri parsovani odpovedi.", sax);
 		} catch (ParserConfigurationException pce) {
@@ -334,8 +355,7 @@ public class DataBoxManager {
 
 	private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, HttpException {
 		if (!OKCodes.contains(con.getResponseCode())) {
-			String message = String.format("Pozadavek selhal se stavovym kodem %d %s.", con.getResponseCode(),
-					con.getResponseMessage());
+			String message = "Pozadavek selhal se stavovym kodem" + " " + con.getResponseCode() + ", " + con.getResponseMessage() + ".";
 			logger.log(Level.SEVERE, message);
 			throw new HttpException(con.getResponseMessage(), con.getResponseCode());
 		}

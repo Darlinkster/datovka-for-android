@@ -19,6 +19,7 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.fragments.MessageAttachmentsFragment;
 import cz.nic.datovka.fragments.MessageDetailFragment;
 import cz.nic.datovka.fragments.MessageDownloadProgressFragment;
+import cz.nic.datovka.services.MessageStatusRefresher;
 
 public class MessageDetailActivity  extends SherlockFragmentActivity {
 	
@@ -29,6 +30,8 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	private int folder;
 	
 	private FragmentManager fm;
+	private MessageDetailFragment mdf;
+	private MessageAttachmentsFragment maf;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,8 +41,8 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		this.messageId = i.getLongExtra(ID, 0);
 		this.folder = i.getIntExtra(FOLDER,0);
 		
-		MessageDetailFragment mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
-		MessageAttachmentsFragment maf = MessageAttachmentsFragment.newInstance(this.messageId, this.folder);
+		mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
+		maf = MessageAttachmentsFragment.newInstance(this.messageId, this.folder);
 		
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
@@ -60,6 +63,12 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			MessageDownloadProgressFragment mdpf = MessageDownloadProgressFragment.newInstance(this.messageId, this.folder);
 			mdpf.show(fm, null);
 			return true;
+		}
+		else if (item.getItemId() == R.id.refresh_message_menu_btn) {
+			Intent param = new Intent();
+			param.putExtra(MessageStatusRefresher.MSG_ID, this.messageId);
+			param.putExtra(MessageStatusRefresher.FOLDER, this.folder);
+			new MessageStatusRefresher(param).start();
 		}
 		return false;
 	}

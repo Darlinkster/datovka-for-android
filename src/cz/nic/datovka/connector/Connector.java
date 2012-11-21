@@ -150,7 +150,7 @@ public class Connector {
 		return sentMessageList;
 	}
 
-	public List<MessageEnvelope> getRecievedMessageListFromDate(GregorianCalendar fromParam) throws HttpException, DSException {
+	public List<MessageEnvelope> getRecievedMessageListFromDate(long fromParam) throws HttpException, DSException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
@@ -161,8 +161,7 @@ public class Connector {
 		GregorianCalendar now = new GregorianCalendar();
 		GregorianCalendar from = new GregorianCalendar();
 
-		// we need to push off the last message date
-		from.setTimeInMillis(fromParam.getTimeInMillis() + 1);
+		from.setTimeInMillis(fromParam);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
 		recievedMessageList = service.getListOfReceivedMessages(
@@ -187,7 +186,7 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public List<MessageEnvelope> getSentMessageListFromDate(GregorianCalendar fromParam) throws HttpException, DSException  {
+	public List<MessageEnvelope> getSentMessageListFromDate(long fromParam) throws HttpException, DSException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
@@ -198,8 +197,7 @@ public class Connector {
 		GregorianCalendar now = new GregorianCalendar();
 		GregorianCalendar from = new GregorianCalendar();
 
-		// we need to push off the last message date
-		from.setTimeInMillis(fromParam.getTimeInMillis() + 1);
+		from.setTimeInMillis(fromParam);
 		now.roll(Calendar.DAY_OF_YEAR, 1);
 
 		sentMessageList = service.getListOfSentMessages(from.getTime(),
@@ -260,5 +258,9 @@ public class Connector {
 		}
 
 		return conn;
+	}
+	
+	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException {
+		return service.GetDeliveryInfo(messageIsdsId);
 	}
 }
