@@ -35,6 +35,7 @@ public class AddAccountService extends IntentService {
 	public static final int RESULT_ERR = 99;
 	public static final int RESULT_DS_ERR = 999;
 	private static final int NOT_READ = 0;
+	private static final int READ = 1;
 	
 	private Message message;
 	private Messenger messenger;
@@ -255,7 +256,7 @@ public class AddAccountService extends IntentService {
 					sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
 				
 				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, NOT_READ);
+				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, READ);
 				//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
 				//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
 				//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());

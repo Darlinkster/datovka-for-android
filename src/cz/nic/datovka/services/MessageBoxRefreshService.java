@@ -29,6 +29,7 @@ public class MessageBoxRefreshService extends Service {
 	public static final int ERROR = -1;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
+	private static final int READ = 1;
 	public static final String HANDLER = "handler";
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -175,7 +176,7 @@ public class MessageBoxRefreshService extends Service {
 							sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
 						
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, NOT_READ);
+						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, READ);
 						//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
 						//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
 						//sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
@@ -193,7 +194,7 @@ public class MessageBoxRefreshService extends Service {
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 						
 						getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
-						newMessageCounter++;
+						//newMessageCounter++;
 					}
 					
 					message.arg1 = newMessageCounter;
