@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/msgListItem"
     android:layout_width="match_parent"
-    
     android:clickable="true"
     android:onClick="itemClicked"
     android:orientation="vertical" >
@@ -19,9 +18,17 @@
         style="@style/listItemMainText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
+        android:layout_alignParentLeft="true"
         android:paddingLeft="8dp"
+        android:paddingTop="8dp"
         android:singleLine="true" />
+
+    <View
+        android:id="@+id/message_item_pictogram"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:paddingTop="8dp" />
 
     <TextView
         android:id="@+id/message_item_sender"

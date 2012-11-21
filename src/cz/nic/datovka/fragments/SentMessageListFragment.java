@@ -21,6 +21,7 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 public class SentMessageListFragment extends SherlockListFragment implements LoaderCallbacks<Cursor>{
 	private SimpleCursorAdapter adapter;
 	private static String MSGBOXID = "msgboxid";
+	private static final int OUTBOX = 1;
 	
 	public static SentMessageListFragment getInstance(String arg){
 		SentMessageListFragment smlf = new SentMessageListFragment();
@@ -48,7 +49,8 @@ public class SentMessageListFragment extends SherlockListFragment implements Loa
 				DatabaseHelper.RECIPIENT_NAME,
 				DatabaseHelper.SENT_MESSAGE_SENT_DATE,
 				DatabaseHelper.SENT_MESSAGE_IS_READ,
-				DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED};
+				DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED,
+				DatabaseHelper.SENT_MESSAGE_STATE};
 		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SentMessagesContentProvider.CONTENT_URI, projection,
@@ -80,7 +82,8 @@ public class SentMessageListFragment extends SherlockListFragment implements Loa
 				R.layout.message_list_fragment, null, from,
 				to, DatabaseHelper.SENT_MESSAGE_IS_READ,
 				DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED,
-				0);
+				DatabaseHelper.SENT_MESSAGE_STATE,
+				OUTBOX, 0);
 		
 		adapter.setViewBinder(new ViewBinder() {
 

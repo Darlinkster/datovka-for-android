@@ -21,6 +21,7 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 public class ReceivedMessageListFragment extends SherlockListFragment implements LoaderCallbacks<Cursor>{
 	private SimpleCursorAdapter adapter;
 	private static String MSGBOXID = "msgboxid";
+	private static final int INBOX = 0;
 	
 	public static ReceivedMessageListFragment getInstance(String arg){
 		ReceivedMessageListFragment rmlf = new ReceivedMessageListFragment();
@@ -44,7 +45,8 @@ public class ReceivedMessageListFragment extends SherlockListFragment implements
 				DatabaseHelper.SENDER_NAME, 
 				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE,
 				DatabaseHelper.RECEIVED_MESSAGE_IS_READ,
-				DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED};
+				DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED,
+				DatabaseHelper.RECEIVED_MESSAGE_STATE};
 
 		String selection = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID + "=?";
 		String[] selectionArgs = { getArguments().getString(MSGBOXID) };
@@ -77,7 +79,8 @@ public class ReceivedMessageListFragment extends SherlockListFragment implements
 				R.layout.message_list_fragment, null, from, to,
 				DatabaseHelper.RECEIVED_MESSAGE_IS_READ,
 				DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED,
-				0);
+				DatabaseHelper.RECEIVED_MESSAGE_STATE,
+				INBOX, 0);
 		
 		adapter.setViewBinder(new ViewBinder() {
 

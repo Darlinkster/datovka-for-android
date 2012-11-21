@@ -12,14 +12,19 @@ import android.widget.TextView;
 public class MessageListCursorAdapter extends SimpleCursorAdapter{
 	private String readColName;
 	private String statusChangedColName;
+	private String statusColName;
+	private int folder;
+	private static final int OUTBOX = 1;
 	private static final int READ = 1;
 	private static final int CHANGED = 1;
 
 	public MessageListCursorAdapter(Context context, int layout, Cursor c,
-			String[] from, int[] to, String readColName, String statusChangedColName, int flags) {
+			String[] from, int[] to, String readColName, String statusChangedColName, String statusColName, int folder, int flags) {
 		super(context, layout, c, from, to, flags);
 		this.readColName = readColName;
 		this.statusChangedColName = statusChangedColName;
+		this.statusColName = statusColName;
+		this.folder = folder;
 	}
 	
 	@Override
@@ -28,9 +33,20 @@ public class MessageListCursorAdapter extends SimpleCursorAdapter{
 		
 		int statusChanged = cursor.getInt(cursor.getColumnIndex(this.statusChangedColName));
 		int isReadBoolean = cursor.getInt(cursor.getColumnIndex(this.readColName));
+		int status = cursor.getInt(cursor.getColumnIndex(this.statusColName));
 		TextView annotation = (TextView) view.findViewById(R.id.message_item_annotation);
 		TextView sender = (TextView) view.findViewById(R.id.message_item_sender);
 		View notification = view.findViewById(R.id.message_item_notification_strip);
+		View pictogram = view.findViewById(R.id.message_item_pictogram);
+		
+		if(folder == OUTBOX){
+			if(status < 6) {
+				pictogram.setBackgroundResource(R.drawable.message_sent);
+			}
+			else {
+				pictogram.setBackgroundResource(R.drawable.content_read);
+			}
+		}
 		
 		if(statusChanged == CHANGED){
 			notification.setVisibility(View.VISIBLE);
