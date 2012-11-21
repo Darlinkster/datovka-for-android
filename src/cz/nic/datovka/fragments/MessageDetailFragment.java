@@ -28,6 +28,7 @@ public class MessageDetailFragment extends SherlockFragment {
 	public static final String ID = "id";
 	public static final String FOLDER = "folder";
 	private static final int INBOX = 0;
+	private static final int NOT_CHANGED = 0;
 	private static final int IS_READ = 1;
 	protected Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -190,9 +191,11 @@ public class MessageDetailFragment extends SherlockFragment {
 		if (folder == INBOX) {
 			singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, id);
 			value.put(DatabaseHelper.RECEIVED_MESSAGE_IS_READ, IS_READ);
+			value.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
 		} else { // if(folder == OUTBOX)
 			singleUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, id);
 			value.put(DatabaseHelper.SENT_MESSAGE_IS_READ, IS_READ);
+			value.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
 		}
 
 		getActivity().getContentResolver().update(singleUri, value, null, null);

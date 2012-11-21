@@ -21,6 +21,7 @@ public class MessageStatusRefresher extends Thread {
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	private static final int INBOX = 0;
+	private static final int STATUS_CHANGED = 1;
 	private long msgId;
 	private int folder;
 
@@ -67,12 +68,14 @@ public class MessageStatusRefresher extends Thread {
 						val.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
 					val.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
 					val.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msg.getStateAsInt());
+					val.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
 				} else {
 					GregorianCalendar sentAcceptanceDate = msg.getAcceptanceTime();
 					if(sentAcceptanceDate != null)
 						val.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
 					val.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
 					val.put(DatabaseHelper.SENT_MESSAGE_STATE, msg.getStateAsInt());
+					val.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
 				}
 				Application.ctx.getContentResolver().update(msgUri, val, null, null);
 			}

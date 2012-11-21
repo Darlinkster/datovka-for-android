@@ -30,6 +30,7 @@ public class MessageBoxRefreshService extends Service {
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
+	private static final int NOT_CHANGED = 0;
 	public static final String HANDLER = "handler";
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -150,6 +151,7 @@ public class MessageBoxRefreshService extends Service {
 						//rcvdMessageValues.put(DatabaseHelper.SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
 						//rcvdMessageValues.put(DatabaseHelper.SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msgEnvelope.getStateAsInt());
+						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TYPE, msgEnvelope.getType().name());
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, msgBoxId);
 						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
@@ -189,6 +191,7 @@ public class MessageBoxRefreshService extends Service {
 						//sentMessageValues.put(DatabaseHelper.RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
 						//sentMessageValues.put(DatabaseHelper.RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATE, msgEnvelope.getStateAsInt());
+						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TYPE, msgEnvelope.getType().name());
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_MSGBOX_ID, msgBoxId);
 						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());

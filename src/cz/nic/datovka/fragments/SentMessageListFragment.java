@@ -47,7 +47,8 @@ public class SentMessageListFragment extends SherlockListFragment implements Loa
 				DatabaseHelper.SENT_MESSAGE_ANNOTATION,
 				DatabaseHelper.RECIPIENT_NAME,
 				DatabaseHelper.SENT_MESSAGE_SENT_DATE,
-				DatabaseHelper.SENT_MESSAGE_IS_READ };
+				DatabaseHelper.SENT_MESSAGE_IS_READ,
+				DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED};
 		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SentMessagesContentProvider.CONTENT_URI, projection,
@@ -77,7 +78,8 @@ public class SentMessageListFragment extends SherlockListFragment implements Loa
 		
 		adapter = new MessageListCursorAdapter(getActivity(),
 				R.layout.message_list_fragment, null, from,
-				to, DatabaseHelper.SENT_MESSAGE_IS_READ, 
+				to, DatabaseHelper.SENT_MESSAGE_IS_READ,
+				DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED,
 				0);
 		
 		adapter.setViewBinder(new ViewBinder() {

@@ -43,7 +43,8 @@ public class ReceivedMessageListFragment extends SherlockListFragment implements
 				DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION,
 				DatabaseHelper.SENDER_NAME, 
 				DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE,
-				DatabaseHelper.RECEIVED_MESSAGE_IS_READ };
+				DatabaseHelper.RECEIVED_MESSAGE_IS_READ,
+				DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED};
 
 		String selection = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID + "=?";
 		String[] selectionArgs = { getArguments().getString(MSGBOXID) };
@@ -74,7 +75,8 @@ public class ReceivedMessageListFragment extends SherlockListFragment implements
 		
 		adapter = new MessageListCursorAdapter(getActivity(),
 				R.layout.message_list_fragment, null, from, to,
-				DatabaseHelper.RECEIVED_MESSAGE_IS_READ, 
+				DatabaseHelper.RECEIVED_MESSAGE_IS_READ,
+				DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED,
 				0);
 		
 		adapter.setViewBinder(new ViewBinder() {
