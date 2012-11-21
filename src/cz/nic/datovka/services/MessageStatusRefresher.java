@@ -33,46 +33,49 @@ public class MessageStatusRefresher extends Thread {
 	@Override
 	public void run() {
 		Uri msgUri;
-		String[] msgProjection;
 		String msgIsdsIdTb;
 		String msgboxIdTb;
+		String msgStatusTb;
 		if (folder == INBOX) {
 			msgUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, msgId);
 			msgIsdsIdTb = DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID;
 			msgboxIdTb = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID;
-			msgProjection = new String[] {msgIsdsIdTb , msgboxIdTb};
+			msgStatusTb = DatabaseHelper.RECEIVED_MESSAGE_STATE;
 		} else {
 			msgUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, msgId);
 			msgIsdsIdTb = DatabaseHelper.SENT_MESSAGE_ISDS_ID;
 			msgboxIdTb = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID;
-			msgProjection = new String[] {msgIsdsIdTb , msgboxIdTb};
+			msgStatusTb = DatabaseHelper.SENT_MESSAGE_STATE;
 		}
-
+		String[] msgProjection = {msgIsdsIdTb , msgboxIdTb, msgStatusTb};
 		Cursor msgCursor = Application.ctx.getContentResolver().query(msgUri, msgProjection, null, null, null);
 		msgCursor.moveToFirst();
 				
 		String msgIsdsId = msgCursor.getString(msgCursor.getColumnIndex(msgIsdsIdTb));
 		long msgboxId = msgCursor.getLong(msgCursor.getColumnIndex(msgboxIdTb));
+		int msgStatus = msgCursor.getInt(msgCursor.getColumnIndex(msgStatusTb));
 		msgCursor.close();
 		
 		Connector connector = Connector.connectToWs(msgboxId);
 		try {
 			MessageEnvelope msg = connector.GetDeliveryInfo(msgIsdsId);
-			ContentValues val = new ContentValues();
-			if (folder == INBOX) {
-				GregorianCalendar recvAcceptanceDate = msg.getAcceptanceTime();
-				if(recvAcceptanceDate != null)
-					val.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
-				val.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
-				val.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msg.getStateAsInt());
-			} else {
-				GregorianCalendar sentAcceptanceDate = msg.getAcceptanceTime();
-				if(sentAcceptanceDate != null)
-					val.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
-				val.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
-				val.put(DatabaseHelper.SENT_MESSAGE_STATE, msg.getStateAsInt());
+			if(msgStatus != msg.getStateAsInt()){
+				ContentValues val = new ContentValues();
+				if (folder == INBOX) {
+					GregorianCalendar recvAcceptanceDate = msg.getAcceptanceTime();
+					if(recvAcceptanceDate != null)
+						val.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
+					val.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
+					val.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msg.getStateAsInt());
+				} else {
+					GregorianCalendar sentAcceptanceDate = msg.getAcceptanceTime();
+					if(sentAcceptanceDate != null)
+						val.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
+					val.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
+					val.put(DatabaseHelper.SENT_MESSAGE_STATE, msg.getStateAsInt());
+				}
+				Application.ctx.getContentResolver().update(msgUri, val, null, null);
 			}
-			Application.ctx.getContentResolver().update(msgUri, val, null, null);
 			
 		} catch (HttpException e) {
 			e.printStackTrace();
