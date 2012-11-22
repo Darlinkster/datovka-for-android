@@ -72,8 +72,8 @@ public class AccountInfoFragment extends SherlockFragment {
 		else
 			ownerNameTv.setText(ownerFirmName);
 						
-		ownerAddressStreetTv.setText(msgBoxCursor.getString(ownerAddressStreetId) + ", " + msgBoxCursor.getString(ownerAddressStreetNumId));
-		ownerAddressCityTv.setText(msgBoxCursor.getString(ownerAddressCityId)+", "+msgBoxCursor.getString(ownerAddressZipId));
+		ownerAddressStreetTv.setText(msgBoxCursor.getString(ownerAddressStreetId) + " " + msgBoxCursor.getString(ownerAddressStreetNumId));
+		ownerAddressCityTv.setText(msgBoxCursor.getString(ownerAddressCityId)+" "+msgBoxCursor.getString(ownerAddressZipId));
 		ownerAddressStateTv.setText(msgBoxCursor.getString(ownerAddressStateId));
 
 		msgBoxCursor.close();

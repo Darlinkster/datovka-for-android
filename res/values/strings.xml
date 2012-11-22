@@ -40,7 +40,7 @@
     <string name="delivery_date">Datum doručení: %1$s</string>
     <string name="msgbox_type">Typ schránky</string>
     <string name="owner_address">Adresa vlastníka účtu</string>
-    <string name="passwd_expir_date">Datum expirace hesla</string>
+    <string name="passwd_expir_date">Expirace hesla</string>
     <string name="remove_account_button">Odstranit účet</string>
     <string name="refresh_message_menu_btn">Obnovit zprávu</string>
     <string name="message_not_accepted_yet">Zpráva dosud nebyla přijata.</string>
