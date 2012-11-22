@@ -61,9 +61,14 @@ public class AccountInfoFragment extends SherlockFragment {
 
 		usernameTv.setText(getString(R.string.username)+ ": " + msgBoxCursor.getString(usernameColId));
 		msgBoxIdTv.setText(getString(R.string.ID, msgBoxCursor.getString(msgBoxIdColId)));
-		passwordExpirationTv.setText(getString(R.string.passwd_expir_date)+ ": " + AndroidUtils.FromEpochTimeToHumanReadableDateWithTime(Long.parseLong(msgBoxCursor.getString(passwordExpirationId))));
-		msgBoxTypeTv.setText(getString(R.string.msgbox_type)+ ": " + msgBoxCursor.getString(msgBoxTypeColId));
 
+		long expirationDate = Long.parseLong(msgBoxCursor.getString(passwordExpirationId));
+		if (expirationDate < 0)
+			passwordExpirationTv.setText(getString(R.string.passwd_expir_date)+ ": " + getString(R.string.not_set));
+		else
+			passwordExpirationTv.setText(getString(R.string.passwd_expir_date)+ ": " + AndroidUtils.FromEpochTimeToHumanReadableDateWithTime(expirationDate));
+		
+		msgBoxTypeTv.setText(getString(R.string.msgbox_type)+ ": " + msgBoxCursor.getString(msgBoxTypeColId));
 		// Check if there is a owner name
 		String ownerName = msgBoxCursor.getString(ownerNameId);
 		String ownerFirmName = msgBoxCursor.getString(ownerFirmNameId);

@@ -44,6 +44,7 @@
     <string name="remove_account_button">Odstranit účet</string>
     <string name="refresh_message_menu_btn">Obnovit zprávu</string>
     <string name="message_not_accepted_yet">Zpráva dosud nebyla přijata.</string>
+    <string name="not_set">Není nastaveno.</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>
