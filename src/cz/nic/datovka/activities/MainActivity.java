@@ -163,9 +163,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		case R.id.menu_accounts:
 			startActivity(new Intent(this, AccountActivity.class));
 			return true;
-		case R.id.menu_settings:
+	// TODO Settings disabled till next release
+	/*	case R.id.menu_settings:
 			Toast.makeText(this, "nastaveni", Toast.LENGTH_SHORT).show();
-			return true;
+			return true; */
 		case R.id.refresh_all:
 			Messenger messenger = new Messenger(handler);
 			Intent intent = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
