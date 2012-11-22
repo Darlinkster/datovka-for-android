@@ -41,7 +41,10 @@ public class GaugeFileOutputStream extends FileOutputStream {
 		if(laststatus < status){
 			laststatus = status;
 			resultData.putInt("progress", status);
-			receiver.send(receiverIdent, resultData); 
+			if(receiver != null)
+				receiver.send(receiverIdent, resultData);
+			else
+				return;
 		}
 	}
 	
@@ -56,7 +59,10 @@ public class GaugeFileOutputStream extends FileOutputStream {
 		if(laststatus < status){
 			laststatus = status;
 			resultData.putInt("progress", status);
-			receiver.send(receiverIdent, resultData); 
+			if(receiver != null)
+				receiver.send(receiverIdent, resultData);
+			else
+				return;
 		}
 	}
 	

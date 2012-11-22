@@ -44,7 +44,12 @@ public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable
 	}
 
 	public void close() {
+		try{
 			Utils.close(bw, os);
+		} catch (RuntimeException e){
+			closed = true;
+			e.printStackTrace();
+		}
 	}
 
 }

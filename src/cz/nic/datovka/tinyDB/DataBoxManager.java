@@ -373,6 +373,10 @@ public class DataBoxManager {
 	}
 
 	public void close() {
+		if (con != null) {
+			con.disconnect();
+		}
+		
 		if (is != null) {
 			try {
 				is.close();
@@ -381,8 +385,7 @@ public class DataBoxManager {
 			}
 		}
 
-		if (con != null) {
-			con.disconnect();
-		}
+		is = null;
+		con = null;
 	}
 }

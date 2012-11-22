@@ -77,7 +77,7 @@ public class CMSStripperInputStream extends InputStream {
 	private int loadData() throws IOException {
 		int contentLength = readOctetStringHeader();
 
-		if (contentLength == -1) {
+		if (contentLength < 0) {
 			return -1;
 		} else if (buffer == null || (!(buffer.length == contentLength))) {
 			buffer = new byte[contentLength];

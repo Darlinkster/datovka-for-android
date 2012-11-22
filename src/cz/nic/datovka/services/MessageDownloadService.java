@@ -71,18 +71,25 @@ public class MessageDownloadService extends Service {
 
 			if (fos != null) {
 				try {
-					fos.flush();
 					fos.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
+			thread.interrupt();
 		}
+		connector = null;
+		receiver = null;
+		fos = null;
+		thread = null;
+		
 		super.onDestroy();
+		logger.log(Level.INFO, "Downloading service interrupted.");
 	}
 
 	private class DaemonThread extends Thread {
 		public void run() {
+			logger.log(Level.INFO, "Downloading service started");
 			// Get ISDS ID and MSGBOX ID of the message
 			Uri singleUri;
 			String[] projection;
@@ -104,6 +111,7 @@ public class MessageDownloadService extends Service {
 				msgBoxIdColName = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID;
 				fileSizeColName = DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE;
 			}
+			if(interrupted()) return;
 			Cursor msgCursor = getContentResolver().query(singleUri, projection, null, null, null);
 			msgCursor.moveToFirst();
 
@@ -119,6 +127,7 @@ public class MessageDownloadService extends Service {
 			msgCursor.close();
 
 			// Connect to WS
+			if(interrupted()) return;
 			connector = Connector.connectToWs(msgBoxId);
 
 			// If the download folder not exists create it
@@ -138,6 +147,7 @@ public class MessageDownloadService extends Service {
 			}
 
 			// Save the signed message
+			if(interrupted()) return;
 			File outFileTmp = null;
 			Bundle resultData = new Bundle();
 			try {
@@ -155,6 +165,7 @@ public class MessageDownloadService extends Service {
 
 				// It seems that the file is downloaded correctly, so remove the
 				// .tmp suffix and insert it to db
+				if(interrupted()) return;
 				File outFile = new File(destFolder, outFileName);
 				outFileTmp.renameTo(outFile);
 				DatabaseTools.insertAttachmentToDb(directory + outFileName,
@@ -173,11 +184,18 @@ public class MessageDownloadService extends Service {
 				fos.close();
 				csis.close();
 				*/
+				if(interrupted()){
+					csis.close();
+					csis = null;
+					input = null;
+					return;
+				}
 				connector.parseSignedMessage(destFolder, folder, messageId, csis, messageIsdsId);
 				
 				// Send 100% to gauge, just for sure
 				resultData.putInt("progress", 100);
-				receiver.send(UPDATE_PROGRESS, resultData);
+				if(receiver != null)
+					receiver.send(UPDATE_PROGRESS, resultData);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -186,8 +204,8 @@ public class MessageDownloadService extends Service {
 			} catch (HttpException e) {
 				String errorMessage = e.getMessage();
 				resultData.putString("error", errorMessage);
-				receiver.send(ERROR, resultData);
-				
+				if( receiver!= null)
+					receiver.send(ERROR, resultData);
 			} catch (StreamInterruptedException e) {
 				// Probably user interrupted download the file, delete it.
 				if (outFileTmp != null && outFileTmp.exists()) {
@@ -196,8 +214,11 @@ public class MessageDownloadService extends Service {
 				logger.log(Level.WARNING, e.getMessage());
 			} catch (DSException e) {
 				resultData.putString("error", e.getErrorCode() + ": " + e.getMessage());
-				receiver.send(ERROR, resultData);
+				if( receiver!= null)
+					receiver.send(ERROR, resultData);
 
+			} catch (NullPointerException e){
+				logger.log(Level.WARNING, "Null pointer Exception: User probably killed download thread.");
 			}
 		}
 

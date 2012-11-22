@@ -1,8 +1,5 @@
 package cz.nic.datovka.fragments;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -25,7 +22,6 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	private static final String MSG_ID = "msgid";
 	private static final String FOLDER = "folder";
 	private static boolean runService = true;
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public static MessageDownloadProgressFragment newInstance(long messageId, int folder) {
 		MessageDownloadProgressFragment mdpf = new MessageDownloadProgressFragment();
@@ -49,7 +45,6 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 
 		if (runService) {
 			runService = false;
-			logger.log(Level.INFO, "Downloading service started");
 			Intent intent = new Intent(getActivity(), MessageDownloadService.class);
 			intent.putExtra(MessageDownloadService.FOLDER, folder);
 			intent.putExtra(MessageDownloadService.MSG_ID, messageId);
@@ -60,11 +55,20 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 
 		return mProgressDialog;
 	}
+	
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		System.out.println("dismiss");
+		this.onCancel(dialog);
+	}
 		
 	@Override
 	public void onCancel(DialogInterface dialog) {
+		System.out.println("cancel");
 		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
 		runService = true;
+		super.onCancel(dialog);
+		super.onDismiss(dialog);
 	}
 
 	private static class DownloadReceiver extends ResultReceiver {

@@ -234,6 +234,7 @@ public class Connector {
 
 	public void close(){
 		service.close();
+		service = null;
 	}
 	
 	public static Connector connectToWs(long msgBoxId) {
