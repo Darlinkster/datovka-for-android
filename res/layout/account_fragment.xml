@@ -7,6 +7,8 @@
     android:longClickable="true"
     android:orientation="vertical"
     android:id="@+id/account_list_item"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     style="@style/msgListItem" >
 
     <TextView
@@ -23,8 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textStyle="normal"
-        
+        style="@style/textAppearanceSmall"
         />
     
 
