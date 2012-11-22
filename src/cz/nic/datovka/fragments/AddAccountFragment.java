@@ -57,7 +57,7 @@ public class AddAccountFragment extends SherlockDialogFragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		final View dialogView = inflater.inflate(R.layout.add_account_dialog, null);
 		builder.setView(dialogView);
-
+		
 		builder.setTitle(R.string.add_acount);
 		builder.setPositiveButton(R.string.add_account_button, new DialogInterface.OnClickListener() {
 
