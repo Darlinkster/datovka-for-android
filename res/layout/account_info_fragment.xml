@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textSize="16sp" />
-        
+
         <TextView
             android:id="@+id/account_info_password_expiration"
             android:layout_width="match_parent"
@@ -55,7 +55,7 @@
             android:paddingLeft="8dp"
             android:singleLine="true"
             android:textSize="16sp" />
-
+        
         <TextView
             android:id="@+id/account_info_owner_address_street"
             android:layout_width="match_parent"
@@ -71,6 +71,7 @@
             android:paddingLeft="8dp"
             android:singleLine="true"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/account_info_owner_address_state"
             android:layout_width="match_parent"
@@ -78,8 +79,6 @@
             android:paddingLeft="8dp"
             android:singleLine="true"
             android:textSize="16sp" />
-
-        
     </LinearLayout>
 
 </ScrollView>

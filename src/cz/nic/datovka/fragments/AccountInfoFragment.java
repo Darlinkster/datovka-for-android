@@ -51,6 +51,7 @@ public class AccountInfoFragment extends SherlockFragment {
 		int msgBoxIdColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
 		int msgBoxTypeColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TYPE);
 		int ownerNameId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
+		int ownerFirmNameId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_FIRM_NAME);
 		int ownerAddressCityId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_CITY);
 		int ownerAddressStateId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_STATE);
 		int ownerAddressStreetId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_STREET);
@@ -62,7 +63,15 @@ public class AccountInfoFragment extends SherlockFragment {
 		msgBoxIdTv.setText(getString(R.string.ID, msgBoxCursor.getString(msgBoxIdColId)));
 		passwordExpirationTv.setText(getString(R.string.passwd_expir_date)+ ": " + AndroidUtils.FromEpochTimeToHumanReadableDateWithTime(Long.parseLong(msgBoxCursor.getString(passwordExpirationId))));
 		msgBoxTypeTv.setText(getString(R.string.msgbox_type)+ ": " + msgBoxCursor.getString(msgBoxTypeColId));
-		ownerNameTv.setText(msgBoxCursor.getString(ownerNameId));
+
+		// Check if there is a owner name
+		String ownerName = msgBoxCursor.getString(ownerNameId);
+		String ownerFirmName = msgBoxCursor.getString(ownerFirmNameId);
+		if(ownerName != null && !ownerName.equalsIgnoreCase(""))
+			ownerNameTv.setText(ownerName);
+		else
+			ownerNameTv.setText(ownerFirmName);
+						
 		ownerAddressStreetTv.setText(msgBoxCursor.getString(ownerAddressStreetId) + ", " + msgBoxCursor.getString(ownerAddressStreetNumId));
 		ownerAddressCityTv.setText(msgBoxCursor.getString(ownerAddressCityId)+", "+msgBoxCursor.getString(ownerAddressZipId));
 		ownerAddressStateTv.setText(msgBoxCursor.getString(ownerAddressStateId));
