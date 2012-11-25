@@ -49,6 +49,10 @@ public class AddAccountFragment extends SherlockDialogFragment {
 				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
 			}
+			else if (message.arg1 == AddAccountService.RESULT_NO_CONNECTION) {
+				mProgressDialog.dismiss();
+				Toast.makeText(Application.ctx, R.string.no_connection , Toast.LENGTH_SHORT).show();
+			}
 		}
 	};
 

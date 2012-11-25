@@ -31,6 +31,7 @@ public class AddAccountService extends IntentService {
 	public static final String HANDLER = "handler";
 	public static final int RESULT_OK = 100;
 	public static final int RESULT_EXISTS = 101;
+	public static final int RESULT_NO_CONNECTION = 102;
 	public static final int RESULT_BAD_LOGIN = 401;
 	public static final int RESULT_ERR = 99;
 	public static final int RESULT_DS_ERR = 999;
@@ -112,8 +113,19 @@ public class AddAccountService extends IntentService {
 		else
 			return false;
 	}
-	Connector connector = new Connector();
+	
 	private void createAccount(String login, String password, int testEnvironment){
+		Connector connector = new Connector();
+		
+		if(!connector.checkConnection()){
+			message.arg1 = RESULT_NO_CONNECTION;
+			try {
+				messenger.send(message);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		try {
 			if(testEnvironment == 1){
 				connector.connect(login, password, Connector.TESTING);
@@ -138,6 +150,11 @@ public class AddAccountService extends IntentService {
 			user = connector.getUserInfo();
 			owner = connector.getOwnerInfo();
 		
+			if(user == null && owner == null){ // Something is wrong, these variable shouldn't be null (what about iptables?)
+				message.arg1 = RESULT_ERR;
+				return; 
+			}
+			
 			String passwordExpiration;			
 			if(cal == null){
 				passwordExpiration = Integer.toString(-1);

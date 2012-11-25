@@ -8,7 +8,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
@@ -37,7 +40,7 @@ public class Connector {
 		else
 			config = new Config(DataBoxEnvironment.TEST);
 
-		service = DataBoxManager.login(config, login, password, Application.ctx);
+		service = DataBoxManager.login(config, login, password);
 	}
 
 	public boolean isOnline() {
@@ -263,5 +266,15 @@ public class Connector {
 	
 	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException {
 		return service.GetDeliveryInfo(messageIsdsId);
+	}
+	
+	public boolean checkConnection() {
+		final ConnectivityManager conMgr =  (ConnectivityManager) Application.ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
+		if (activeNetwork != null && activeNetwork.isConnected()) {
+		    return true;
+		} else {
+		    return false;
+		} 
 	}
 }

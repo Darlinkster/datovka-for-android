@@ -25,18 +25,19 @@ import javax.xml.parsers.SAXParserFactory;
 import org.kobjects.base64.Base64;
 import org.xml.sax.SAXException;
 
-import android.content.Context;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.MessageState;
 import cz.abclinuxu.datoveschranky.common.entities.MessageType;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
+import cz.abclinuxu.datoveschranky.common.entities.PasswordExpirationInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.R.raw;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
@@ -90,9 +91,9 @@ public class DataBoxManager {
 	 *             absence autorizační cookie.
 	 * 
 	 */
-	public static DataBoxManager login(Config config, String userName, String password, Context context) throws Exception {
+	public static DataBoxManager login(Config config, String userName, String password) throws Exception {
 		DataBoxManager manager = new DataBoxManager(config);
-		manager.loginImpl(userName, password, context);
+		manager.loginImpl(userName, password);
 		return manager;
 	}
 
@@ -231,7 +232,11 @@ public class DataBoxManager {
 		}
 
 		GregorianCalendar cal = new GregorianCalendar();
-		Date expirationDate = parser.getPasswordInfo().getPasswordExpiration();
+		PasswordExpirationInfo pei = parser.getPasswordInfo();
+		if(pei == null)
+			return null;
+		
+		Date expirationDate = pei.getPasswordExpiration();
 
 		if (expirationDate != null) {
 			cal.setTime(expirationDate);
@@ -276,7 +281,7 @@ public class DataBoxManager {
 		this.storeRequest(post, "dz", os);
 	}
 
-	private void loginImpl(String username, String password, Context context) throws Exception {
+	private void loginImpl(String username, String password) throws Exception {
 		String userPassword = username + ":" + password;
 
 		authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
@@ -284,7 +289,7 @@ public class DataBoxManager {
 		KeyStore keyStore = KeyStore.getInstance("BKS");
 		SSLContext sslcontext = SSLContext.getInstance("TLS");
 
-		InputStream keyStoreStream = context.getResources().openRawResource(raw.key_store);
+		InputStream keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store);
 		keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
 
 		sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
@@ -329,6 +334,7 @@ public class DataBoxManager {
 		} catch (ParserConfigurationException pce) {
 			throw new DataBoxException("Chyba pri konfiguraci SAX parseru.", pce);
 		} catch (IOException ioe) {
+			logger.log(Level.INFO, post);
 			String message = "IOException, error while reading answer. The input stream may be closed by user decision.";
 			throw new StreamInterruptedException(message);
 		} finally {
@@ -370,6 +376,7 @@ public class DataBoxManager {
 		connect.setDoOutput(true);
 		connect.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
 		connect.setRequestProperty("Soapaction", "");
+		
 	}
 
 	public void close() {
