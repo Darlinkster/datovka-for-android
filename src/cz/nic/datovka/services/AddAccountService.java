@@ -223,6 +223,7 @@ public class AddAccountService extends IntentService {
 			String msgBoxId = getContentResolver().insert(
 					MsgBoxContentProvider.CONTENT_URI, values)
 					.getLastPathSegment();
+			values = null;
 			
 			Iterator<MessageEnvelope> receivedMsgIterator = recievedMessageList.iterator();
 			while(receivedMsgIterator.hasNext()){
@@ -256,6 +257,7 @@ public class AddAccountService extends IntentService {
 				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 				
 				getContentResolver().insert(ReceivedMessagesContentProvider.CONTENT_URI, rcvdMessageValues);
+				rcvdMessageValues = null;
 			}
 			
 			Iterator<MessageEnvelope> sentMsgIterator = sentMessageList.iterator();
@@ -294,6 +296,7 @@ public class AddAccountService extends IntentService {
 				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 				
 				getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
+				sentMessageValues = null;
 			}
 			
 			message.arg1 = RESULT_OK;
