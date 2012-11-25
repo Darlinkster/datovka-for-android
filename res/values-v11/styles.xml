@@ -4,7 +4,6 @@
 
     <style name="msgListItem">
         <item name="android:layout_height">?android:attr/listPreferredItemHeight</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:paddingRight">8dp</item>
     </style>
 
