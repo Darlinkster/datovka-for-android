@@ -21,12 +21,12 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textStyle="normal" />
-    
+<!--    
     <TextView
         android:id="@+id/attachment_item_mime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textStyle="normal" />
-
+ -->
 </LinearLayout>

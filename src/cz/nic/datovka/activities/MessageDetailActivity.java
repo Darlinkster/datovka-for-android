@@ -78,10 +78,9 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		Intent intent = new Intent();
 		intent.setAction(android.content.Intent.ACTION_VIEW);
 		TextView pathTv = (TextView) view.findViewById(R.id.attachment_item_path);
-		TextView mimeTv = (TextView) view.findViewById(R.id.attachment_item_mime);
 		
 		File file = new File(pathTv.getText().toString());
-		intent.setDataAndType(Uri.fromFile(file), mimeTv.getText().toString());
+		intent.setDataAndType(Uri.fromFile(file), (String) view.getTag());
 		try{
 			startActivity(intent);
 		}catch(RuntimeException e){

@@ -7,6 +7,9 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.view.View;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
@@ -34,7 +37,7 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-		int folder = getArguments().getInt(FOLDER, 0);
+		final int folder = getArguments().getInt(FOLDER, 0);
 		
 		String[] from;
 		if (folder == INBOX) {
@@ -44,13 +47,26 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 			from = new String[] { DatabaseHelper.SENT_ATTACHMENTS_FILENAME, DatabaseHelper.SENT_ATTACHMENTS_PATH,
 					DatabaseHelper.SENT_ATTACHMENTS_MIME };
 		}
-		int[] to = { R.id.attachment_item_filename, R.id.attachment_item_path, R.id.attachment_item_mime };
+		int[] to = { R.id.attachment_item_filename, R.id.attachment_item_path };
 		
 		getLoaderManager().initLoader(0, null, this);
 		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item,null, from, to, 0);
 		setListAdapter(adapter);
 		setEmptyText(getText(R.string.empty_attachments_list));
-		
+
+		adapter.setViewBinder(new ViewBinder() {
+			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
+				int attachmentMIME;
+				if(folder == INBOX){
+					attachmentMIME = cursor.getColumnIndex(DatabaseHelper.RECV_ATTACHMENTS_MIME);
+				} else{
+					attachmentMIME = cursor.getColumnIndex(DatabaseHelper.SENT_ATTACHMENTS_MIME);
+				}
+					
+				((View) view.getParent()).setTag(cursor.getString(attachmentMIME));
+				return false;
+			}
+		});
 		
 	}
 
