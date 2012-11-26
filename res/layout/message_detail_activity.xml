@@ -14,10 +14,10 @@
 
     <TextView
         android:id="@+id/line"
-        style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:gravity="center_horizontal"
+        android:background="@color/lightblack"
         android:paddingTop="5dip" />
     
     <LinearLayout

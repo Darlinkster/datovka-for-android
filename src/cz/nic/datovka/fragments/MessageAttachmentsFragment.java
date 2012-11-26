@@ -49,6 +49,7 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 		getLoaderManager().initLoader(0, null, this);
 		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item,null, from, to, 0);
 		setListAdapter(adapter);
+		setEmptyText(getText(R.string.empty_attachments_list));
 		
 		
 	}
