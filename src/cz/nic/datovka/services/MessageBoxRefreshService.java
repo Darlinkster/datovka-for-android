@@ -27,6 +27,7 @@ import cz.nic.datovka.tinyDB.exceptions.HttpException;
 
 public class MessageBoxRefreshService extends Service {
 	public static final int ERROR = -1;
+	public static final int ERROR_NO_CONNECTION = -99;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
@@ -112,6 +113,15 @@ public class MessageBoxRefreshService extends Service {
 											
 				// Connect
 				Connector connector = Connector.connectToWs(msgBoxId);
+				if(!connector.checkConnection()){
+					message.arg1 = ERROR_NO_CONNECTION;
+					try {
+						messenger.send(message);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					return;
+				}
 				try {
 					// get new messages
 					List<MessageEnvelope> newInboxMsg = connector.getRecievedMessageListFromDate(lastInboxMsgTime + 1);

@@ -213,6 +213,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			if(message.arg1 == MessageBoxRefreshService.ERROR){
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			}
+			else if(message.arg1 == MessageBoxRefreshService.ERROR_NO_CONNECTION){
+				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
+			}
 			else if(message.arg1 == 0){
 				Toast.makeText(Application.ctx, R.string.no_new_messages, Toast.LENGTH_LONG).show();
 			}
