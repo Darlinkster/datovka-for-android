@@ -9,7 +9,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.View;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
