@@ -5,6 +5,10 @@
     android:orientation="vertical"
     android:clickable="true"
     android:onClick="attachmentClicked"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     style="@style/msgListItem" >    
 
     <TextView
@@ -13,6 +17,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textStyle="bold"
+        android:paddingBottom="4dp"
         android:textSize="16sp" />
 
     <TextView
@@ -21,12 +26,5 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textStyle="normal" />
-<!--    
-    <TextView
-        android:id="@+id/attachment_item_mime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textStyle="normal" />
- -->
+
 </LinearLayout>
