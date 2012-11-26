@@ -1,5 +1,7 @@
 package cz.nic.datovka.fragments;
 
+import java.io.File;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,14 +39,13 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		final int folder = getArguments().getInt(FOLDER, 0);
+		final long messageId = getArguments().getLong(ID, 0);
 		
 		String[] from;
 		if (folder == INBOX) {
-			from = new String[] { DatabaseHelper.RECV_ATTACHMENTS_FILENAME, DatabaseHelper.RECV_ATTACHMENTS_PATH,
-					DatabaseHelper.RECV_ATTACHMENTS_MIME };
+			from = new String[] { DatabaseHelper.RECV_ATTACHMENTS_FILENAME, DatabaseHelper.RECV_ATTACHMENTS_PATH };
 		} else {
-			from = new String[] { DatabaseHelper.SENT_ATTACHMENTS_FILENAME, DatabaseHelper.SENT_ATTACHMENTS_PATH,
-					DatabaseHelper.SENT_ATTACHMENTS_MIME };
+			from = new String[] { DatabaseHelper.SENT_ATTACHMENTS_FILENAME, DatabaseHelper.SENT_ATTACHMENTS_PATH };
 		}
 		int[] to = { R.id.attachment_item_filename, R.id.attachment_item_path };
 		
@@ -55,18 +56,38 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 
 		adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
-				int attachmentMIME;
-				if(folder == INBOX){
-					attachmentMIME = cursor.getColumnIndex(DatabaseHelper.RECV_ATTACHMENTS_MIME);
-				} else{
-					attachmentMIME = cursor.getColumnIndex(DatabaseHelper.SENT_ATTACHMENTS_MIME);
+				if (view.getId() == R.id.attachment_item_path) {
+					int attachmentMIME;
+					if (folder == INBOX) {
+						attachmentMIME = cursor.getColumnIndex(DatabaseHelper.RECV_ATTACHMENTS_MIME);
+					} else {
+						attachmentMIME = cursor.getColumnIndex(DatabaseHelper.SENT_ATTACHMENTS_MIME);
+					}
+
+					((View) view.getParent()).setTag(cursor.getString(attachmentMIME));
+					// If any file from attachments is missing, then remove all
+					// attachments from db, and pretend that attachments wasn't
+					// downloaded yet. 
+					File tmp = new File(cursor.getString(colIndex));
+					if (!tmp.exists()) {
+						Uri attachmentUri;
+						String where;
+						if (folder == INBOX) {
+							attachmentUri = RecvAttachmentsContentProvider.CONTENT_URI;
+							where = DatabaseHelper.RECV_ATTACHMENTS_MSG_ID + "=?";
+						}
+						else {
+							attachmentUri = SentAttachmentsContentProvider.CONTENT_URI;
+							where = DatabaseHelper.SENT_ATTACHMENTS_MSG_ID + "=?";
+						}
+						getActivity().getContentResolver().delete(attachmentUri, where, new String[]{Long.toString(messageId)});
+					}
+					tmp = null;
 				}
-					
-				((View) view.getParent()).setTag(cursor.getString(attachmentMIME));
 				return false;
 			}
 		});
-		
+
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
