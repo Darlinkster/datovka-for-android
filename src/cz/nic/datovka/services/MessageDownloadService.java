@@ -30,6 +30,7 @@ import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 public class MessageDownloadService extends Service {
 	public static final int UPDATE_PROGRESS = 8344;
 	public static final int ERROR = 8355;
+	public static final int ERROR_NO_CONNECTION = 8366;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
@@ -126,9 +127,14 @@ public class MessageDownloadService extends Service {
 			//fileSize += 20 * 1024; // 20 kB is the size of the envelope
 			msgCursor.close();
 
-			// Connect to WS
 			if(interrupted()) return;
+			// Connect to WS
 			connector = Connector.connectToWs(msgBoxId);
+			if(!connector.checkConnection()){
+				if( receiver!= null)
+					receiver.send(ERROR_NO_CONNECTION, null);
+				return;
+			}
 
 			// If the download folder not exists create it
 			checkExternalStorage();

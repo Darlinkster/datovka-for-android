@@ -55,12 +55,12 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 
 		return mProgressDialog;
 	}
-	
+
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		this.onCancel(dialog);
 	}
-		
+
 	@Override
 	public void onCancel(DialogInterface dialog) {
 		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
@@ -89,7 +89,12 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 				mProgressDialog.dismiss();
 				runService = true;
 				Toast.makeText(Application.ctx, msg, Toast.LENGTH_LONG).show();
+			} else if (resultCode == MessageDownloadService.ERROR_NO_CONNECTION) {
+				mProgressDialog.dismiss();
+				runService = true;
+				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
 			}
+
 		}
 	}
 }
