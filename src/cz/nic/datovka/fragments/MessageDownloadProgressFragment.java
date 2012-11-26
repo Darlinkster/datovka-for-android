@@ -58,13 +58,11 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	
 	@Override
 	public void onDismiss(DialogInterface dialog) {
-		System.out.println("dismiss");
 		this.onCancel(dialog);
 	}
 		
 	@Override
 	public void onCancel(DialogInterface dialog) {
-		System.out.println("cancel");
 		getActivity().stopService(new Intent(getActivity(), MessageDownloadService.class));
 		runService = true;
 		super.onCancel(dialog);
