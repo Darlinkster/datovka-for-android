@@ -5,6 +5,7 @@
     <style name="msgListItem">
         <item name="android:layout_height">?android:attr/listPreferredItemHeight</item>
         <item name="android:paddingRight">8dp</item>
+        <item name="android:background">@drawable/message_item_unread_background</item>
     </style>
 
     <style name="CustomCheckbox">
