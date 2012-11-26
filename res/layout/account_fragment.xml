@@ -8,6 +8,8 @@
     android:orientation="vertical"
     android:id="@+id/account_list_item"
     android:paddingTop="8dp"
+    android:paddingLeft="8dp" 
+    android:paddingRight="8dp"
     android:paddingBottom="8dp"
     style="@style/msgListItem" >
 
