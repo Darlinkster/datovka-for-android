@@ -128,7 +128,7 @@ public class AddAccountService extends IntentService {
 		}
 		
 		try {
-			if(testEnvironment == connector.TESTING){
+			if(testEnvironment == Connector.TESTING){
 				connector.connect(login, password, Connector.TESTING);
 			}
 			else{

@@ -19,19 +19,12 @@
  */
 package cz.nic.datovka.tinyDB;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509TrustManager;
-
-import android.os.Environment;
 
 public class MyAndroidTrustManager implements X509TrustManager {
 	private KeyStore ks;
