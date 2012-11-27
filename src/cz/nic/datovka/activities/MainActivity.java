@@ -66,8 +66,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		int[] to = new int[] { android.R.id.text1 };
 		getSupportLoaderManager().initLoader(0, null, this);
 
-		account_adapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, null, from, to, 0);
-		account_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		account_adapter = new SimpleCursorAdapter(this, R.layout.sherlock_spinner_item, null, from, to, 0);
+		account_adapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		account_adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 				TextView tv = (TextView) view;
