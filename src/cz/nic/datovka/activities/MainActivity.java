@@ -62,7 +62,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
 		// account spinner setup
-		String[] from = new String[] { DatabaseHelper.OWNER_FIRM_NAME };
+		String[] from = new String[] { DatabaseHelper.OWNER_NAME };
 		int[] to = new int[] { android.R.id.text1 };
 		getSupportLoaderManager().initLoader(0, null, this);
 
@@ -72,16 +72,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
 				TextView tv = (TextView) view;
 				int indexMsgBoxId = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
-				// If the owner_firm_name is empty set that textview to
-				// owner_name
-				if (cursor.getString(colIndex).length() == 0) {
-					int indexOwnerName = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
-					tv.setText(cursor.getString(indexOwnerName));
-					// Set msgbox ID as a tag
-					tv.setTag(cursor.getString(indexMsgBoxId));
-					return true;
-				}
-
+				
 				// Set msgbox ID as a tag
 				tv.setTag(cursor.getString(indexMsgBoxId));
 				return false;
@@ -191,7 +182,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 	// Three methods for accounts content resolver
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME, DatabaseHelper.OWNER_FIRM_NAME };
+		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME };
 		CursorLoader cursorLoader = new CursorLoader(this, MsgBoxContentProvider.CONTENT_URI, projection, null, null, null);
 
 		return cursorLoader;

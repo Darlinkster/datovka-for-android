@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	protected static final String DATABASE_NAME = "datovka";
-	protected static final int DATABASE_VERSION = 1;
+	protected static final int DATABASE_VERSION = 2;
 
 	public static final String MSGBOX_TB_NAME = "msgbox";
 	public static final String MSGBOX_ID = "_id";
@@ -47,7 +47,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String OWNER_ADDRESS_STATE = "owner_address_state";
 	public static final String OWNER_BIRTH_DATE = "owner_birth_date";
 	public static final String OWNER_IC = "owner_ic";
-	public static final String OWNER_FIRM_NAME = "owner_firm_name";
 	public static final String OWNER_BIRTH_COUNTY = "owner_birth_county";
 	public static final String OWNER_BIRTH_CITY = "owner_birth_city";
 	public static final String OWNER_BIRTH_STATE = "owner_birth_state";
@@ -59,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public static final String[] msgbox_columns = { MSGBOX_ID, MSGBOX_ISDS_ID, MSGBOX_LOGIN, MSGBOX_PASSWORD, MSGBOX_TEST_ENV, MSGBOX_TYPE,
 			MSGBOX_PASSWD_EXPIRATION, OWNER_NAME, OWNER_LAST_BIRTH_NAME, OWNER_ADDRESS_CITY, OWNER_ADDRESS_STREET, OWNER_ADDRESS_STREET_NUMBER,
-			OWNER_ADDRESS_MUNIC_NUMBER, OWNER_ADDRESS_ZIP, OWNER_ADDRESS_STATE, OWNER_BIRTH_DATE, OWNER_IC, OWNER_FIRM_NAME, OWNER_BIRTH_COUNTY,
+			OWNER_ADDRESS_MUNIC_NUMBER, OWNER_ADDRESS_ZIP, OWNER_ADDRESS_STATE, OWNER_BIRTH_DATE, OWNER_IC, OWNER_BIRTH_COUNTY,
 			OWNER_BIRTH_CITY, OWNER_BIRTH_STATE, OWNER_NATIONALITY, OWNER_EMAIL, OWNER_TELEPHONE, OWNER_IDENTIFIER, OWNER_REGISTRY_CODE, USER_ISDS_ID,
 			USER_NAME, USER_LAST_BIRTH_NAME, USER_ADDRESS_CITY, USER_ADDRESS_STREET, USER_ADDRESS_STREET_NUMBER, USER_ADDRESS_MUNIC_NUMBER, USER_ADDRESS_ZIP,
 			USER_ADDRESS_STATE, USER_BIRTH_DATE, USER_TYPE, USER_PRIVILS, USER_IC, USER_FIRM_NAME, USER_CON_ADDRESS_STREET, USER_CON_ADDRESS_CITY,
@@ -205,7 +204,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ OWNER_ADDRESS_STATE + " TEXT ,"
 				+ OWNER_BIRTH_DATE + " TEXT ,"
 				+ OWNER_IC + " INTEGER,"
-				+ OWNER_FIRM_NAME + " TEXT ,"
 				+ OWNER_BIRTH_COUNTY + " TEXT,"
 				+ OWNER_BIRTH_CITY + " TEXT ,"
 				+ OWNER_BIRTH_STATE + " TEXT ,"

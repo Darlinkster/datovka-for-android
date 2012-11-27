@@ -42,8 +42,8 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 
 	public void updateList() {
 
-		String[] from = { DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.USER_NAME };
-		int[] to = { R.id.account_item_owner, R.id.account_item_user };
+		String[] from = { DatabaseHelper.OWNER_NAME, DatabaseHelper.USER_NAME };
+		int[] to = { R.id.account_item_owner, R.id.account_item_user};
 
 		getLoaderManager().initLoader(0, null, this);
 
@@ -55,23 +55,16 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 				// If the owner_firm_name is empty set that textview to
 				// owner_name
 				if (tv.getId() == R.id.account_item_owner) {
-					if (cursor.getString(colIndex).length() == 0) {
-						int index = cursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
-						tv.setText(cursor.getString(index));
-					}
-					else {
-						int index = cursor.getColumnIndex(DatabaseHelper.OWNER_FIRM_NAME);
-						tv.setText(cursor.getString(index));
-					}
+					// Set Owner Name
+					tv.setText(cursor.getString(colIndex));
 					// Append ISDS ID
 					int isdsIDindex = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
-					String msgBoxIsdsID = cursor.getString(isdsIDindex);
-					tv.append(" (ID: " + msgBoxIsdsID + ")");
+					tv.append(" (ID: " + cursor.getString(isdsIDindex) + ")");
 					// Set parent view tag to database id
 					int msgBoxId = cursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
 					((View) tv.getParent()).setTag(Long.toString(cursor.getLong(msgBoxId)));
 					return true;
-				}				
+				}
 				return false;
 			}
 		});
@@ -81,7 +74,7 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME,
-				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.USER_NAME, DatabaseHelper.MSGBOX_ISDS_ID };
+				DatabaseHelper.USER_NAME, DatabaseHelper.MSGBOX_ISDS_ID };
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), MsgBoxContentProvider.CONTENT_URI, projection,
 				null, null, null);
 

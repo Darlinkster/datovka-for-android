@@ -75,8 +75,41 @@ public class AddAccountService extends IntentService {
 		
 	}
 
+	private String createOwnerName(int testEnv, String firmName, String name, String middle, String last){
+		String userName = "";
+		if (testEnv == Connector.TESTING) {
+			userName += "* ";
+		}
+		if (firmName.length() > 0) {
+			userName += firmName;
+		}
+		
+		
+		if(name.length() > 0){
+			if(firmName.length() > 0){
+				userName += ", ";
+			}
+			userName += name;
+		}
+		if(middle.length() > 0){
+			if(userName.length() > 0){
+				userName += " ";
+			}
+			userName += middle;
+		}
+		if(last.length() > 0){
+			if(userName.length() > 0){
+				userName += " ";
+			}
+			userName += last;
+		}
+		
+		return userName;
+	}
+	
 	private String createName(String name, String middle, String last){
 		String userName = "";
+		
 		
 		if(name.length() > 0){
 			userName += name;
@@ -177,13 +210,17 @@ public class AddAccountService extends IntentService {
 			values.put(DatabaseHelper.OWNER_BIRTH_DATE, owner.getBirthDate());
 			values.put(DatabaseHelper.OWNER_BIRTH_STATE, owner.getBirthState());
 			values.put(DatabaseHelper.OWNER_EMAIL, owner.getEmail());
-			values.put(DatabaseHelper.OWNER_FIRM_NAME, owner.getFirmName());
 			
-			values.put(
-					DatabaseHelper.OWNER_NAME,
-					createName(owner.getPersonNameFirstName(),
-							owner.getPersonNameMiddleName(),
-							owner.getPersonNameLastName()));
+			String ownerName = createOwnerName( testEnvironment, 
+					owner.getFirmName(),
+					owner.getPersonNameFirstName(),
+					owner.getPersonNameMiddleName(),
+					owner.getPersonNameLastName());
+			
+			
+			values.put(DatabaseHelper.OWNER_NAME, ownerName);
+			
+			
 			values.put(DatabaseHelper.OWNER_IC, owner.getIC());
 			values.put(DatabaseHelper.OWNER_IDENTIFIER, owner.getIdentifier());
 			values.put(DatabaseHelper.OWNER_LAST_BIRTH_NAME, owner.getPersonNameLastNameAtBirth());
