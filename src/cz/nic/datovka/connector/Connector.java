@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.kobjects.base64.Base64;
+
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,7 +36,7 @@ public class Connector {
 	public void connect(String login, String password, int environment) throws Exception {
 		
 
-		service = DataBoxManager.login(environment, login, password);
+		service = DataBoxManager.login(environment, login, new String(Base64.decode(password)));
 	}
 
 	public boolean isOnline() {

@@ -4,6 +4,8 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kobjects.base64.Base64;
+
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -149,6 +151,7 @@ public class AddAccountService extends IntentService {
 	}
 	
 	private void createAccount(String login, String password, int testEnvironment){
+		String encPassword = Base64.encode(password.getBytes());
 		Connector connector = new Connector();
 		
 		if(!connector.checkConnection()){
@@ -162,10 +165,10 @@ public class AddAccountService extends IntentService {
 		
 		try {
 			if(testEnvironment == Connector.TESTING){
-				connector.connect(login, password, Connector.TESTING);
+				connector.connect(login, encPassword, Connector.TESTING);
 			}
 			else{
-				connector.connect(login, password, Connector.PRODUCTION);
+				connector.connect(login, encPassword, Connector.PRODUCTION);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -254,7 +257,7 @@ public class AddAccountService extends IntentService {
 			values.put(DatabaseHelper.MSGBOX_ISDS_ID, owner.getDataBoxID());
 			values.put(DatabaseHelper.MSGBOX_TYPE, owner.getDataBoxType().name());
 			values.put(DatabaseHelper.MSGBOX_LOGIN, login);
-			values.put(DatabaseHelper.MSGBOX_PASSWORD, password);
+			values.put(DatabaseHelper.MSGBOX_PASSWORD, encPassword);
 			values.put(DatabaseHelper.MSGBOX_TEST_ENV, testEnvironment);
 			values.put(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION, passwordExpiration);
 			
