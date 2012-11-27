@@ -189,12 +189,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		startActivity(i);
 	}
 
-	// Three methods for accounts content resolver 
+	// Three methods for accounts content resolver
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME,
-				DatabaseHelper.OWNER_FIRM_NAME, DatabaseHelper.MSGBOX_ID };
-		CursorLoader cursorLoader = new CursorLoader(this, MsgBoxContentProvider.CONTENT_URI, projection, null, null,
-				null);
+		String[] projection = new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.OWNER_NAME, DatabaseHelper.OWNER_FIRM_NAME };
+		CursorLoader cursorLoader = new CursorLoader(this, MsgBoxContentProvider.CONTENT_URI, projection, null, null, null);
 
 		return cursorLoader;
 	}

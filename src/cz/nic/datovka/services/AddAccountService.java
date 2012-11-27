@@ -77,6 +77,7 @@ public class AddAccountService extends IntentService {
 
 	private String createName(String name, String middle, String last){
 		String userName = "";
+		
 		if(name.length() > 0){
 			userName += name;
 		}
@@ -127,7 +128,7 @@ public class AddAccountService extends IntentService {
 		}
 		
 		try {
-			if(testEnvironment == 1){
+			if(testEnvironment == connector.TESTING){
 				connector.connect(login, password, Connector.TESTING);
 			}
 			else{
@@ -177,6 +178,7 @@ public class AddAccountService extends IntentService {
 			values.put(DatabaseHelper.OWNER_BIRTH_STATE, owner.getBirthState());
 			values.put(DatabaseHelper.OWNER_EMAIL, owner.getEmail());
 			values.put(DatabaseHelper.OWNER_FIRM_NAME, owner.getFirmName());
+			
 			values.put(
 					DatabaseHelper.OWNER_NAME,
 					createName(owner.getPersonNameFirstName(),
