@@ -210,7 +210,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	// Handler for handling messages from MessageBoxRefresh service 
 	private static Handler handler = new Handler() {
 		public void handleMessage(Message message) {
-			System.out.println(message.arg1 + " " + message.arg2);
 			if(message.arg1 == MessageBoxRefreshService.ERROR){
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			}
