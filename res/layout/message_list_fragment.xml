@@ -19,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/message_item_pictogram"
         android:paddingLeft="8dp"
         android:paddingTop="8dp"
         android:singleLine="true" />
