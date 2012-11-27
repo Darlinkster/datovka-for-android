@@ -275,6 +275,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + MSGBOX_TB_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + RECEIVED_MESSAGE_TB_NAME);
 		db.execSQL("DROP TABLE IF EXISTS " + SENT_MESSAGE_TB_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + SENT_ATTACHMENTS_TB_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + RECV_ATTACHMENTS_TB_NAME);
 		
 		onCreate(db);
 	}
