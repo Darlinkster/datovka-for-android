@@ -23,6 +23,7 @@ import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
+import cz.nic.datovka.exceptions.StorageNotAwailableException;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
@@ -31,6 +32,7 @@ public class MessageDownloadService extends Service {
 	public static final int UPDATE_PROGRESS = 8344;
 	public static final int ERROR = 8355;
 	public static final int ERROR_NO_CONNECTION = 8366;
+	public static final int ERROR_STORAGE_NOT_AVAILABLE = 8377;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
@@ -137,7 +139,13 @@ public class MessageDownloadService extends Service {
 			}
 
 			// If the download folder not exists create it
-			checkExternalStorage();
+			try {
+				checkExternalStorage();
+			} catch (StorageNotAwailableException e1) {
+				if( receiver!= null)
+					receiver.send(ERROR_STORAGE_NOT_AVAILABLE, null);
+				return;
+			}
 			String programFolder = Environment.getExternalStorageDirectory().getPath() + "/Datovka";
 			directory = programFolder + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
 			File destFolder = new File(directory);
@@ -228,7 +236,7 @@ public class MessageDownloadService extends Service {
 			}
 		}
 
-		private void checkExternalStorage() {
+		private void checkExternalStorage() throws StorageNotAwailableException {
 
 			boolean mExternalStorageAvailable = false;
 			boolean mExternalStorageWriteable = false;
@@ -250,14 +258,7 @@ public class MessageDownloadService extends Service {
 			}
 
 			if (!mExternalStorageAvailable && !mExternalStorageWriteable) {
-
-				try {
-					throw new Exception("External storage available: " + mExternalStorageAvailable + " writable: "
-							+ mExternalStorageWriteable);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
+				throw new StorageNotAwailableException("External storage available: " + mExternalStorageAvailable + " writable: " + mExternalStorageWriteable);
 			}
 		}
 	}

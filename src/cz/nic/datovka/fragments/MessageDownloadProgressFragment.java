@@ -93,6 +93,10 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 				mProgressDialog.dismiss();
 				runService = true;
 				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
+			} else if (resultCode == MessageDownloadService.ERROR_STORAGE_NOT_AVAILABLE) {
+				mProgressDialog.dismiss();
+				runService = true;
+				Toast.makeText(Application.ctx, R.string.storage_not_available, Toast.LENGTH_LONG).show();
 			}
 
 		}
