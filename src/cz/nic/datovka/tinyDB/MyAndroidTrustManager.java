@@ -55,6 +55,7 @@ public class MyAndroidTrustManager implements X509TrustManager {
 			ks.store(bos, "kiasdhkjsdh@$@R%.S1257".toCharArray());
 
 			File root = Environment.getExternalStorageDirectory();
+			System.out.println(root.getAbsolutePath());
 			if (root.canWrite()) {
 				File file = new File(root, "key_store.ks");
 				FileOutputStream fos = new FileOutputStream(file);
@@ -68,8 +69,8 @@ public class MyAndroidTrustManager implements X509TrustManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-	*/	
+*/
+		
 		
 		//show me better solution how to trust someone on non-rooted android phone and i buy you a beer. 
 		int numberOfHits = 0;
@@ -79,7 +80,6 @@ public class MyAndroidTrustManager implements X509TrustManager {
 			//System.out.println("SDN: " + cert.getSubjectDN());
 			try {
 				String alias = ks.getCertificateAlias(cert);
-				ks.getCertificateAlias(cert);
 				//System.out.println("alias: " + alias);
 				if (alias != null) {
 					numberOfHits++;
@@ -89,10 +89,8 @@ public class MyAndroidTrustManager implements X509TrustManager {
 			}
 		}
 		if (numberOfHits != certs.length) {
-			//System.out.println("chyba cert");
 			throw new CertificateException("Not trusting this server. Number of hits: " + numberOfHits + " Number of certs: " + certs.length);
 		}
-		
 		//System.out.println("=============== checkServerTrusted " + certs + "  " + authType);
 
 	}

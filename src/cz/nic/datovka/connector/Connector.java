@@ -17,8 +17,6 @@ import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
-import cz.abclinuxu.datoveschranky.common.impl.Config;
-import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.DataBoxManager;
@@ -34,13 +32,9 @@ public class Connector {
 	private DataBoxManager service;
 	
 	public void connect(String login, String password, int environment) throws Exception {
-		Config config;
-		if (environment == PRODUCTION)
-			config = new Config(DataBoxEnvironment.PRODUCTION);
-		else
-			config = new Config(DataBoxEnvironment.TEST);
+		
 
-		service = DataBoxManager.login(config, login, password);
+		service = DataBoxManager.login(environment, login, password);
 	}
 
 	public boolean isOnline() {

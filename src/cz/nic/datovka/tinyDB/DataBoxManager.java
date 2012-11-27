@@ -33,6 +33,7 @@ import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.PasswordExpirationInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.abclinuxu.datoveschranky.common.impl.Config;
+import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
@@ -71,9 +72,19 @@ public class DataBoxManager {
 
 	private HttpsURLConnection con;
 	private InputStream is;
+	
+	private static final int PRODUCTION = 0;
+	//private static final int TESTING = 1;
+	private int environment;
 
-	private DataBoxManager(Config configuration) {
-		this.config = configuration;
+	private DataBoxManager(int environment) {
+		this.environment = environment;
+		if(environment == PRODUCTION){
+			this.config = new Config(DataBoxEnvironment.PRODUCTION);
+		} else {
+			this.config = new Config(DataBoxEnvironment.TEST);
+		}
+		
 	}
 
 	/**
@@ -91,8 +102,8 @@ public class DataBoxManager {
 	 *             absence autorizační cookie.
 	 * 
 	 */
-	public static DataBoxManager login(Config config, String userName, String password) throws Exception {
-		DataBoxManager manager = new DataBoxManager(config);
+	public static DataBoxManager login(int environment, String userName, String password) throws Exception {
+		DataBoxManager manager = new DataBoxManager(environment);
 		manager.loginImpl(userName, password);
 		return manager;
 	}
@@ -289,7 +300,13 @@ public class DataBoxManager {
 		KeyStore keyStore = KeyStore.getInstance("BKS");
 		SSLContext sslcontext = SSLContext.getInstance("TLS");
 
-		InputStream keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store);
+		InputStream keyStoreStream;
+		if(environment == PRODUCTION){
+			keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_production_env);
+		} else {
+			keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_test_env);
+		}
+		
 		keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
 
 		sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
