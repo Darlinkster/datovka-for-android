@@ -29,7 +29,7 @@
     <string name="outbox">Odeslané</string>
     <string name="refresh_menu_btn">Obnovit</string>
     <string name="no_new_messages">Nemáte žádné nové zprávy</string>
-    <string name="new_messages_with_count">Máte %1$d nových zpráv</string>
+    <string name="new_messages_with_count">Máte %1$d nových zpráv a %2$d aktualizací stavů příchozích zpráv.</string>
     <string name="empty_inbox_message">Nemáte žádné příchozí zprávy.</string>
     <string name="empty_account_list">Nemáte nastavené žádné účty. Nový účet nastavíte klepnutím na ikonu v pravém horním rohu.</string>
     <string name="empty_outbox_message">Nemáte žádné odchozí zprávy.</string>

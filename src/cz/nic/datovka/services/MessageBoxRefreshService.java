@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -32,7 +34,8 @@ public class MessageBoxRefreshService extends Service {
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
 	private static final int NOT_CHANGED = 0;
-	private static final int OUTBOX = 1;
+//	private static final int OUTBOX = 1;
+	private static final int STATUS_CHANGED = 1;
 	public static final String HANDLER = "handler";
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -73,6 +76,7 @@ public class MessageBoxRefreshService extends Service {
 			
 			// new message counter
 			int newMessageCounter = 0;
+			int messageStatusChangeCounter = 0;
 			// Iterate over all Message Boxes IDs
 			for(int i = 0; i < msgBoxCount; i++){
 				// get msgbox id
@@ -110,6 +114,8 @@ public class MessageBoxRefreshService extends Service {
 				//close cursors
 				inboxMsg.close();
 				outboxMsg.close();
+				inboxMsg = null;
+				outboxMsg = null;
 											
 				// Connect
 				Connector connector = Connector.connectToWs(msgBoxId);
@@ -212,21 +218,43 @@ public class MessageBoxRefreshService extends Service {
 					}
 					
 					// Select all outbox messages with status lower than 6 and check if there is any status update
-					Cursor outboxMsgWithBadStatus = getContentResolver().query(SentMessagesContentProvider.CONTENT_URI,
-							new String[]{DatabaseHelper.SENT_MESSAGE_ID, DatabaseHelper.SENT_MESSAGE_STATE},
-							DatabaseHelper.SENT_MESSAGE_STATE + " < ?", new String[]{"6"}, null);
-					int outboxMsgIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ID);
-					Intent intent;
-					while(outboxMsgWithBadStatus.moveToNext()){
-						long id = outboxMsgWithBadStatus.getLong(outboxMsgIdColId);
-						intent = new Intent();
-						intent.putExtra(MessageStatusRefresher.FOLDER, OUTBOX);
-						intent.putExtra(MessageStatusRefresher.MSG_ID, id);
-						new MessageStatusRefresher(intent).start();
-					}
-					outboxMsgWithBadStatus.close();
+					String select = DatabaseHelper.SENT_MESSAGE_STATE + " < ? AND " + DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + " = ?";
+					String[] params = { "6", Long.toString(msgBoxId) };
+					String[] projection = { DatabaseHelper.SENT_MESSAGE_ID, 
+											DatabaseHelper.SENT_MESSAGE_STATE, 
+											DatabaseHelper.SENT_MESSAGE_ISDS_ID };
 					
+					Cursor outboxMsgWithBadStatus = getContentResolver().query(SentMessagesContentProvider.CONTENT_URI, projection, select, params, null);
+					int outboxMsgIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ID);
+					int outboxMsgStateColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_STATE);
+					int outboxMsgIsdsIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ISDS_ID);
+					
+					while(outboxMsgWithBadStatus.moveToNext()) {
+						String msgIsdsId = outboxMsgWithBadStatus.getString(outboxMsgIsdsIdColId);
+						MessageEnvelope msg = connector.GetDeliveryInfo(msgIsdsId);
+						int msgStatus = outboxMsgWithBadStatus.getInt(outboxMsgStateColId);
+						
+						if(msgStatus != msg.getStateAsInt()){
+							ContentValues val = new ContentValues();
+							long msgId = outboxMsgWithBadStatus.getLong(outboxMsgIdColId);
+							
+							GregorianCalendar sentAcceptanceDate = msg.getAcceptanceTime();
+							if(sentAcceptanceDate != null)
+								val.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
+							val.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
+							val.put(DatabaseHelper.SENT_MESSAGE_STATE, msg.getStateAsInt());
+							val.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
+							Application.ctx.getContentResolver().update(ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, msgId), val, null,
+									null);			
+							messageStatusChangeCounter++;
+						}
+					}
+					
+					outboxMsgWithBadStatus.close();
+					outboxMsgWithBadStatus = null;
+		
 					message.arg1 = newMessageCounter;
+					message.arg2 = messageStatusChangeCounter;
 				} catch (HttpException e) {
 					e.printStackTrace();
 				} catch (DSException e) {
@@ -248,3 +276,4 @@ public class MessageBoxRefreshService extends Service {
 	}
 
 }
+
