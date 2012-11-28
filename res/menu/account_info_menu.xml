@@ -4,4 +4,9 @@
         android:icon="@drawable/content_discard"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />
+    <item android:id="@+id/change_passwd_account_menu_btn"
+        android:title="@string/change_passwd_account_button"
+        android:icon="@drawable/device_access_accounts"
+        android:orderInCategory="200"
+        android:showAsAction="ifRoom" />
 </menu>
