@@ -126,18 +126,24 @@ public class MessageDownloadService extends Service {
 
 			int messageIsdsId = msgCursor.getInt(isdsIdColIndex);
 			long msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
-			long fileSize = msgCursor.getInt(fileSizeColIndex) * 1024; // kB to bytes
-			fileSize *= 1.33f; // base64 makes the content bigger by 33%
-			//fileSize += 20 * 1024; // 20 kB is the size of the envelope
+			long fileSize = msgCursor.getInt(fileSizeColIndex);
 			msgCursor.close();
-			msgCursor = null;
+			msgCursor = null;														
 			
-			// Check if there is enough space to save the message and for unpacking it.
-			if((2 * fileSize) > getAvailableSpaceInKB()) {
-				if( receiver!= null)
+			
+			// Check if there is enough space to save the message and for
+			// unpacking it.
+			fileSize *= 1.33f; // base64 makes the content bigger by 33%
+			if ((2 * fileSize) > getAvailableSpaceInKB()) {
+				System.out.println(fileSize + " " + getAvailableSpaceInKB());
+				if (receiver != null)
 					receiver.send(ERROR_STORAGE_LOW_SPACE, null);
 				return;
 			}
+
+			fileSize *= 1024f; // kB to bytes
+			// fileSize += 20 * 1024; // 20 kB is the size of the envelope
+			
 
 			if(interrupted()) return;
 			// Connect to WS
