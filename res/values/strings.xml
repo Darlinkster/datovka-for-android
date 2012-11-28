@@ -47,7 +47,8 @@
     <string name="not_set">Není nastaveno.</string>
     <string name="no_connection">Zařízení není připojeno k internetu.</string>
     <string name="empty_attachments_list">Pro tuto zprávu ještě nebyly staženy přílohy. Jejich stažení provedete stisknutím tlačítka s ikonou sponky.</string>
-    <string name="storage_not_available">Úložiště není dostupné, nebo na něm došlo volné místo.</string>
+    <string name="storage_not_available">Úložiště není dostupné.</string>
+    <string name="storage_low_space">Na úložišti není dostatek volného místa.</string>
     <string name="message_download_crashed">Stahování zprávy nebylo dokončeno.</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>

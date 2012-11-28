@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
+import android.os.StatFs;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
@@ -33,6 +34,7 @@ public class MessageDownloadService extends Service {
 	public static final int ERROR = 8355;
 	public static final int ERROR_NO_CONNECTION = 8366;
 	public static final int ERROR_STORAGE_NOT_AVAILABLE = 8377;
+	public static final int ERROR_STORAGE_LOW_SPACE = 8388;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
@@ -128,6 +130,14 @@ public class MessageDownloadService extends Service {
 			fileSize *= 1.33f; // base64 makes the content bigger by 33%
 			//fileSize += 20 * 1024; // 20 kB is the size of the envelope
 			msgCursor.close();
+			msgCursor = null;
+			
+			// Check if there is enough space to save the message and for unpacking it.
+			if((2 * fileSize) > getAvailableSpaceInKB()) {
+				if( receiver!= null)
+					receiver.send(ERROR_STORAGE_LOW_SPACE, null);
+				return;
+			}
 
 			if(interrupted()) return;
 			// Connect to WS
@@ -262,6 +272,14 @@ public class MessageDownloadService extends Service {
 			if (!mExternalStorageAvailable && !mExternalStorageWriteable) {
 				throw new StorageNotAwailableException("External storage available: " + mExternalStorageAvailable + " writable: " + mExternalStorageWriteable);
 			}
+		}
+		
+		public long getAvailableSpaceInKB(){
+		    final long SIZE_KB = 1024L;
+		    long availableSpace = -1L;
+		    StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+		    availableSpace = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
+		    return availableSpace/SIZE_KB;
 		}
 	}
 
