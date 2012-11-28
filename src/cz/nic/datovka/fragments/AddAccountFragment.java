@@ -26,31 +26,25 @@ public class AddAccountFragment extends SherlockDialogFragment {
 
 	private static Handler handler = new Handler() {
 		public void handleMessage(Message message) {
-			if (message.arg1 == AddAccountService.RESULT_OK) {
+			if(mProgressDialog.getWindow() != null)
 				mProgressDialog.dismiss();
+
+			if (message.arg1 == AddAccountService.RESULT_OK) {
 				Toast.makeText(Application.ctx, R.string.account_created, Toast.LENGTH_SHORT).show();
 			}
-
 			else if (message.arg1 == AddAccountService.RESULT_EXISTS) {
-				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, R.string.account_exists, Toast.LENGTH_SHORT).show();
 			}
-
 			else if (message.arg1 == AddAccountService.RESULT_ERR) {
-				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, R.string.account_create_error, Toast.LENGTH_SHORT).show();
 			}
-
 			else if (message.arg1 == AddAccountService.RESULT_BAD_LOGIN) {
-				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
 			}
 			else if (message.arg1 == AddAccountService.RESULT_DS_ERR) {
-				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
 			}
 			else if (message.arg1 == AddAccountService.RESULT_NO_CONNECTION) {
-				mProgressDialog.dismiss();
 				Toast.makeText(Application.ctx, R.string.no_connection , Toast.LENGTH_SHORT).show();
 			}
 		}

@@ -45,35 +45,37 @@ public class AccountInfoFragment extends SherlockFragment {
 
 		Uri uri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 		Cursor msgBoxCursor = getActivity().getContentResolver().query(uri, DatabaseHelper.msgbox_columns, null, null, null);
-		msgBoxCursor.moveToFirst();
+		if (msgBoxCursor.moveToFirst()) {
 
-		int usernameColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
-		int msgBoxIdColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
-		int msgBoxTypeColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TYPE);
-		int ownerNameId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
-		int ownerAddressCityId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_CITY);
-		int ownerAddressStateId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_STATE);
-		int ownerAddressStreetId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_STREET);
-		int ownerAddressStreetNumId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_MUNIC_NUMBER);
-		int ownerAddressZipId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_ZIP);
-		int passwordExpirationId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION);
+			int usernameColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
+			int msgBoxIdColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
+			int msgBoxTypeColId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_TYPE);
+			int ownerNameId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_NAME);
+			int ownerAddressCityId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_CITY);
+			int ownerAddressStateId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_STATE);
+			int ownerAddressStreetId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_STREET);
+			int ownerAddressStreetNumId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_MUNIC_NUMBER);
+			int ownerAddressZipId = msgBoxCursor.getColumnIndex(DatabaseHelper.OWNER_ADDRESS_ZIP);
+			int passwordExpirationId = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION);
 
-		usernameTv.setText(getString(R.string.username)+ ": " + msgBoxCursor.getString(usernameColId));
-		msgBoxIdTv.setText(getString(R.string.ID, msgBoxCursor.getString(msgBoxIdColId)));
+			usernameTv.setText(getString(R.string.username) + ": " + msgBoxCursor.getString(usernameColId));
+			msgBoxIdTv.setText(getString(R.string.ID, msgBoxCursor.getString(msgBoxIdColId)));
 
-		long expirationDate = Long.parseLong(msgBoxCursor.getString(passwordExpirationId));
-		if (expirationDate < 0)
-			passwordExpirationTv.setText(getString(R.string.passwd_expir_date)+ ": " + getString(R.string.not_set));
-		else
-			passwordExpirationTv.setText(getString(R.string.passwd_expir_date)+ ": " + AndroidUtils.FromEpochTimeToHumanReadableDateWithTime(expirationDate));
-		
-		msgBoxTypeTv.setText(getString(R.string.msgbox_type)+ ": " + msgBoxCursor.getString(msgBoxTypeColId));
+			long expirationDate = Long.parseLong(msgBoxCursor.getString(passwordExpirationId));
+			if (expirationDate < 0)
+				passwordExpirationTv.setText(getString(R.string.passwd_expir_date) + ": " + getString(R.string.not_set));
+			else
+				passwordExpirationTv.setText(getString(R.string.passwd_expir_date) + ": "
+						+ AndroidUtils.FromEpochTimeToHumanReadableDateWithTime(expirationDate));
 
-		ownerNameTv.setText(msgBoxCursor.getString(ownerNameId));
-		ownerAddressStreetTv.setText(msgBoxCursor.getString(ownerAddressStreetId) + " " + msgBoxCursor.getString(ownerAddressStreetNumId));
-		ownerAddressCityTv.setText(msgBoxCursor.getString(ownerAddressCityId)+" "+msgBoxCursor.getString(ownerAddressZipId));
-		ownerAddressStateTv.setText(msgBoxCursor.getString(ownerAddressStateId));
+			msgBoxTypeTv.setText(getString(R.string.msgbox_type) + ": " + msgBoxCursor.getString(msgBoxTypeColId));
 
+			ownerNameTv.setText(msgBoxCursor.getString(ownerNameId));
+			ownerAddressStreetTv.setText(msgBoxCursor.getString(ownerAddressStreetId) + " " + msgBoxCursor.getString(ownerAddressStreetNumId));
+			ownerAddressCityTv.setText(msgBoxCursor.getString(ownerAddressCityId) + " " + msgBoxCursor.getString(ownerAddressZipId));
+			ownerAddressStateTv.setText(msgBoxCursor.getString(ownerAddressStateId));
+
+		}
 		msgBoxCursor.close();
 		return v;
 	}

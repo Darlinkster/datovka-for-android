@@ -135,7 +135,7 @@ public class AddAccountService extends IntentService {
 	private boolean checkIfAccountExists(String login, String password) {
 		String[] projection = { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD };
 		String selection = DatabaseHelper.MSGBOX_LOGIN + " = ? and " + DatabaseHelper.MSGBOX_PASSWORD + " = ?";
-		String[] selectionArgs = { login, password };
+		String[] selectionArgs = { login, Base64.encode(password.getBytes()) };
 		
 		Cursor cursor = getContentResolver().query(
 				MsgBoxContentProvider.CONTENT_URI, projection, selection,
