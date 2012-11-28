@@ -4,6 +4,7 @@ import cz.abclinuxu.datoveschranky.common.impl.Status;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
 import cz.nic.datovka.tinyDB.holders.StringHolder;
 
+import java.io.IOException;
 import java.util.HashMap;
 import org.xml.sax.Attributes;
 
@@ -69,8 +70,9 @@ public abstract class AbstractResponseParser implements ResponseParser {
     
     /**
      * Konec elementu, handle obsahuje OutputHandler s obsaheme elementu.
+     * @throws IOException 
      */ 
-    public void endElement(String elName, OutputHolder handle) {
+    public void endElement(String elName, OutputHolder handle) throws IOException {
         if (debug) {
             System.err.println(dumpState());
         }
@@ -112,5 +114,5 @@ public abstract class AbstractResponseParser implements ResponseParser {
 
     public abstract OutputHolder startElementImpl(String elName, Attributes attributes);
 
-    public abstract void endElementImpl(String elName, OutputHolder handle);
+    public abstract void endElementImpl(String elName, OutputHolder handle) throws IOException;
 }

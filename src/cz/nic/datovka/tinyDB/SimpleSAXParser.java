@@ -8,6 +8,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
 import cz.nic.datovka.tinyDB.responseparsers.ResponseParser;
 
+import java.io.IOException;
 import java.util.Stack;
 
 /**
@@ -46,15 +47,24 @@ public class SimpleSAXParser extends DefaultHandler {
     public void characters(char[] array, int start, int length) throws SAXException {
             OutputHolder handler = this.state().handler;
             if (handler != null) {
-                handler.write(array, start, length);
+                try {
+					handler.write(array, start, length);
+				} catch (IOException e) {
+					throw new SAXException(e);
+				}
             }
     }
 
     @Override
     public void endElement(String arg0, String arg1, String arg2) throws SAXException {
         State state = this.state();
-        delegate.endElement(state.element, state.handler);
-        path.pop();
+        try {
+			delegate.endElement(state.element, state.handler);
+			path.pop();
+		} catch (IOException e) {
+			throw new SAXException(e);
+		}
+       
     }
 
     private State state() {

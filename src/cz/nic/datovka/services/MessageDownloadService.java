@@ -152,8 +152,7 @@ public class MessageDownloadService extends Service {
 			if (!destFolder.exists()) {
 				if (!destFolder.mkdirs()) {
 					try {
-						// TODO
-						throw new Exception("neco se po..");
+						throw new Exception("Cannot create output folder.");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -233,6 +232,9 @@ public class MessageDownloadService extends Service {
 
 			} catch (NullPointerException e){
 				logger.log(Level.WARNING, "Null pointer Exception: User probably killed download thread.");
+				resultData.putString("error", getString(R.string.message_download_crashed));
+				if( receiver!= null)
+					receiver.send(ERROR, resultData);
 			}
 		}
 

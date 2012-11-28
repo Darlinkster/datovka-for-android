@@ -1,6 +1,7 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import org.xml.sax.Attributes;
@@ -37,9 +38,9 @@ public class DownloadSignedSentMessage extends AbstractResponseParser {
     }
 
     @Override
-    public void endElementImpl(String elName, OutputHolder handle) {
+    public void endElementImpl(String elName, OutputHolder handle) throws IOException {
         if (handle instanceof Closeable) {
-            Utils.close((Closeable) handle);
+            ((Closeable) handle).close();
         }
     }
 }

@@ -1,5 +1,7 @@
 package cz.nic.datovka.tinyDB.holders;
 
+import java.io.IOException;
+
 /**
  *
  * Interface pro čtení obsahu XML elementu.
@@ -8,7 +10,7 @@ package cz.nic.datovka.tinyDB.holders;
  */
 public interface OutputHolder<T> {
 
-    public void write(char[] array, int start, int length);
+    public void write(char[] array, int start, int length) throws IOException;
     
     /**
      * Vrátí výsledek čtení.

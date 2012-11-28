@@ -8,8 +8,6 @@ import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cz.abclinuxu.datoveschranky.common.impl.Utils;
-
 /**
  * Zapíše obsah elementu do OutputStreamu.
  * 
@@ -27,15 +25,15 @@ public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable
 		bw = new BufferedWriter(new OutputStreamWriter(os));
 	}
 
-	public void write(char[] array, int start, int length) {
+	public void write(char[] array, int start, int length) throws IOException {
 		if (closed == true) return; 
 		
 		try {
 			bw.write(array, start, length);
-			//bw.flush();
 		} catch (IOException ioe) {
 			logger.log(Level.SEVERE, "Cannot write to buffer. Maybe user cancel downloading of that file.");
 			closed = true;
+			throw ioe;
 		}
 	}
 
@@ -43,13 +41,10 @@ public class OutputStreamHolder implements OutputHolder<OutputStream>, Closeable
 		return os;
 	}
 
-	public void close() {
-		try{
-			Utils.close(bw, os);
-		} catch (RuntimeException e){
-			closed = true;
-			e.printStackTrace();
-		}
+	public void close() throws IOException {
+		bw.close();
+		os.close();
+		
 	}
 
 }
