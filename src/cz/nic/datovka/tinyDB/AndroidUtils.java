@@ -61,4 +61,18 @@ public class AndroidUtils {
 		
 		return sdf.format(gc.getTime());
 	}
+	
+	public static boolean stringToBoolean(String param) {
+		if((param == null) || param.equalsIgnoreCase("")) {
+			return false;
+		}
+		else if(param.equalsIgnoreCase("yes") || param.equalsIgnoreCase("true")){
+			return true;
+		}
+		else if(param.equalsIgnoreCase("no") || param.equalsIgnoreCase("false")) {
+			return false;
+		}
+		
+		return false;
+	}
 }

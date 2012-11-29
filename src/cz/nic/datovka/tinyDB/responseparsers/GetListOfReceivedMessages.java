@@ -1,19 +1,20 @@
 package cz.nic.datovka.tinyDB.responseparsers;
 
-import cz.abclinuxu.datoveschranky.common.impl.Utils;
-import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.xml.sax.Attributes;
 
 import cz.abclinuxu.datoveschranky.common.entities.DataBox;
-import cz.abclinuxu.datoveschranky.common.entities.MessageState;
+import cz.abclinuxu.datoveschranky.common.entities.DataBoxType;
+import cz.abclinuxu.datoveschranky.common.entities.DocumentIdent;
+import cz.abclinuxu.datoveschranky.common.entities.LegalTitle;
+import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.MessageType;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.holders.OutputHolder;
 import cz.nic.datovka.tinyDB.holders.StringHolder;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.xml.sax.Attributes;
 
 /**
  *
@@ -23,7 +24,10 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
 
     static private final String[] wanting = {"dbIDSender", "dmSender", "dmSenderAddress",
         "dbIDRecipient", "dmRecipient", "dmRecipientAddress", "dmID", "dmAnnotation",
-        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize", "dmMessageStatus"
+        "dmDeliveryTime", "dmAcceptanceTime", "dmAttachmentSize", "dmMessageStatus",
+        "dmSenderType", "dmToHands", "dmRecipientRefNumber", "dmSenderRefNumber", "dmRecipientIdent",
+        "dmSenderIdent", "dmLegalTitleLaw", "dmLegalTitleYear", "dmLegalTitleSect", "dmLegalTitlePar",
+        "dmLegalTitlePoint", "dmPersonalDelivery", "dmAllowSubstDelivery"
     };
     private HashMap<String, StringHolder> map = new HashMap<String, StringHolder>();
     private List<MessageEnvelope> messages = new ArrayList<MessageEnvelope>();
@@ -48,16 +52,31 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
             String senderID = map.get("dbIDSender").toString();
             String senderName = map.get("dmSender").toString();
             String senderAddress = map.get("dmSenderAddress").toString();
-            DataBox sender = new DataBox(senderID, senderName, senderAddress);
+            String senderType = map.get("dmSenderType").toString();
+            DataBoxType dbtype = DataBoxType.valueOf(Integer.parseInt(senderType));
+            DataBox sender = new DataBox(senderID, dbtype, senderName, senderAddress);
             
             String recipientID = map.get("dbIDRecipient").toString();
             String recipientName = map.get("dmRecipient").toString();
             String recipientAdress = map.get("dmRecipientAddress").toString();
             DataBox recipient = new DataBox(recipientID, recipientName, recipientAdress);
             
+            String legalTitleLaw = map.get("dmLegalTitleLaw").toString();
+            String legalTitleYear = map.get("dmLegalTitleYear").toString();
+            String legalTitleSect = map.get("dmLegalTitleSect").toString();
+            String legalTitlePar = map.get("dmLegalTitlePar").toString();
+            String legalTitlePoint = map.get("dmLegalTitlePoint").toString();
+            LegalTitle legalTitle = new LegalTitle(legalTitleLaw, legalTitleYear, legalTitleSect, legalTitlePar, legalTitlePoint);
+            
+            String personalDelivery = map.get("dmPersonalDelivery").toString();
+            String substDelivery = map.get("dmAllowSubstDelivery").toString();
+            
             String dmAnnotation = map.get("dmAnnotation").toString();
             String messageID = map.get("dmID").toString();
-            MessageEnvelope env = new MessageEnvelope(MessageType.RECEIVED, sender, recipient, messageID, dmAnnotation);
+            String toHands = map.get("dmToHands").toString();
+            MessageEnvelope env = new MessageEnvelope(MessageType.RECEIVED, sender, recipient, messageID, dmAnnotation, 
+            											legalTitle, toHands, AndroidUtils.stringToBoolean(personalDelivery), 
+            											AndroidUtils.stringToBoolean(substDelivery));
 
             
             String attachmentSize = map.get("dmAttachmentSize").toString();
@@ -78,6 +97,17 @@ public class GetListOfReceivedMessages extends AbstractResponseParser {
             if (status != null && !status.equals("")) {
                 env.setState(Integer.parseInt(status));
             }
+
+            String recipientRefNum = map.get("dmRecipientRefNumber").toString();
+            String recipientIdent = map.get("dmRecipientIdent").toString();
+            DocumentIdent recipientDocIdent = new DocumentIdent(recipientRefNum, recipientIdent);
+            env.setRecipientIdent(recipientDocIdent);
+            
+            String senderRefNum = map.get("dmSenderRefNumber").toString();
+            String senderIdent = map.get("dmSenderIdent").toString();
+            DocumentIdent senderDocIdent = new DocumentIdent(senderRefNum, senderIdent);
+            env.setSenderIdent(senderDocIdent);
+            
             messages.add(env);
             this.fillMap(); // a jedeme dál
 
