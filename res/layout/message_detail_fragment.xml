@@ -183,6 +183,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
             android:singleLine="true"
+            android:paddingBottom="8dp"
             android:textSize="14sp" />
         
     </LinearLayout>
