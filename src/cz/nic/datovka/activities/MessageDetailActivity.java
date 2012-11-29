@@ -5,6 +5,9 @@ import java.io.File;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -19,6 +22,7 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.fragments.MessageAttachmentsFragment;
 import cz.nic.datovka.fragments.MessageDetailFragment;
 import cz.nic.datovka.fragments.MessageDownloadProgressFragment;
+import cz.nic.datovka.services.MessageDownloadService;
 import cz.nic.datovka.services.MessageStatusRefresher;
 
 public class MessageDetailActivity  extends SherlockFragmentActivity {
@@ -68,6 +72,8 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			Intent param = new Intent();
 			param.putExtra(MessageStatusRefresher.MSG_ID, this.messageId);
 			param.putExtra(MessageStatusRefresher.FOLDER, this.folder);
+			Messenger messenger = new Messenger(handler);
+			param.putExtra(MessageDownloadService.RECEIVER, messenger);
 			new MessageStatusRefresher(param).start();
 		}
 		return false;
@@ -87,4 +93,17 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			Toast.makeText(this, R.string.no_default_application, Toast.LENGTH_LONG).show();
 		}
 	}
+	
+	// Handler for handling messages from MessageBoxRefresh service
+	private static Handler handler = new Handler() {
+		public void handleMessage(Message message) {
+			if (message.arg1 == MessageStatusRefresher.ERROR) {
+				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
+			} else if (message.arg1 == MessageStatusRefresher.ERROR_BAD_LOGIN) {
+				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(Application.ctx, R.string.error, Toast.LENGTH_LONG).show();
+			}
+		}
+	};
 }

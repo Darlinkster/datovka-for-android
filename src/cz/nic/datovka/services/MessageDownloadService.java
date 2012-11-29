@@ -22,6 +22,7 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.connector.DatabaseTools;
+import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.exceptions.StorageNotAwailableException;
@@ -35,6 +36,7 @@ public class MessageDownloadService extends Service {
 	public static final int ERROR_NO_CONNECTION = 8366;
 	public static final int ERROR_STORAGE_NOT_AVAILABLE = 8377;
 	public static final int ERROR_STORAGE_LOW_SPACE = 8388;
+	public static final int RESULT_BAD_LOGIN = 401;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
@@ -128,7 +130,17 @@ public class MessageDownloadService extends Service {
 			long msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
 			long fileSize = msgCursor.getInt(fileSizeColIndex);
 			msgCursor.close();
-			msgCursor = null;														
+			msgCursor = null;
+			
+			// Get MsgBox ISDS ID
+			String msgBoxIsdsId = "-1";
+			Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
+			Cursor msgBoxCursor = getContentResolver().query(msgBoxUri, new String[]{DatabaseHelper.MSGBOX_ISDS_ID}, null, null, null);
+			if(msgBoxCursor.moveToFirst()){
+				msgBoxIsdsId = msgBoxCursor.getString(msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID));
+			}
+			msgBoxCursor.close();
+			msgBoxCursor = null;
 			
 			
 			// Check if there is enough space to save the message and for
@@ -231,10 +243,15 @@ public class MessageDownloadService extends Service {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (HttpException e) {
-				String errorMessage = e.getMessage();
-				resultData.putString("error", errorMessage);
-				if( receiver!= null)
+				if(e.getErrorCode() == 401){
+					resultData.putString("error", new String(getString(R.string.cannot_login, msgBoxIsdsId)));
+				} else {
+					String errorMessage = e.getMessage();
+					resultData.putString("error", errorMessage);
+				}
+				if( receiver!= null){
 					receiver.send(ERROR, resultData);
+				}
 			} catch (StreamInterruptedException e) {
 				// Probably user interrupted download the file, delete it.
 				if (outFileTmp != null && outFileTmp.exists()) {
