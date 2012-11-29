@@ -101,8 +101,11 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.ERROR_BAD_LOGIN) {
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
-			} else {
-				Toast.makeText(Application.ctx, R.string.error, Toast.LENGTH_LONG).show();
+			} else if (message.arg1 == MessageStatusRefresher.STATUS_UPDATED) {
+				if(message.arg2 > 0)
+					Toast.makeText(Application.ctx, R.string.status_changed, Toast.LENGTH_LONG).show();
+				else
+					Toast.makeText(Application.ctx, R.string.status_not_changed, Toast.LENGTH_LONG).show();
 			}
 		}
 	};

@@ -68,6 +68,8 @@
     <string name="passwd_change_fail">Chyba: Heslo nebylo změněno.</string>
     <string name="cannot_login">Není možné se přihlásit k účtu ID: %1$s.</string>
     <string name="error">Chyba</string>
+    <string name="status_changed">Stav zprávy byl aktualizován</string>
+    <string name="status_not_changed">Stav zprávy nezměněn</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

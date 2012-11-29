@@ -71,13 +71,9 @@ public class AddAccountFragment extends SherlockDialogFragment {
 				intent.putExtra(AddAccountService.PASSWORD, passwordTv.getText().toString());
 				intent.putExtra(AddAccountService.TESTENV, testEnvCheckbox.isChecked());
 
-				// TODO HACK
 				if (loginTv.getText().toString().length() == 0) {
-					intent.putExtra(AddAccountService.LOGIN, "co55on");
-					intent.putExtra(AddAccountService.PASSWORD, "Fx2MAt3u8wDRL5");
-					intent.putExtra(AddAccountService.TESTENV, true);
+					return;
 				}
-				// TODO END HACK
 
 				getActivity().startService(intent);
 

@@ -28,8 +28,8 @@ public class MessageStatusRefresher extends Thread {
 	public static final String RECEIVER = "receiver";
 	public static final int ERROR_BAD_LOGIN = 100;
 	public static final int ERROR = 200;
+	public static final int STATUS_UPDATED = 300;
 	private static final int INBOX = 0;
-	private static final int STATUS_CHANGED = 1;
 	private long msgId;
 	private int folder;
 	private Messenger messenger;
@@ -77,6 +77,7 @@ public class MessageStatusRefresher extends Thread {
 		msgBoxCursor.close();
 		msgBoxCursor = null;
 		
+		int statusChanged = 0;
 		Connector connector = Connector.connectToWs(msgboxId);
 		try {
 			MessageEnvelope msg = connector.GetDeliveryInfo(msgIsdsId);
@@ -88,16 +89,15 @@ public class MessageStatusRefresher extends Thread {
 						val.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
 					val.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
 					val.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msg.getStateAsInt());
-					val.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
 				} else {
 					GregorianCalendar sentAcceptanceDate = msg.getAcceptanceTime();
 					if(sentAcceptanceDate != null)
 						val.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
 					val.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
 					val.put(DatabaseHelper.SENT_MESSAGE_STATE, msg.getStateAsInt());
-					val.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
 				}
 				Application.ctx.getContentResolver().update(msgUri, val, null, null);
+				statusChanged = 1;
 			}
 			
 		} catch (HttpException e) {
@@ -128,5 +128,13 @@ public class MessageStatusRefresher extends Thread {
 			}
 		}
 		
+		Message message3 = Message.obtain();
+		message3.arg1 = STATUS_UPDATED;
+		message3.arg2 = statusChanged;
+		try {
+			messenger.send(message3);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
 	}
 }
