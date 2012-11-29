@@ -192,7 +192,7 @@ public class MessageDownloadService extends Service {
 			File outFileTmp = null;
 			Bundle resultData = new Bundle();
 			try {
-				String outFileName = messageIsdsId + ".bin";
+				String outFileName = messageIsdsId + ".zfo";
 				outFileTmp = new File(destFolder, outFileName + ".tmp");
 				fos = new GaugeFileOutputStream(outFileTmp, receiver, UPDATE_PROGRESS, fileSize);
 
@@ -209,9 +209,9 @@ public class MessageDownloadService extends Service {
 				if(interrupted()) return;
 				File outFile = new File(destFolder, outFileName);
 				outFileTmp.renameTo(outFile);
-				DatabaseTools.insertAttachmentToDb(directory + outFileName,
-						getResources().getString(R.string.signed_message_name), "application/pkcs7+xml", folder,
-						messageId);
+				/*DatabaseTools.insertAttachmentToDb(directory + outFileName,
+						getResources().getString(R.string.signed_message_name), "application/vnd.software602.filler.form-xml-zip", folder,
+						messageId);*/
 				
 				// Parse the signed message and extract attachments
 				InputStream input = new FileInputStream(outFile);
