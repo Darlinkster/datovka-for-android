@@ -21,7 +21,6 @@ import android.os.StatFs;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
 import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
