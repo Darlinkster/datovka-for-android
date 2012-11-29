@@ -91,6 +91,7 @@ public class MessageDetailFragment extends SherlockFragment {
 		
 		TextView senderDetailTV = (TextView) v.findViewById(R.id.sender_details);
 		TextView recipientDetailTV = (TextView) v.findViewById(R.id.recipient_details);
+		TextView senderRecpTV = (TextView) v.findViewById(R.id.message_sender_recipient);
 
 		int annotationColId;
 		int messageIdColId;
@@ -115,6 +116,8 @@ public class MessageDetailFragment extends SherlockFragment {
 
 		int folder = getArguments().getInt(FOLDER, 0);
 		if (folder == INBOX) {
+			senderRecpTV.setText(getString(R.string.sender));
+			
 			annotationColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION);
 			messageIdColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID);
 			messageDeliveryDateColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE);
@@ -136,6 +139,8 @@ public class MessageDetailFragment extends SherlockFragment {
 			senderRefNumColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_SENDER_REF_NUMBER);
 			senderIdentColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_SENDER_IDENT); 
 		} else { // OUTBOX
+			senderRecpTV.setText(getString(R.string.recipient));
+			
 			annotationColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ANNOTATION);
 			messageIdColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ISDS_ID);
 			messageDeliveryDateColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENT_DATE);
@@ -181,6 +186,7 @@ public class MessageDetailFragment extends SherlockFragment {
 			acceptanceDateTV.setText(getString(R.string.acceptance_date,AndroidUtils.FromXmlToHumanReadableDateWithTime(acceptanceDate)));
 		else
 			acceptanceDateTV.setText(getString(R.string.acceptance_date, getString(R.string.message_not_accepted_yet)));
+		
 		
 		senderTV.setText(message.getString(senderRecipientColId));
 		senderAddressTV.setText(message.getString(senderRecipientAddressColId));
