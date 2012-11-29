@@ -14,6 +14,7 @@ import com.actionbarsherlock.view.MenuItem;
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.fragments.AccountInfoFragment;
+import cz.nic.datovka.fragments.ChangePasswordFragment;
 
 public class AccountInfoActivity extends SherlockFragmentActivity{
 	public final static String MSGBOX_ID = "msgid";
@@ -51,6 +52,11 @@ public class AccountInfoActivity extends SherlockFragmentActivity{
 			DatabaseTools.deleteAccount(msgBoxId);
 			Toast.makeText(this, R.string.account_deleted, Toast.LENGTH_SHORT).show();
 			this.finish();
+			return true;
+		}
+		else if (item.getItemId() == R.id.change_passwd_account_menu_btn) {
+			ChangePasswordFragment cpf = ChangePasswordFragment.newInstance(this.msgBoxId);
+			cpf.show(fm, null);
 			return true;
 		}
 		return false;

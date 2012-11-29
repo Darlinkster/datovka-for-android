@@ -17,6 +17,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
@@ -30,6 +31,7 @@ import cz.nic.datovka.tinyDB.exceptions.HttpException;
 public class MessageBoxRefreshService extends Service {
 	public static final int ERROR = -1;
 	public static final int ERROR_NO_CONNECTION = -99;
+	public static final int ERROR_BAD_LOGIN = -401;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
@@ -69,8 +71,9 @@ public class MessageBoxRefreshService extends Service {
 		public void run() {
 			//System.out.println("thread started");
 			Cursor msgBoxCursor = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
-					new String[] { DatabaseHelper.MSGBOX_ID }, null, null, null);
+					new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.MSGBOX_ISDS_ID }, null, null, null);
 			int msgBoxIdColIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
+			int msgBoxIsdsIdColIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
 			
 			// new message counter
 			int newMessageCounter = 0;
@@ -80,6 +83,7 @@ public class MessageBoxRefreshService extends Service {
 			while(msgBoxCursor.moveToNext()){
 				// get msgbox id
 				long msgBoxId = msgBoxCursor.getLong(msgBoxIdColIndex);
+				String msgBoxIsdsId = msgBoxCursor.getString(msgBoxIsdsIdColIndex);
 				
 				// get last inbox message
 				Cursor inboxMsg = getContentResolver().query(ReceivedMessagesContentProvider.CONTENT_URI,
@@ -260,6 +264,21 @@ public class MessageBoxRefreshService extends Service {
 					message.arg2 = messageStatusChangeCounter;
 				} catch (HttpException e) {
 					e.printStackTrace();
+					Message msg1 = Message.obtain();
+					if(e.getErrorCode() == 401){
+						msg1.arg1 = ERROR_BAD_LOGIN;
+						msg1.obj = new String(getString(R.string.cannot_login, msgBoxIsdsId));
+					} else {
+						msg1.arg1 = ERROR;
+						msg1.obj = new String(e.getErrorCode() + ": " + e.getMessage());
+					}
+					
+					try {
+						messenger.send(msg1);
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+				} catch (DSException e) {
 					Message msg2 = Message.obtain();
 					msg2.arg1 = ERROR;
 					msg2.obj = new String(e.getErrorCode() + ": " + e.getMessage());
@@ -267,17 +286,7 @@ public class MessageBoxRefreshService extends Service {
 					try {
 						messenger.send(msg2);
 					} catch (RemoteException e1) {
-						e.printStackTrace();
-					}
-				} catch (DSException e) {
-					Message msg3 = Message.obtain();
-					msg3.arg1 = ERROR;
-					msg3.obj = new String(e.getErrorCode() + ": " + e.getMessage());
-					
-					try {
-						messenger.send(msg3);
-					} catch (RemoteException e1) {
-						e.printStackTrace();
+						e1.printStackTrace();
 					}
 				}
 				

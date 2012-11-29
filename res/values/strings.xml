@@ -62,6 +62,10 @@
     <string name="doc_ident">Spisová značka: %1$s</string>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
+    <string name="new_password">Nové heslo</string>
+    <string name="passwd_change_success">Heslo bylo úspěšně změněno.</string>
+    <string name="passwd_change_fail">Chyba: Heslo nebylo změněno.</string>
+    <string name="cannot_login">Není možné se přihlásit k účtu ID: %1$s.</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

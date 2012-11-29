@@ -7,7 +7,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.widget.Toast;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
+import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
@@ -82,6 +84,9 @@ public class MessageStatusRefresher extends Thread {
 			
 		} catch (HttpException e) {
 			e.printStackTrace();
+			if(e.getErrorCode() == 401){
+				Toast.makeText(Application.ctx, Application.ctx.getString(R.string.cannot_login, "xx"), Toast.LENGTH_LONG).show();
+			}
 		} catch (DSException e) {
 			e.printStackTrace();
 		}
