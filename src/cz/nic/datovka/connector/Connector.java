@@ -1,6 +1,5 @@
 package cz.nic.datovka.connector;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
@@ -225,7 +224,7 @@ public class Connector {
 		return service.verifyMessage(envelope);
 	}
 	
-	public void  parseSignedMessage(File outputDir, int folder, Long messageId, InputStream input, int messageIsdsId){
+	public void  parseSignedMessage(String outputDir, int folder, Long messageId, InputStream input, int messageIsdsId){
 		FileAttachmentStorerWithDBInsertion faswd = new FileAttachmentStorerWithDBInsertion(outputDir, folder, messageId);
 		
 		service.parseSignedMessage(faswd, messageIsdsId, input);

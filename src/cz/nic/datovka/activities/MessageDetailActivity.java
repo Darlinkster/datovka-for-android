@@ -83,7 +83,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		Intent intent = new Intent();
 		intent.setAction(android.content.Intent.ACTION_VIEW);
 		
-		File file = new File(view.getTag(R.id.attachment_path_tag_id).toString());
+		File file = new File(Application.externalStoragePath + view.getTag(R.id.attachment_path_tag_id).toString());
 		intent.setDataAndType(Uri.fromFile(file), (String) view.getTag());
 		try{
 			startActivity(intent);

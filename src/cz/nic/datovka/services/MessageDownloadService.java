@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.os.StatFs;
 import cz.nic.datovka.R;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -42,7 +43,6 @@ public class MessageDownloadService extends Service {
 
 	private static final int INBOX = 0;
 
-	private String directory;
 	private long messageId;
 	private int folder;
 	private ResultReceiver receiver;
@@ -173,9 +173,8 @@ public class MessageDownloadService extends Service {
 					receiver.send(ERROR_STORAGE_NOT_AVAILABLE, null);
 				return;
 			}
-			String programFolder = Environment.getExternalStorageDirectory().getPath() + "/Datovka";
-			directory = programFolder + "/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
-			File destFolder = new File(directory);
+			String outputDirectory = "/Datovka/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
+			File destFolder = new File(Application.externalStoragePath + outputDirectory);
 			if (!destFolder.exists()) {
 				if (!destFolder.mkdirs()) {
 					try {
@@ -230,7 +229,7 @@ public class MessageDownloadService extends Service {
 					input = null;
 					return;
 				}
-				connector.parseSignedMessage(destFolder, folder, messageId, csis, messageIsdsId);
+				connector.parseSignedMessage(outputDirectory, folder, messageId, csis, messageIsdsId);
 				
 				// Send 100% to gauge, just for sure
 				resultData.putInt("progress", 100);

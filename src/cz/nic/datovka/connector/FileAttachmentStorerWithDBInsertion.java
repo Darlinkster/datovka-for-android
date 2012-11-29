@@ -9,18 +9,17 @@ import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
+import cz.nic.datovka.activities.Application;
 
 public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
 
-    private File outputDir = null;
+    private String outputDir = null;
     private int folder;
     private long messageId;
 
-    public FileAttachmentStorerWithDBInsertion(File outputDir, int folder,
+    public FileAttachmentStorerWithDBInsertion(String outputDir, int folder,
 			long messageId) {
-        if (!outputDir.isDirectory()) {
-            throw new IllegalArgumentException(String.format("%s neni adresarem.", outputDir.getAbsolutePath()));
-        }
+        
         this.outputDir = outputDir;
         this.folder = folder;
         this.messageId = messageId;
@@ -29,7 +28,7 @@ public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
     
     public OutputStream store(MessageEnvelope envelope, Attachment attachment) throws IOException {
         String name = name(envelope, attachment);
-        File output = new File(outputDir, name);
+        File output = new File(Application.externalStoragePath + outputDir, name);
         attachment.setContents(new FileContent(output));
         
         DatabaseTools.insertAttachmentToDb(outputDir + "/" + name,

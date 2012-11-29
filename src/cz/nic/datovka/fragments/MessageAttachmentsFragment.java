@@ -15,6 +15,7 @@ import android.view.View;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import cz.nic.datovka.R;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.RecvAttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.SentAttachmentsContentProvider;
@@ -74,7 +75,7 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 					// If any file from attachments is missing, then remove all
 					// attachments from db, and pretend that attachments wasn't
 					// downloaded yet. 
-					File tmp = new File(attachmentPath);
+					File tmp = new File(Application.externalStoragePath + attachmentPath);
 					if (!tmp.exists()) {
 						Uri attachmentUri;
 						String where;
