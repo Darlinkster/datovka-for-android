@@ -42,7 +42,7 @@ public class AndroidUtils {
 	
 	public static String FromXmlToHumanReadableDateWithTime(String date){
 		Date dateObj = IsoDate.stringToDate(date, IsoDate.DATE_TIME);
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss \t d.M.yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss    d.M.yyyy");
 		
 		return sdf.format(dateObj);
 	}
@@ -57,7 +57,7 @@ public class AndroidUtils {
 	public static String FromEpochTimeToHumanReadableDateWithTime(long time){
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTimeInMillis(time);
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss \t d.M.yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss    d.M.yyyy");
 		
 		return sdf.format(gc.getTime());
 	}
