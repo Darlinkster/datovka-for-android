@@ -80,6 +80,17 @@ public class MessageDetailFragment extends SherlockFragment {
 		TextView senderAddressTV = (TextView) v.findViewById(R.id.message_sender_address);
 		TextView messageStatusTV = (TextView) v.findViewById(R.id.message_type);
 		TextView messageAttachmentSizeTV = (TextView) v.findViewById(R.id.message_attachment_size);
+		TextView legalTitleTV = (TextView) v.findViewById(R.id.message_detail_legal_title);
+		TextView personalDeliveryTV = (TextView) v.findViewById(R.id.message_detail_personal_delivery);
+		TextView substDeliveryTV = (TextView) v.findViewById(R.id.message_detail_subst_delivery);
+		TextView toHandsTV = (TextView) v.findViewById(R.id.message_detail_to_hands);
+		TextView recipientRefNumTV = (TextView) v.findViewById(R.id.message_recipient_ref_num);
+		TextView recipientIdentTV = (TextView) v.findViewById(R.id.message_recipient_ident);
+		TextView senderRefNumTV = (TextView) v.findViewById(R.id.message_sender_ref_num);
+		TextView senderIdentTV = (TextView) v.findViewById(R.id.message_sender_ident);
+		
+		TextView senderDetailTV = (TextView) v.findViewById(R.id.sender_details);
+		TextView recipientDetailTV = (TextView) v.findViewById(R.id.recipient_details);
 
 		int annotationColId;
 		int messageIdColId;
@@ -89,6 +100,18 @@ public class MessageDetailFragment extends SherlockFragment {
 		int senderRecipientAddressColId;
 		int messageStatusColId;
 		int messageAttachmentSizeColId;
+		int legalTitleLawColId;
+		int legalTitleParColId;
+		int legalTitlePointColId;
+		int legalTitleSectColId;
+		int legalTitleYearColId;
+		int personalDeliveryColId;
+		int substDeliveryColId;
+		int toHandsColId;
+		int recipientRefNumColId;
+		int recipientIdentColId;
+		int senderRefNumColId;
+		int senderIdentColId;
 
 		int folder = getArguments().getInt(FOLDER, 0);
 		if (folder == INBOX) {
@@ -100,6 +123,18 @@ public class MessageDetailFragment extends SherlockFragment {
 			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.SENDER_ADDRESS);
 			messageStatusColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_STATE);
 			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE);
+			legalTitleLawColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_LAW);
+			legalTitleParColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_PAR);
+			legalTitlePointColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_POINT);
+			legalTitleSectColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_SECT);
+			legalTitleYearColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_YEAR);
+			personalDeliveryColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_PERSONAL_DELIVERY);
+			substDeliveryColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY);
+			toHandsColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_TO_HANDS);
+			recipientRefNumColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER);
+			recipientIdentColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_IDENT);
+			senderRefNumColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_SENDER_REF_NUMBER);
+			senderIdentColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_SENDER_IDENT); 
 		} else { // OUTBOX
 			annotationColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ANNOTATION);
 			messageIdColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ISDS_ID);
@@ -109,6 +144,18 @@ public class MessageDetailFragment extends SherlockFragment {
 			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.RECIPIENT_ADDRESS);
 			messageStatusColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_STATE);
 			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE);
+			legalTitleLawColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW);
+			legalTitleParColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_PAR);
+			legalTitlePointColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_POINT);
+			legalTitleSectColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_SECT);
+			legalTitleYearColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_YEAR);
+			personalDeliveryColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_PERSONAL_DELIVERY);
+			substDeliveryColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ALLOW_SUBST_DELIVERY);
+			toHandsColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_TO_HANDS);
+			recipientRefNumColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_RECIPIENT_REF_NUMBER);
+			recipientIdentColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_RECIPIENT_IDENT);
+			senderRefNumColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENDER_REF_NUMBER);
+			senderIdentColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENDER_IDENT);
 		}
 
 		if(customActionBarView != null){
@@ -155,12 +202,84 @@ public class MessageDetailFragment extends SherlockFragment {
 						
 		}
 		messageAttachmentSizeTV.setText(getString(R.string.size_of_attachments, message.getInt(messageAttachmentSizeColId)));
-
+		personalDeliveryTV.setText(getString(R.string.personal_delivery, translateIntAnswerToString(message.getString(personalDeliveryColId))));
+		substDeliveryTV.setText(getString(R.string.subst_delivery, translateIntAnswerToString(message.getString(substDeliveryColId))));
+		
+		String toHands = message.getString(toHandsColId);
+		if(toHands.equalsIgnoreCase(""))
+			hideTextView(toHandsTV);
+		else
+			toHandsTV.setText(getString(R.string.to_hands, toHands));
+		
+		String legalTitle = createLegalTitle(message.getString(legalTitleLawColId), message.getString(legalTitleParColId), 
+															message.getString(legalTitlePointColId), message.getString(legalTitleSectColId), 
+															message.getString(legalTitleYearColId));
+		if(legalTitle.equalsIgnoreCase(""))
+			hideTextView(legalTitleTV);
+		else
+			legalTitleTV.setText(getString(R.string.legal_title, legalTitle));
+		
+		String recipientIdent = message.getString(recipientIdentColId);
+		String recipientRefNum = message.getString(recipientRefNumColId);
+		if((recipientIdent.equalsIgnoreCase("") || (recipientRefNum.equalsIgnoreCase("")))){
+			hideTextView(recipientIdentTV);
+			hideTextView(recipientRefNumTV);
+			hideTextView(recipientDetailTV);
+		} else {
+			if(recipientIdent.equalsIgnoreCase(""))
+				hideTextView(recipientIdentTV);
+			else
+				recipientIdentTV.setText(getString(R.string.doc_ident, recipientIdent));
+			if(recipientRefNum.equalsIgnoreCase(""))
+				hideTextView(recipientRefNumTV);
+			else
+				recipientRefNumTV.setText(getString(R.string.doc_ref_num, recipientRefNum));
+		}
+		
+		String senderIdent = message.getString(senderIdentColId);
+		String senderRefNum = message.getString(senderRefNumColId);
+		if((senderIdent.equalsIgnoreCase("") || (senderRefNum.equalsIgnoreCase("")))){
+			hideTextView(senderIdentTV);
+			hideTextView(senderRefNumTV);
+			hideTextView(senderDetailTV);
+		} else {
+			if(senderIdent.equalsIgnoreCase(""))
+				hideTextView(senderIdentTV);
+			else
+				senderIdentTV.setText(getString(R.string.doc_ident, senderIdent));
+			if(senderRefNum.equalsIgnoreCase(""))
+				hideTextView(senderRefNumTV);
+			else
+				senderRefNumTV.setText(getString(R.string.doc_ref_num, senderRefNum));
+		}
 		message.close();
 		return v;
 
 	}
 
+	private String createLegalTitle(String legalTitleLaw, String legalTitlePar, 
+			String legalTitlePoint, String legalTitleSect, String legalTitleYear) {
+		String legalTitle = "";
+		
+		if((legalTitleLaw != null) && (!legalTitleLaw.equalsIgnoreCase(""))){
+			legalTitle += (legalTitleLaw + ", ");
+		}
+		if((legalTitleYear != null) && (!legalTitleYear.equalsIgnoreCase(""))){
+			legalTitle += (legalTitleYear + ", ");
+		}
+		if((legalTitleSect != null) && (!legalTitleSect.equalsIgnoreCase(""))){
+			legalTitle += (legalTitleSect + ", ");
+		}
+		if((legalTitlePar != null) && (!legalTitlePar.equalsIgnoreCase(""))){
+			legalTitle += (legalTitlePar + ", ");
+		}
+		if((legalTitlePoint != null) && (!legalTitlePoint.equalsIgnoreCase(""))){
+			legalTitle += legalTitlePoint;
+		}
+		
+		return legalTitle;
+	}
+	
 	private Cursor getMessageCursor() {
 		long id = getArguments().getLong(ID, 0);
 		int folder = getArguments().getInt(FOLDER, 0);
@@ -217,5 +336,21 @@ public class MessageDetailFragment extends SherlockFragment {
 	    public void onChange(boolean selfChange) {
 	    	fillFragment(getView(), null);
 	    }
+	}
+	
+	private String translateIntAnswerToString(String param){
+		if((param == null) || param.equalsIgnoreCase(""))
+			return getString(R.string.no);
+		else if(Integer.parseInt(param) == 1)
+			return getString(R.string.yes);
+		else if (Integer.parseInt(param) == 0)
+			return getString(R.string.no);
+		
+		return getString(R.string.no);
+	}
+	
+	private void hideTextView(TextView param) {
+		param.setHeight(0);
+		param.setVisibility(View.INVISIBLE);
 	}
 }

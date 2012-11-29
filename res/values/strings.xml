@@ -51,6 +51,17 @@
     <string name="storage_low_space">Na úložišti není dostatek volného místa.</string>
     <string name="message_download_crashed">Stahování zprávy nebylo dokončeno.</string>
     <string name="change_passwd_account_button">Změnit heslo</string>
+    <string name="sender_details">Detaily odesilatele:</string>
+    <string name="recipient_details">Detaily příjemce:</string>
+    <string name="message_details">Detaily zprávy:</string>
+    <string name="to_hands">K rukám: %1$s</string>
+    <string name="personal_delivery">Do vlastních rukou: %1$s</string>
+    <string name="subst_delivery">Povoleno doručení fikcí: %1$s</string>
+    <string name="legal_title">Zmocnění: %1$s</string>
+    <string name="doc_ref_num">Číslo jednací: %1$s</string>
+    <string name="doc_ident">Spisová značka: %1$s</string>
+    <string name="yes">Ano</string>
+    <string name="no">Ne</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>
