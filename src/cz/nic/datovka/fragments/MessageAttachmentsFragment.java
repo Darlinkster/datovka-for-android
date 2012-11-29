@@ -43,11 +43,11 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 		
 		String[] from;
 		if (folder == INBOX) {
-			from = new String[] { DatabaseHelper.RECV_ATTACHMENTS_FILENAME, DatabaseHelper.RECV_ATTACHMENTS_PATH };
+			from = new String[] { DatabaseHelper.RECV_ATTACHMENTS_FILENAME };
 		} else {
-			from = new String[] { DatabaseHelper.SENT_ATTACHMENTS_FILENAME, DatabaseHelper.SENT_ATTACHMENTS_PATH };
+			from = new String[] { DatabaseHelper.SENT_ATTACHMENTS_FILENAME };
 		}
-		int[] to = { R.id.attachment_item_filename, R.id.attachment_item_path };
+		int[] to = { R.id.attachment_item_filename };
 		
 		getLoaderManager().initLoader(0, null, this);
 		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item,null, from, to, 0);
@@ -56,19 +56,25 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 
 		adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
-				if (view.getId() == R.id.attachment_item_path) {
+				if (view.getId() == R.id.attachment_item_filename) {
 					int attachmentMIME;
+					int attachmentPathColId;
 					if (folder == INBOX) {
 						attachmentMIME = cursor.getColumnIndex(DatabaseHelper.RECV_ATTACHMENTS_MIME);
+						attachmentPathColId = cursor.getColumnIndex(DatabaseHelper.RECV_ATTACHMENTS_PATH);
 					} else {
 						attachmentMIME = cursor.getColumnIndex(DatabaseHelper.SENT_ATTACHMENTS_MIME);
+						attachmentPathColId = cursor.getColumnIndex(DatabaseHelper.SENT_ATTACHMENTS_PATH);
 					}
 
+					String attachmentPath = cursor.getString(attachmentPathColId);
+					
 					((View) view.getParent()).setTag(cursor.getString(attachmentMIME));
+					((View) view.getParent()).setTag(R.id.attachment_path_tag_id, attachmentPath);
 					// If any file from attachments is missing, then remove all
 					// attachments from db, and pretend that attachments wasn't
 					// downloaded yet. 
-					File tmp = new File(cursor.getString(colIndex));
+					File tmp = new File(attachmentPath);
 					if (!tmp.exists()) {
 						Uri attachmentUri;
 						String where;

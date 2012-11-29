@@ -11,7 +11,6 @@ import android.os.Messenger;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -83,9 +82,8 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		
 		Intent intent = new Intent();
 		intent.setAction(android.content.Intent.ACTION_VIEW);
-		TextView pathTv = (TextView) view.findViewById(R.id.attachment_item_path);
 		
-		File file = new File(pathTv.getText().toString());
+		File file = new File(view.getTag(R.id.attachment_path_tag_id).toString());
 		intent.setDataAndType(Uri.fromFile(file), (String) view.getTag());
 		try{
 			startActivity(intent);
