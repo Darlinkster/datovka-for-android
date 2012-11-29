@@ -70,18 +70,16 @@ public class MessageBoxRefreshService extends Service {
 			//System.out.println("thread started");
 			Cursor msgBoxCursor = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
 					new String[] { DatabaseHelper.MSGBOX_ID }, null, null, null);
-			msgBoxCursor.moveToFirst();
 			int msgBoxIdColIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
-			int msgBoxCount = msgBoxCursor.getCount();
 			
 			// new message counter
 			int newMessageCounter = 0;
 			int messageStatusChangeCounter = 0;
+			
 			// Iterate over all Message Boxes IDs
-			for(int i = 0; i < msgBoxCount; i++){
+			while(msgBoxCursor.moveToNext()){
 				// get msgbox id
 				long msgBoxId = msgBoxCursor.getLong(msgBoxIdColIndex);
-				msgBoxCursor.moveToNext();
 				
 				// get last inbox message
 				Cursor inboxMsg = getContentResolver().query(ReceivedMessagesContentProvider.CONTENT_URI,
@@ -120,9 +118,10 @@ public class MessageBoxRefreshService extends Service {
 				// Connect
 				Connector connector = Connector.connectToWs(msgBoxId);
 				if(!connector.checkConnection()){
-					message.arg1 = ERROR_NO_CONNECTION;
+					Message msg1 = Message.obtain();
+					msg1.arg1 = ERROR_NO_CONNECTION;
 					try {
-						messenger.send(message);
+						messenger.send(msg1);
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}
@@ -257,9 +256,25 @@ public class MessageBoxRefreshService extends Service {
 					message.arg2 = messageStatusChangeCounter;
 				} catch (HttpException e) {
 					e.printStackTrace();
+					Message msg2 = Message.obtain();
+					msg2.arg1 = ERROR;
+					msg2.obj = new String(e.getErrorCode() + ": " + e.getMessage());
+					
+					try {
+						messenger.send(msg2);
+					} catch (RemoteException e1) {
+						e.printStackTrace();
+					}
 				} catch (DSException e) {
-					message.arg1 = ERROR;
-					message.obj = new String(e.getErrorCode() + ": " + e.getMessage());
+					Message msg3 = Message.obtain();
+					msg3.arg1 = ERROR;
+					msg3.obj = new String(e.getErrorCode() + ": " + e.getMessage());
+					
+					try {
+						messenger.send(msg3);
+					} catch (RemoteException e1) {
+						e.printStackTrace();
+					}
 				}
 				
 			}
