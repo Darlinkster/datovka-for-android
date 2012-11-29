@@ -41,7 +41,7 @@ public class ChangePasswordFragment extends SherlockDialogFragment {
 		
 		final long msgBoxId = getArguments().getLong(MSGBOX_ID);
 
-		builder.setTitle(R.string.change_passwd_account_button);
+		builder.setTitle(R.string.change_login_credentials);
 		builder.setNegativeButton(R.string.storno, null);
 		builder.setPositiveButton(R.string.change_passwd_account_button, new DialogInterface.OnClickListener() {
 
