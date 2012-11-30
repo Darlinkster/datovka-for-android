@@ -7,7 +7,6 @@ import java.io.OutputStream;
 
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
-import cz.abclinuxu.datoveschranky.common.entities.content.FileContent;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.activities.Application;
 
@@ -29,7 +28,7 @@ public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
     public OutputStream store(MessageEnvelope envelope, Attachment attachment) throws IOException {
         String name = name(envelope, attachment);
         File output = new File(Application.externalStoragePath + outputDir, name);
-        attachment.setContents(new FileContent(output));
+        output.createNewFile();
         
         DatabaseTools.insertAttachmentToDb(outputDir + "/" + name,
 				attachment.getDescription(), attachment.getMimeType(), folder, messageId);
