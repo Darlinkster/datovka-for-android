@@ -11,7 +11,7 @@
     <string name="add_acount">Přidat účet</string>
     <string name="username">Uživatelské jméno</string>
     <string name="password">Heslo</string>
-    <string name="add_account_button">Vytvořit účet</string>
+    <string name="add_account_button">Přidat účet</string>
     <string name="storno">Storno</string>
     <string name="account_created">Účet vytvořen</string>
     <string name="account_exists">Účet již existuje</string>
