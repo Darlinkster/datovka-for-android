@@ -1,0 +1,13 @@
+Aplikace Datovka pro android je klientskou aplikací pro službu Datové schránky.
+Autor: CZ NIC z.s.p.o. <podpora at nic dot cz>
+Licence: GPLv3
+
+Aplikace využívá následujících knihoven a částí programů:
+TinyISDS (http://github.com/xrosecky/JAVA_ISDS, upraveno) - BSD Licence
+ISDSCommon (http://github.com/xrosecky/JAVA_ISDS, upraveno) - BSD Licence
+Ksoap2-android (http://code.google.com/p/ksoap2-android/) - MIT Licence
+ViewPagerIndicator (https://github.com/JakeWharton/Android-ViewPagerIndicator) - Apache 2.0 Licence
+ActionBarSherlock (https://github.com/JakeWharton/ActionBarSherlock) - Apache 2.0 Licence
+Base64 (http://www.java2s.com/Open-Source/Android/android-core/platform-frameworks-base/android/util/Base64OutputStream.java.htm) - Apache 2.0 Licence
+Datové schránky (https://github.com/b00lean/datoveschranky, upraveno) - GPLv3 Licence
+ 
