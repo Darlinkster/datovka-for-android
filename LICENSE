@@ -1,4 +1,3 @@
-/*
 Datovka - An Android client for Datove schranky
     Copyright (C) 2012  CZ NIC z.s.p.o. <podpora at nic dot cz>
 
@@ -14,14 +13,3 @@ Datovka - An Android client for Datove schranky
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package cz.nic.datovka.activities;
-
-import android.content.Context;
-import android.os.Environment;
-
-public class Application {
-	public static Context ctx;
-	public static final String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
-}

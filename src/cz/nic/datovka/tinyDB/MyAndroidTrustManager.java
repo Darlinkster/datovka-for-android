@@ -1,6 +1,7 @@
 /*
  *  Datove schranky (http://github.com/b00lean/datoveschranky)
  *  Copyright (C) 2010  Karel Kyovsky <karel.kyovsky at apksoft.eu>
+ *  Modification: 09/2012 CZ NIC z.s.p.o. <podpora at nic dot cz>
  *
  *  This file is part of Datove schranky (http://github.com/b00lean/datoveschranky).
  *
