@@ -48,16 +48,23 @@ public class ChangePasswordFragment extends SherlockDialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				EditText passwordTv = (EditText) dialogView.findViewById(R.id.new_password);
-				String newEncPass = Base64.encode(passwordTv.getText().toString().getBytes());
+				String newPass = passwordTv.getText().toString();
+				String newEncPass = Base64.encode(newPass.getBytes());
 				Uri uri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 
 				ContentValues values = new ContentValues();
 				values.put(DatabaseHelper.MSGBOX_PASSWORD, newEncPass);
 				
-				if(Application.ctx.getContentResolver().update(uri, values, null, null) > 0){
-					Toast.makeText(Application.ctx, R.string.passwd_change_success, Toast.LENGTH_LONG).show();
-				} else {
+				int passwordLength = newPass.length();
+				if ((passwordLength < 8) || (passwordLength > 32)) {
 					Toast.makeText(Application.ctx, R.string.passwd_change_fail, Toast.LENGTH_LONG).show();
+				} else {
+
+					if (Application.ctx.getContentResolver().update(uri, values, null, null) > 0) {
+						Toast.makeText(Application.ctx, R.string.passwd_change_success, Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(Application.ctx, R.string.passwd_change_fail, Toast.LENGTH_LONG).show();
+					}
 				}
 
 			}
