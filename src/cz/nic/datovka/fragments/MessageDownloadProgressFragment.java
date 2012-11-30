@@ -57,14 +57,8 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	}
 
 	@Override
-	public void onDismiss(DialogInterface dialog) {
-		Application.ctx.stopService(new Intent(Application.ctx, MessageDownloadService.class));
-		runService = true;
-		super.onDismiss(dialog);
-	}
-
-	@Override
 	public void onCancel(DialogInterface dialog) {
+		System.out.println("cancel");
 		Application.ctx.stopService(new Intent(Application.ctx, MessageDownloadService.class));
 		runService = true;
 		super.onCancel(dialog);
@@ -81,10 +75,6 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 			if (resultCode == MessageDownloadService.UPDATE_PROGRESS) {
 				int progress = resultData.getInt("progress");
 				mProgressDialog.setProgress(progress);
-				if (progress == 100) {
-					mProgressDialog.dismiss();
-					runService = true;
-				}
 			} else if (resultCode == MessageDownloadService.ERROR) {
 				String msg = resultData.getString("error");
 				mProgressDialog.dismiss();
@@ -102,7 +92,11 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 				mProgressDialog.dismiss();
 				runService = true;
 				Toast.makeText(Application.ctx, R.string.storage_low_space, Toast.LENGTH_LONG).show();
+			} else if (resultCode == MessageDownloadService.SERVICE_FINISHED) {
+				mProgressDialog.dismiss();
+				runService = true;
 			}
+			
 
 		}
 	}

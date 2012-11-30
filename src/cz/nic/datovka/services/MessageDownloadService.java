@@ -37,6 +37,7 @@ public class MessageDownloadService extends Service {
 	public static final int ERROR_STORAGE_NOT_AVAILABLE = 8377;
 	public static final int ERROR_STORAGE_LOW_SPACE = 8388;
 	public static final int RESULT_BAD_LOGIN = 401;
+	public static final int SERVICE_FINISHED = 999;
 	public static final String MSG_ID = "msgid";
 	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
@@ -188,7 +189,6 @@ public class MessageDownloadService extends Service {
 			// Save the signed message
 			if(interrupted()) return;
 			File outFileTmp = null;
-			Bundle resultData = new Bundle();
 			try {
 				String outFileName = messageIsdsId + ".zfo";
 				outFileTmp = new File(destFolder, outFileName + ".tmp");
@@ -231,16 +231,16 @@ public class MessageDownloadService extends Service {
 				}
 				connector.parseSignedMessage(outputDirectory, folder, messageId, csis, messageIsdsId);
 				
-				// Send 100% to gauge, just for sure
-				resultData.putInt("progress", 100);
+				// Send SERVICE_FINISHED to dismiss download progress bar
 				if(receiver != null)
-					receiver.send(UPDATE_PROGRESS, resultData);
+					receiver.send(SERVICE_FINISHED, null);
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (HttpException e) {
+				Bundle resultData = new Bundle();
 				if(e.getErrorCode() == 401){
 					resultData.putString("error", new String(getString(R.string.cannot_login, msgBoxIsdsId)));
 				} else {
@@ -257,11 +257,13 @@ public class MessageDownloadService extends Service {
 				}
 				logger.log(Level.WARNING, e.getMessage());
 			} catch (DSException e) {
+				Bundle resultData = new Bundle();
 				resultData.putString("error", e.getErrorCode() + ": " + e.getMessage());
 				if( receiver!= null)
 					receiver.send(ERROR, resultData);
 
 			} catch (NullPointerException e){
+				Bundle resultData = new Bundle();
 				logger.log(Level.WARNING, "Null pointer Exception: User probably killed download thread.");
 				resultData.putString("error", getString(R.string.message_download_crashed));
 				if( receiver!= null)
