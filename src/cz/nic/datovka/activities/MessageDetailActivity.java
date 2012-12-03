@@ -19,6 +19,7 @@ package cz.nic.datovka.activities;
 
 import java.io.File;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,7 +28,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -52,6 +57,8 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	private FragmentManager fm;
 	private MessageDetailFragment mdf;
 	private MessageAttachmentsFragment maf;
+	private static MenuItem refreshButtonItem;
+
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -85,6 +92,13 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			return true;
 		}
 		else if (item.getItemId() == R.id.refresh_message_menu_btn) {
+			LayoutInflater inflater = (LayoutInflater) Application.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			ImageView refreshButtonView = (ImageView) inflater.inflate(R.layout.refresh_button_view, null);
+			Animation rotation = AnimationUtils.loadAnimation(Application.ctx, R.anim.anim_rotate);
+			refreshButtonView.startAnimation(rotation);
+			item.setActionView(refreshButtonView);
+			refreshButtonItem = item;
+			
 			Intent param = new Intent();
 			param.putExtra(MessageStatusRefresher.MSG_ID, this.messageId);
 			param.putExtra(MessageStatusRefresher.FOLDER, this.folder);
@@ -93,6 +107,13 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			new MessageStatusRefresher(param).start();
 		}
 		return false;
+	}
+	
+	private static final void removeAnimationFromRefreshButton(){
+		if(refreshButtonItem != null) {
+			refreshButtonItem.getActionView().clearAnimation();
+			refreshButtonItem.setActionView(null);
+		}
 	}
 			
 	public void attachmentClicked(View view){
@@ -112,6 +133,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	// Handler for handling messages from MessageBoxRefresh service
 	private static Handler handler = new Handler() {
 		public void handleMessage(Message message) {
+			removeAnimationFromRefreshButton();
 			if (message.arg1 == MessageStatusRefresher.ERROR) {
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.ERROR_BAD_LOGIN) {

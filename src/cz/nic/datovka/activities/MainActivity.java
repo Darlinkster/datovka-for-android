@@ -18,6 +18,7 @@ Datovka - An Android client for Datove schranky
 
 package cz.nic.datovka.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -35,8 +36,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +70,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private FragmentManager fragmentManager;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
+	private static MenuItem refreshButtonItem;
 	private static AddAccountFragment aaf;
 
 	@Override
@@ -177,6 +183,13 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			Toast.makeText(this, "nastaveni", Toast.LENGTH_SHORT).show();
 			return true; */
 		case R.id.refresh_all:
+			LayoutInflater inflater = (LayoutInflater) Application.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			ImageView refreshButtonView = (ImageView) inflater.inflate(R.layout.refresh_button_view, null);
+			Animation rotation = AnimationUtils.loadAnimation(Application.ctx, R.anim.anim_rotate);
+			refreshButtonView.startAnimation(rotation);
+			item.setActionView(refreshButtonView);
+			refreshButtonItem = item;
+			
 			Messenger messenger = new Messenger(handler);
 			Intent intent = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
 			intent.putExtra(MessageBoxRefreshService.HANDLER, messenger);
@@ -214,9 +227,18 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		account_adapter.swapCursor(null);
 	}
 	
+	private static final void removeAnimationFromRefreshButton(){
+		if(refreshButtonItem != null) {
+			refreshButtonItem.getActionView().clearAnimation();
+			refreshButtonItem.setActionView(null);
+		}
+	}
+	
 	// Handler for handling messages from MessageBoxRefresh service 
 	private static Handler handler = new Handler() {
 		public void handleMessage(Message message) {
+			removeAnimationFromRefreshButton();
+			
 			if(message.arg1 == MessageBoxRefreshService.ERROR){
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			}
