@@ -135,8 +135,18 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	
 	private void openFileBySuffix(File file) {
 		String mimeType = null;
-		String extension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
-		if (extension != null) {
+		String filename = file.getName();
+		int lastDotOffset = filename.lastIndexOf('.');
+		if(lastDotOffset == -1){
+			Toast.makeText(this, getString(R.string.no_default_application, "no suffix"), Toast.LENGTH_LONG).show();
+			return;
+		}
+		if((lastDotOffset + 1) >= filename.length()){
+			Toast.makeText(this, getString(R.string.no_default_application, "dot at the end"), Toast.LENGTH_LONG).show();
+			return;
+		}
+		String extension = filename.substring(lastDotOffset + 1);
+		if (!extension.equalsIgnoreCase("")) {
 			// check the mime type by suffix
 			MimeTypeMap mime = MimeTypeMap.getSingleton();
 			mimeType = mime.getMimeTypeFromExtension(extension);
@@ -161,7 +171,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			
 		} else {
 			// we cannot get mime type from the file suffix 
-			Toast.makeText(this, getString(R.string.no_default_application, "suffix: " + extension), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.no_default_application, new String("suffix: " + extension)), Toast.LENGTH_LONG).show();
 			return;
 		}
 
