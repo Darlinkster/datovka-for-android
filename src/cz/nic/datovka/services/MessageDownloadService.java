@@ -165,7 +165,7 @@ public class MessageDownloadService extends Service {
 			// unpacking it.
 			fileSize *= 1.33f; // base64 makes the content bigger by 33%
 			if ((2 * fileSize) > getAvailableSpaceInKB()) {
-				System.out.println(fileSize + " " + getAvailableSpaceInKB());
+				//System.out.println(fileSize + " " + getAvailableSpaceInKB());
 				if (receiver != null)
 					receiver.send(ERROR_STORAGE_LOW_SPACE, null);
 				return;
