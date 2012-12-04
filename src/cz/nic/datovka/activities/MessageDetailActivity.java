@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -127,8 +128,43 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		try{
 			startActivity(intent);
 		}catch(RuntimeException e){
-			Toast.makeText(this, getString(R.string.no_default_application, mimeType), Toast.LENGTH_LONG).show();
+			// Maybe wrong mime type in XML file, check the file suffix
+			openFileBySuffix(file);
 		}
+	}
+	
+	private void openFileBySuffix(File file) {
+		String mimeType = null;
+		String extension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
+		if (extension != null) {
+			// check the mime type by suffix
+			MimeTypeMap mime = MimeTypeMap.getSingleton();
+			mimeType = mime.getMimeTypeFromExtension(extension);
+		} else {
+			// the file has bad suffix
+			Toast.makeText(this, getString(R.string.no_default_application, "null"), Toast.LENGTH_LONG).show();
+			return;
+		}
+
+		if (mimeType != null) {
+			// we have got mime type from suffix, open the file with it
+			Intent intent = new Intent();
+			intent.setAction(android.content.Intent.ACTION_VIEW);
+			intent.setDataAndType(Uri.fromFile(file), mimeType);
+			try{
+				startActivity(intent);
+			}catch(RuntimeException e){
+				// the mime type is probably right, but we don't have any app to open the file
+				Toast.makeText(this, getString(R.string.no_default_application, mimeType), Toast.LENGTH_LONG).show();
+				return;
+			}
+			
+		} else {
+			// we cannot get mime type from the file suffix 
+			Toast.makeText(this, getString(R.string.no_default_application, "suffix: " + extension), Toast.LENGTH_LONG).show();
+			return;
+		}
+
 	}
 	
 	// Handler for handling messages from MessageBoxRefresh service
