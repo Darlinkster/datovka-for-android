@@ -8,6 +8,14 @@
         <item name="android:textColor">@color/dimwhite</item>
     </style>
    
+    <style name="MySherlockActionButton">
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:paddingLeft">12dip</item>
+        <item name="android:paddingRight">12dip</item>
+        <item name="android:minWidth">56dip</item>
+    </style>
+    
     <style name="msgListItem">
         <item name="android:paddingRight">8dp</item>
         <item name="android:layout_height">?android:attr/listPreferredItemHeight</item>

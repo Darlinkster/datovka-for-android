@@ -21,7 +21,7 @@
     <string name="test_environment_checkbox">Testovací účet?</string>
     <string name="download_attachment_button">Stáhnout přílohy</string>
     <string name="download_attachment_progress">Stahuji zprávy</string>
-    <string name="no_default_application">Nenalezena žádná aplikace podporujicí tento formát souboru!</string>
+    <string name="no_default_application">Nenalezena žádná aplikace podporujicí tento formát souboru! (%1$s)</string>
     <string name="signed_message_name">Podepsaná zpráva</string>
     <string name="account_menu_info">Detailní informace</string>
     <string name="account_menu_delete">Smazat</string>

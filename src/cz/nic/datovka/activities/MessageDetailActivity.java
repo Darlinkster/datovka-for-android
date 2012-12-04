@@ -122,11 +122,12 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		intent.setAction(android.content.Intent.ACTION_VIEW);
 		
 		File file = new File(Application.externalStoragePath + view.getTag(R.id.attachment_path_tag_id).toString());
-		intent.setDataAndType(Uri.fromFile(file), (String) view.getTag());
+		String mimeType = (String) view.getTag();
+		intent.setDataAndType(Uri.fromFile(file), mimeType);
 		try{
 			startActivity(intent);
 		}catch(RuntimeException e){
-			Toast.makeText(this, R.string.no_default_application, Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.no_default_application, mimeType), Toast.LENGTH_LONG).show();
 		}
 	}
 	

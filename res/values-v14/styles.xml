@@ -8,6 +8,9 @@
         <item name="android:background">@drawable/message_item_unread_background</item>
     </style>
 
+     <style name="MySherlockActionButton" parent="@style/Widget.Sherlock.ActionButton">
+    </style>
+    
     <style name="CustomCheckbox">
     </style>
     
