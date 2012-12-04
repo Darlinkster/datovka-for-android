@@ -81,17 +81,21 @@ public class AddAccountFragment extends SherlockDialogFragment {
 				EditText loginTv = (EditText) dialogView.findViewById(R.id.username);
 				EditText passwordTv = (EditText) dialogView.findViewById(R.id.password);
 				CheckBox testEnvCheckbox = (CheckBox) dialogView.findViewById(R.id.test_environment_checkbox);
+				
+				String login = loginTv.getText().toString();
+				String password = passwordTv.getText().toString();
+				
+				if ((login.length() == 0) || (password.length() < 8) || (password.length() > 32)) {
+					Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
+					return;
+				}
 
 				Messenger messenger = new Messenger(handler);
 				Intent intent = new Intent(getActivity(), AddAccountService.class);
 				intent.putExtra(AddAccountService.HANDLER, messenger);
-				intent.putExtra(AddAccountService.LOGIN, loginTv.getText().toString());
-				intent.putExtra(AddAccountService.PASSWORD, passwordTv.getText().toString());
+				intent.putExtra(AddAccountService.LOGIN, login);
+				intent.putExtra(AddAccountService.PASSWORD, password);
 				intent.putExtra(AddAccountService.TESTENV, testEnvCheckbox.isChecked());
-
-				if (loginTv.getText().toString().length() == 0) {
-					return;
-				}
 
 				getActivity().startService(intent);
 
