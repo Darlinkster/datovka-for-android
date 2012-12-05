@@ -18,6 +18,7 @@ Datovka - An Android client for Datove schranky
 package cz.nic.datovka.activities;
 
 import java.io.File;
+import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
@@ -145,7 +146,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			Toast.makeText(this, getString(R.string.no_default_application, "dot at the end"), Toast.LENGTH_LONG).show();
 			return;
 		}
-		String extension = filename.substring(lastDotOffset + 1);
+		String extension = filename.substring(lastDotOffset + 1).toLowerCase();
 		if (!extension.equalsIgnoreCase("")) {
 			// check the mime type by suffix
 			MimeTypeMap mime = MimeTypeMap.getSingleton();
