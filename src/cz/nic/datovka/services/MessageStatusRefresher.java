@@ -57,6 +57,7 @@ public class MessageStatusRefresher extends Thread {
 		msgId = param.getLongExtra(MSG_ID, 0);
 		folder = param.getIntExtra(FOLDER, 0);
 		messenger = (Messenger) param.getParcelableExtra(RECEIVER);
+		
 	}
 
 	@Override
@@ -78,7 +79,20 @@ public class MessageStatusRefresher extends Thread {
 		}
 		String[] msgProjection = {msgIsdsIdTb , msgboxIdTb, msgStatusTb};
 		Cursor msgCursor = Application.ctx.getContentResolver().query(msgUri, msgProjection, null, null, null);
-		msgCursor.moveToFirst();
+		if(!msgCursor.moveToFirst()){
+			//There is no message with that ID, send an error message
+			msgCursor.close();
+			String msg = Application.ctx.getString(R.string.message_with_id_not_found, msgId);
+			Message message = Message.obtain();
+			message.arg1 = ERROR;
+			message.obj = msg;
+			try {
+				messenger.send(message);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 				
 		String msgIsdsId = msgCursor.getString(msgCursor.getColumnIndex(msgIsdsIdTb));
 		long msgboxId = msgCursor.getLong(msgCursor.getColumnIndex(msgboxIdTb));
