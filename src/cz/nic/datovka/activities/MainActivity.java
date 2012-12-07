@@ -18,6 +18,8 @@ Datovka - An Android client for Datove schranky
 
 package cz.nic.datovka.activities;
 
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -318,7 +320,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			return TITLES[position % NUM_TITLES].toUpperCase();
+			return TITLES[position % NUM_TITLES].toUpperCase(Locale.getDefault());
 		}
 	}
 }
