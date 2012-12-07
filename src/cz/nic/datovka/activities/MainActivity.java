@@ -207,6 +207,13 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		return false;
 	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		removeAnimationFromRefreshButton();
+		
+	}
 
 	// This method takes care about clicking on messages
 	public void itemClicked(View view) {
@@ -239,7 +246,8 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		if(refreshButtonItem != null) {
 			refreshButtonItem.getActionView().clearAnimation();
 			refreshButtonItem.setActionView(null);
-		}
+			refreshButtonItem = null;
+		} 
 	}
 	
 	// Handler for handling messages from MessageBoxRefresh service 
