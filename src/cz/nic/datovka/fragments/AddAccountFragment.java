@@ -20,13 +20,8 @@ package cz.nic.datovka.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -37,76 +32,88 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
-import cz.nic.datovka.services.AddAccountService;
 
 public class AddAccountFragment extends SherlockDialogFragment {
-	private static ProgressDialog mProgressDialog;
+	public static final String PASSWORD = "pass";
+	public static final String LOGIN = "login";
+	public static final String TESTENV = "testenv";
+	
+	private String loginText;
+	private String passwordText;
 
-	private static Handler handler = new Handler() {
-		public void handleMessage(Message message) {
-			if(mProgressDialog.getWindow() != null)
-				mProgressDialog.dismiss();
-
-			if (message.arg1 == AddAccountService.RESULT_OK) {
-				Toast.makeText(Application.ctx, R.string.account_created, Toast.LENGTH_SHORT).show();
-			}
-			else if (message.arg1 == AddAccountService.RESULT_EXISTS) {
-				Toast.makeText(Application.ctx, R.string.account_exists, Toast.LENGTH_SHORT).show();
-			}
-			else if (message.arg1 == AddAccountService.RESULT_ERR) {
-				Toast.makeText(Application.ctx, R.string.account_create_error, Toast.LENGTH_SHORT).show();
-			}
-			else if (message.arg1 == AddAccountService.RESULT_BAD_LOGIN) {
-				Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
-			}
-			else if (message.arg1 == AddAccountService.RESULT_DS_ERR) {
-				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
-			}
-			else if (message.arg1 == AddAccountService.RESULT_NO_CONNECTION) {
-				Toast.makeText(Application.ctx, R.string.no_connection , Toast.LENGTH_SHORT).show();
-			}
-		}
-	};
-
+	public static AddAccountFragment newInstance(String login, String password, boolean testEnv) {
+		AddAccountFragment aaf = new AddAccountFragment();
+		Bundle args = new Bundle();
+		args.putString(LOGIN, login);
+		args.putString(PASSWORD, password);
+		args.putBoolean(TESTENV, testEnv);
+		
+		aaf.setArguments(args);
+		
+		return aaf;
+	}
+	
 	public Dialog onCreateDialog(Bundle SavedInstanceState) {
+		
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		final View dialogView = inflater.inflate(R.layout.add_account_dialog, null);
-		builder.setView(dialogView);
+		View dialogView = inflater.inflate(R.layout.add_account_dialog, null);
 		
+		final EditText loginTv = (EditText) dialogView.findViewById(R.id.username);
+		final EditText passwordTv = (EditText) dialogView.findViewById(R.id.password);
+		final CheckBox testEnvCheckbox = (CheckBox) dialogView.findViewById(R.id.test_environment_checkbox);
+
+		Bundle args = getArguments();
+		String loginArg = null;
+		String passwordArg = null;
+		boolean testEnvArg = false;
+		if (args != null) {
+			loginArg = args.getString(LOGIN);
+			passwordArg = args.getString(PASSWORD);
+			testEnvArg = args.getBoolean(TESTENV);
+
+			if (loginArg != null) {
+				loginTv.setText(loginArg);
+			}
+			if (passwordArg != null) {
+				passwordTv.setText(passwordArg);
+			}
+			testEnvCheckbox.setChecked(testEnvArg);
+		}
+
+		builder.setView(dialogView);
 		builder.setTitle(R.string.add_acount);
 		builder.setPositiveButton(R.string.add_account_button, new DialogInterface.OnClickListener() {
 
 			public void onClick(DialogInterface dialog, int which) {
-				EditText loginTv = (EditText) dialogView.findViewById(R.id.username);
-				EditText passwordTv = (EditText) dialogView.findViewById(R.id.password);
-				CheckBox testEnvCheckbox = (CheckBox) dialogView.findViewById(R.id.test_environment_checkbox);
+				loginText = loginTv.getText().toString();
+				passwordText = passwordTv.getText().toString();
+				boolean testEnv = testEnvCheckbox.isChecked();
 				
-				String login = loginTv.getText().toString();
-				String password = passwordTv.getText().toString();
-				
-				if ((login.length() == 0) || (password.length() < 8) || (password.length() > 32)) {
+				if ((loginText.length() == 0) || (passwordText.length() < 8) || (passwordText.length() > 32)) {
 					Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
+					reShow(loginText, passwordText, testEnv);
 					return;
 				}
-
-				Messenger messenger = new Messenger(handler);
-				Intent intent = new Intent(getActivity(), AddAccountService.class);
-				intent.putExtra(AddAccountService.HANDLER, messenger);
-				intent.putExtra(AddAccountService.LOGIN, login);
-				intent.putExtra(AddAccountService.PASSWORD, password);
-				intent.putExtra(AddAccountService.TESTENV, testEnvCheckbox.isChecked());
-
-				getActivity().startService(intent);
-
-				mProgressDialog = new ProgressDialog(getActivity());
-				mProgressDialog.setIndeterminate(true);
-				mProgressDialog.setMessage(new String(getResources().getString(R.string.account_create_progress)));
-				mProgressDialog.show();
+				AddAccountProgressBarFragment ipbf = AddAccountProgressBarFragment.newInstance(loginText, passwordText, testEnv);
+				ipbf.show(getFragmentManager(), null);
+				dialog.dismiss();
 			}
 		});
-		builder.setNegativeButton(R.string.storno, null);
+		builder.setNegativeButton(R.string.storno, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+			
+		});
 
 		return builder.create();
+	}
+	
+	private void reShow(String login, String password, boolean testEnv) {
+		AddAccountFragment aaf = AddAccountFragment.newInstance(login, password, testEnv);
+		aaf.show(getFragmentManager(), null);
 	}
 }

@@ -33,7 +33,7 @@ import cz.nic.datovka.fragments.AccountListFragment;
 import cz.nic.datovka.fragments.AddAccountFragment;
 
 public class AccountActivity extends SherlockFragmentActivity {
-	private FragmentManager fm;
+	private FragmentManager fragmentManager;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,8 +44,8 @@ public class AccountActivity extends SherlockFragmentActivity {
 
 		AccountListFragment af = AccountListFragment.newInstance();
 
-		fm = getSupportFragmentManager();
-		FragmentTransaction ft = fm.beginTransaction();
+		fragmentManager = getSupportFragmentManager();
+		FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.replace(R.id.account_activity, af);
 		ft.commit();
 	}
@@ -60,7 +60,7 @@ public class AccountActivity extends SherlockFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.add_account_menu_btn) {
 			AddAccountFragment aaf = new AddAccountFragment();
-			aaf.show(fm, null);
+			aaf.show(fragmentManager, null);
 			return true;
 		}
 		return false;
