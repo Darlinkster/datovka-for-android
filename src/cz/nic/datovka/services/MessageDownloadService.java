@@ -40,9 +40,8 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.exceptions.StorageNotAwailableException;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -116,37 +115,16 @@ public class MessageDownloadService extends Service {
 		public void run() {
 			logger.log(Level.INFO, "Downloading service started");
 			// Get ISDS ID and MSGBOX ID of the message
-			Uri singleUri;
-			String[] projection;
-			String IsdsIdColName;
-			String msgBoxIdColName;
-			String fileSizeColName;
-			if (folder == INBOX) {
-				singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, messageId);
-				projection = new String[] { DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID,
-						DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE };
-				IsdsIdColName = DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID;
-				msgBoxIdColName = DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID;
-				fileSizeColName = DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE;
-			} else {
-				singleUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, messageId);
-				projection = new String[] { DatabaseHelper.SENT_MESSAGE_ISDS_ID, DatabaseHelper.SENT_MESSAGE_MSGBOX_ID,
-						DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE };
-				IsdsIdColName = DatabaseHelper.SENT_MESSAGE_ISDS_ID;
-				msgBoxIdColName = DatabaseHelper.SENT_MESSAGE_MSGBOX_ID;
-				fileSizeColName = DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE;
-			}
+			Uri singleUri = ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, messageId);
+			String[] projection = new String[] { DatabaseHelper.MESSAGE_ISDS_ID,
+					DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_ATTACHMENT_SIZE };
 			if(interrupted()) return;
 			Cursor msgCursor = getContentResolver().query(singleUri, projection, null, null, null);
 			msgCursor.moveToFirst();
 
-			int isdsIdColIndex = msgCursor.getColumnIndex(IsdsIdColName);
-			int msgBoxIdColIndex = msgCursor.getColumnIndex(msgBoxIdColName);
-			int fileSizeColIndex = msgCursor.getColumnIndex(fileSizeColName);
-
-			int messageIsdsId = msgCursor.getInt(isdsIdColIndex);
-			long msgBoxId = msgCursor.getInt(msgBoxIdColIndex);
-			long fileSize = msgCursor.getInt(fileSizeColIndex);
+			int messageIsdsId = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_ISDS_ID));
+			long msgBoxId = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_MSGBOX_ID));
+			long fileSize = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE));
 			msgCursor.close();
 			msgCursor = null;
 			

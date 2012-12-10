@@ -57,8 +57,7 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
-import cz.nic.datovka.fragments.ReceivedMessageListFragment;
-import cz.nic.datovka.fragments.SentMessageListFragment;
+import cz.nic.datovka.fragments.MessageListFragment;
 import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener, LoaderCallbacks<Cursor> {
@@ -302,9 +301,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return ReceivedMessageListFragment.getInstance(msgBoxID);
+				return MessageListFragment.getInstance(msgBoxID, Application.INBOX);
 			case 1:
-				return SentMessageListFragment.getInstance(msgBoxID);
+				return MessageListFragment.getInstance(msgBoxID, Application.OUTBOX);
 			default:
 				return null;
 			}

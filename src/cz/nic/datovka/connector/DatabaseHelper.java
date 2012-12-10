@@ -80,97 +80,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			USER_NAME, USER_LAST_BIRTH_NAME, USER_ADDRESS_CITY, USER_ADDRESS_STREET, USER_ADDRESS_STREET_NUMBER, USER_ADDRESS_MUNIC_NUMBER, USER_ADDRESS_ZIP,
 			USER_ADDRESS_STATE, USER_BIRTH_DATE, USER_TYPE, USER_PRIVILS, USER_IC, USER_FIRM_NAME, USER_CON_ADDRESS_STREET, USER_CON_ADDRESS_CITY,
 			USER_CON_ADDRESS_ZIP, USER_CON_ADDRESS_STATE };
-
-	public static final String RECEIVED_MESSAGE_TB_NAME = "received_message";
-	public static final String RECEIVED_MESSAGE_ID = "_id";
-	public static final String RECEIVED_MESSAGE_ISDS_ID = "isds_id";
-	public static final String RECEIVED_MESSAGE_ANNOTATION = "annotation";
-	public static final String RECEIVED_MESSAGE_ACCEPTANCE_DATE = "date_acceptance";
-	public static final String RECEIVED_MESSAGE_RECEIVED_DATE = "date_received";
-	public static final String RECEIVED_MESSAGE_MSGBOX_ID = "msgbox_id";
-	public static final String RECEIVED_MESSAGE_TYPE = "type";
-	public static final String RECEIVED_MESSAGE_DM_TYPE = "dm_type";
-	public static final String RECEIVED_MESSAGE_TO_HANDS = "to_hands";
-	public static final String RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY = "subst_delivery";
-	public static final String RECEIVED_MESSAGE_PERSONAL_DELIVERY = "personal_delivery";
-	public static final String RECEIVED_MESSAGE_STATE = "msg_state";
-	public static final String RECEIVED_MESSAGE_STATUS_CHANGED = "status_changed";
-	public static final String RECEIVED_MESSAGE_LEGALTITLE_LAW = "legaltitle_law";
-	public static final String RECEIVED_MESSAGE_LEGALTITLE_PAR = "legaltitle_par";
-	public static final String RECEIVED_MESSAGE_LEGALTITLE_POINT = "legaltitle_point";
-	public static final String RECEIVED_MESSAGE_LEGALTITLE_SECT = "legaltitle_sect";
-	public static final String RECEIVED_MESSAGE_LEGALTITLE_YEAR = "legaltitle_year";
-	public static final String RECEIVED_MESSAGE_IS_READ = "is_read";
-	public static final String RECEIVED_MESSAGE_ATTACHMENT_SIZE = "attachment_size";
-	public static final String RECEIVED_MESSAGE_RECIPIENT_IDENT = "recipient_ident";
-	public static final String RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER = "recipient_ref_num";
-	public static final String RECEIVED_MESSAGE_SENDER_IDENT = "sender_ident";
-	public static final String RECEIVED_MESSAGE_SENDER_REF_NUMBER = "sender_ref_number";
-	public static final String SENDER_ISDS_ID = "sender_isds_id";
-	public static final String SENDER_NAME = "sender_name";
-	public static final String SENDER_ADDRESS = "sender_address";
-	public static final String SENDER_DATABOX_TYPE = "sender_databox_type";
-	public static final String[] received_message_columns = { RECEIVED_MESSAGE_ID, RECEIVED_MESSAGE_ISDS_ID, RECEIVED_MESSAGE_ANNOTATION,
-			RECEIVED_MESSAGE_ACCEPTANCE_DATE, RECEIVED_MESSAGE_RECEIVED_DATE, SENDER_ISDS_ID, SENDER_NAME, SENDER_ADDRESS, RECEIVED_MESSAGE_MSGBOX_ID,
-			RECEIVED_MESSAGE_TYPE, RECEIVED_MESSAGE_DM_TYPE, RECEIVED_MESSAGE_TO_HANDS, RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY,
-			RECEIVED_MESSAGE_PERSONAL_DELIVERY, SENDER_DATABOX_TYPE, RECEIVED_MESSAGE_SENDER_IDENT, RECEIVED_MESSAGE_SENDER_REF_NUMBER, RECEIVED_MESSAGE_STATE, RECEIVED_MESSAGE_LEGALTITLE_LAW,
-			RECEIVED_MESSAGE_LEGALTITLE_PAR, RECEIVED_MESSAGE_LEGALTITLE_POINT, RECEIVED_MESSAGE_LEGALTITLE_SECT, RECEIVED_MESSAGE_LEGALTITLE_YEAR,
-			RECEIVED_MESSAGE_IS_READ, RECEIVED_MESSAGE_ATTACHMENT_SIZE, RECEIVED_MESSAGE_STATUS_CHANGED, RECEIVED_MESSAGE_RECIPIENT_IDENT, RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER };
-
-	public static final String SENT_MESSAGE_TB_NAME = "sent_message";
-	public static final String SENT_MESSAGE_ID = "_id";
-	public static final String SENT_MESSAGE_ISDS_ID = "isds_id";
-	public static final String SENT_MESSAGE_ANNOTATION = "annotation";
-	public static final String SENT_MESSAGE_ACCEPTANCE_DATE = "date_acceptance";
-	public static final String SENT_MESSAGE_MSGBOX_ID = "msgbox_id";
-	public static final String SENT_MESSAGE_TYPE = "type";
-	public static final String SENT_MESSAGE_DM_TYPE = "dm_type";
-	public static final String SENT_MESSAGE_TO_HANDS = "to_hands";
-	public static final String SENT_MESSAGE_ALLOW_SUBST_DELIVERY = "subst_delivery";
-	public static final String SENT_MESSAGE_PERSONAL_DELIVERY = "personal_delivery";
-	public static final String SENT_MESSAGE_SENT_DATE = "sent_date";
-	public static final String SENT_MESSAGE_LEGALTITLE_LAW = "legaltitle_law";
-	public static final String SENT_MESSAGE_LEGALTITLE_PAR = "legaltitle_par";
-	public static final String SENT_MESSAGE_LEGALTITLE_POINT = "legaltitle_point";
-	public static final String SENT_MESSAGE_LEGALTITLE_SECT = "legaltitle_sect";
-	public static final String SENT_MESSAGE_LEGALTITLE_YEAR = "legaltitle_year";
-	public static final String SENT_MESSAGE_IS_READ = "is_read";
-	public static final String SENT_MESSAGE_ATTACHMENT_SIZE = "attachment_size";
-	public static final String SENT_MESSAGE_STATE = "msg_state";
-	public static final String SENT_MESSAGE_STATUS_CHANGED = "status_changed";
-	public static final String SENT_MESSAGE_SENDER_IDENT = "sender_ident";
-	public static final String SENT_MESSAGE_SENDER_REF_NUMBER = "sender_ref_number";
-	public static final String SENT_MESSAGE_RECIPIENT_IDENT = "recipient_ident";
-	public static final String SENT_MESSAGE_RECIPIENT_REF_NUMBER = "recipient_ref_num";
-	public static final String RECIPIENT_DATABOX_TYPE = "recipient_databox_type";
-	public static final String RECIPIENT_ISDS_ID = "recipient_isds_id";
-	public static final String RECIPIENT_NAME = "recipient_name";
-	public static final String RECIPIENT_ADDRESS = "recipient_address";
-	public static final String[] sent_message_columns = { SENT_MESSAGE_ID, SENT_MESSAGE_ISDS_ID, SENT_MESSAGE_ANNOTATION, SENT_MESSAGE_ACCEPTANCE_DATE,
-			SENT_MESSAGE_MSGBOX_ID, RECIPIENT_ISDS_ID, RECIPIENT_NAME, RECIPIENT_ADDRESS, SENT_MESSAGE_TYPE, SENT_MESSAGE_DM_TYPE, SENT_MESSAGE_TO_HANDS,
-			SENT_MESSAGE_ALLOW_SUBST_DELIVERY, SENT_MESSAGE_PERSONAL_DELIVERY, SENT_MESSAGE_SENT_DATE, RECIPIENT_DATABOX_TYPE, SENT_MESSAGE_RECIPIENT_IDENT,
-			SENT_MESSAGE_RECIPIENT_REF_NUMBER, SENT_MESSAGE_IS_READ, SENT_MESSAGE_ATTACHMENT_SIZE, SENT_MESSAGE_STATE, SENT_MESSAGE_STATUS_CHANGED, SENT_MESSAGE_LEGALTITLE_LAW,
-			SENT_MESSAGE_LEGALTITLE_PAR, SENT_MESSAGE_LEGALTITLE_POINT, SENT_MESSAGE_LEGALTITLE_SECT, SENT_MESSAGE_LEGALTITLE_YEAR, SENT_MESSAGE_SENDER_IDENT, SENT_MESSAGE_SENDER_REF_NUMBER };
+	
+	public static final String MESSAGE_TB_NAME = "messages";
+	public static final String MESSAGE_FOLDER = "message_folder";
+	public static final String MESSAGE_ID = "_id";
+	public static final String MESSAGE_ISDS_ID = "isds_id";
+	public static final String MESSAGE_ANNOTATION = "annotation";
+	public static final String MESSAGE_ACCEPTANCE_DATE = "date_acceptance";
+	public static final String MESSAGE_MSGBOX_ID = "msgbox_id";
+	public static final String MESSAGE_TYPE = "type";
+	public static final String MESSAGE_DM_TYPE = "dm_type";
+	public static final String MESSAGE_TO_HANDS = "to_hands";
+	public static final String MESSAGE_ALLOW_SUBST_DELIVERY = "subst_delivery";
+	public static final String MESSAGE_PERSONAL_DELIVERY = "personal_delivery";
+	public static final String MESSAGE_SENT_DATE = "sent_date";
+	public static final String MESSAGE_LEGALTITLE_LAW = "legaltitle_law";
+	public static final String MESSAGE_LEGALTITLE_PAR = "legaltitle_par";
+	public static final String MESSAGE_LEGALTITLE_POINT = "legaltitle_point";
+	public static final String MESSAGE_LEGALTITLE_SECT = "legaltitle_sect";
+	public static final String MESSAGE_LEGALTITLE_YEAR = "legaltitle_year";
+	public static final String MESSAGE_IS_READ = "is_read";
+	public static final String MESSAGE_ATTACHMENT_SIZE = "attachment_size";
+	public static final String MESSAGE_STATE = "msg_state";
+	public static final String MESSAGE_STATUS_CHANGED = "status_changed";
+	public static final String MESSAGE_SENDER_IDENT = "sender_ident";
+	public static final String MESSAGE_SENDER_REF_NUMBER = "sender_ref_number";
+	public static final String MESSAGE_RECIPIENT_IDENT = "recipient_ident";
+	public static final String MESSAGE_RECIPIENT_REF_NUMBER = "recipient_ref_num";
+	public static final String MESSAGE_OTHERSIDE_DATABOX_TYPE = "recipient_databox_type";
+	public static final String MESSAGE_OTHERSIDE_ISDS_ID = "recipient_isds_id";
+	public static final String MESSAGE_OTHERSIDE_NAME = "recipient_name";
+	public static final String MESSAGE_OTHERSIDE_ADDRESS = "recipient_address";
+	public static final String[] message_columns = { MESSAGE_FOLDER, MESSAGE_ID, MESSAGE_ISDS_ID, MESSAGE_ANNOTATION, MESSAGE_ACCEPTANCE_DATE,
+			MESSAGE_MSGBOX_ID, MESSAGE_OTHERSIDE_ISDS_ID, MESSAGE_OTHERSIDE_NAME, MESSAGE_OTHERSIDE_ADDRESS, MESSAGE_TYPE, MESSAGE_DM_TYPE, MESSAGE_TO_HANDS,
+			MESSAGE_ALLOW_SUBST_DELIVERY, MESSAGE_PERSONAL_DELIVERY, MESSAGE_SENT_DATE, MESSAGE_OTHERSIDE_DATABOX_TYPE, MESSAGE_RECIPIENT_IDENT,
+			MESSAGE_RECIPIENT_REF_NUMBER, MESSAGE_IS_READ, MESSAGE_ATTACHMENT_SIZE, MESSAGE_STATE, MESSAGE_STATUS_CHANGED, MESSAGE_LEGALTITLE_LAW,
+			MESSAGE_LEGALTITLE_PAR, MESSAGE_LEGALTITLE_POINT, MESSAGE_LEGALTITLE_SECT, MESSAGE_LEGALTITLE_YEAR, MESSAGE_SENDER_IDENT, MESSAGE_SENDER_REF_NUMBER };
 
 	// protected static final String ORDER_BY = ACCOUNT_ID + " DESC";
-	
-	public static final String RECV_ATTACHMENTS_TB_NAME = "recv_attachments";
-	public static final String RECV_ATTACHMENTS_MSG_ID = "attachment_msg_id";
-	public static final String RECV_ATTACHMENTS_ID = "_id";
-	public static final String RECV_ATTACHMENTS_PATH = "attachment_path";
-	public static final String RECV_ATTACHMENTS_FILENAME = "attachment_filename";
-	public static final String RECV_ATTACHMENTS_MIME = "attachment_mime";
-	public static final String[] recv_attachments_columns = { RECV_ATTACHMENTS_MSG_ID,
-			RECV_ATTACHMENTS_ID, RECV_ATTACHMENTS_PATH, RECV_ATTACHMENTS_FILENAME, RECV_ATTACHMENTS_MIME };
 
-	public static final String SENT_ATTACHMENTS_TB_NAME = "sent_attachments";
-	public static final String SENT_ATTACHMENTS_MSG_ID = "attachment_msg_id";
-	public static final String SENT_ATTACHMENTS_ID = "_id";
-	public static final String SENT_ATTACHMENTS_PATH = "attachment_path";
-	public static final String SENT_ATTACHMENTS_FILENAME = "attachment_filename";
-	public static final String SENT_ATTACHMENTS_MIME = "attachment_mime";
-	public static final String[] sent_attachments_columns = { SENT_ATTACHMENTS_MSG_ID,
-			SENT_ATTACHMENTS_ID, SENT_ATTACHMENTS_PATH, SENT_ATTACHMENTS_FILENAME, SENT_ATTACHMENTS_MIME };
+	public static final String ATTACHMENTS_TB_NAME = "sent_attachments";
+	public static final String ATTACHMENTS_MSG_ID = "attachment_msg_id";
+	public static final String ATTACHMENTS_ID = "_id";
+	public static final String ATTACHMENTS_PATH = "attachment_path";
+	public static final String ATTACHMENTS_FILENAME = "attachment_filename";
+	public static final String ATTACHMENTS_MIME = "attachment_mime";
+	public static final String[] attachments_columns = { ATTACHMENTS_MSG_ID,
+			ATTACHMENTS_ID, ATTACHMENTS_PATH, ATTACHMENTS_FILENAME, ATTACHMENTS_MIME };
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -179,21 +135,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 			
-		db.execSQL("CREATE TABLE " + SENT_ATTACHMENTS_TB_NAME + " (" 
-				+ SENT_ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
-				+ SENT_ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
-				+ SENT_ATTACHMENTS_PATH + " TEXT NOT NULL UNIQUE, " 
-				+ SENT_ATTACHMENTS_MIME + " TEXT, "
-				+ SENT_ATTACHMENTS_FILENAME + " TEXT NOT NULL, "
-				+ " FOREIGN KEY (" + SENT_ATTACHMENTS_MSG_ID + ") REFERENCES " + SENT_MESSAGE_TB_NAME + " (" + SENT_MESSAGE_ID + ") ON DELETE CASCADE );");
-				
-		db.execSQL("CREATE TABLE " + RECV_ATTACHMENTS_TB_NAME + " (" 
-				+ RECV_ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
-				+ RECV_ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
-				+ RECV_ATTACHMENTS_PATH + " TEXT NOT NULL UNIQUE, " 
-				+ RECV_ATTACHMENTS_MIME + " TEXT, "
-				+ RECV_ATTACHMENTS_FILENAME + " TEXT NOT NULL, "
-				+ " FOREIGN KEY (" + RECV_ATTACHMENTS_MSG_ID + ") REFERENCES " + RECEIVED_MESSAGE_TB_NAME + " (" + RECEIVED_MESSAGE_ID + ") ON DELETE CASCADE );");
+		db.execSQL("CREATE TABLE " + ATTACHMENTS_TB_NAME + " (" 
+				+ ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
+				+ ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
+				+ ATTACHMENTS_PATH + " TEXT NOT NULL UNIQUE, " 
+				+ ATTACHMENTS_MIME + " TEXT, "
+				+ ATTACHMENTS_FILENAME + " TEXT NOT NULL, "
+				+ " FOREIGN KEY (" + ATTACHMENTS_MSG_ID + ") REFERENCES " + MESSAGE_TB_NAME + " (" + MESSAGE_ID + ") ON DELETE CASCADE );");
 		
 		db.execSQL("CREATE TABLE " + MSGBOX_TB_NAME + " (" 
 				+ MSGBOX_ID	+ " INTEGER PRIMARY KEY,"
@@ -240,77 +188,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ OWNER_IDENTIFIER + " INTEGER,"
 				+ OWNER_REGISTRY_CODE + " INTEGER);");
 		
-		db.execSQL("CREATE TABLE " + RECEIVED_MESSAGE_TB_NAME + " ("
-				+ RECEIVED_MESSAGE_ID + " INTEGER PRIMARY KEY,"
-				+ RECEIVED_MESSAGE_ISDS_ID + " INTEGER NOT NULL,"
-				+ RECEIVED_MESSAGE_ANNOTATION + " TEXT NOT NULL,"
-				+ RECEIVED_MESSAGE_ACCEPTANCE_DATE + " TEXT NOT NULL,"
-				+ RECEIVED_MESSAGE_RECEIVED_DATE + " TEXT NOT NULL,"
-				+ RECEIVED_MESSAGE_MSGBOX_ID + " INTEGER NOT NULL,"
-				+ RECEIVED_MESSAGE_TYPE + " TEXT NOT NULL," 
-				+ RECEIVED_MESSAGE_DM_TYPE  + " TEXT, "
-				+ RECEIVED_MESSAGE_TO_HANDS  + " TEXT, "
-				+ RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY  + " TEXT, "
-				+ RECEIVED_MESSAGE_PERSONAL_DELIVERY   + " TEXT, "
-				+ RECEIVED_MESSAGE_STATE  + " INTEGER, "
-				+ RECEIVED_MESSAGE_LEGALTITLE_LAW  + " TEXT, "
-				+ RECEIVED_MESSAGE_LEGALTITLE_PAR  + " TEXT, "
-				+ RECEIVED_MESSAGE_LEGALTITLE_POINT  + " TEXT, "
-				+ RECEIVED_MESSAGE_LEGALTITLE_SECT  + " TEXT, "
-				+ RECEIVED_MESSAGE_LEGALTITLE_YEAR  + " TEXT, "
-				+ RECEIVED_MESSAGE_IS_READ + " INTEGER NOT NULL,"
-				+ RECEIVED_MESSAGE_ATTACHMENT_SIZE+ " INTEGER,"
-				+ RECEIVED_MESSAGE_STATUS_CHANGED + " INTEGER NOT NULL,"
-				+ RECEIVED_MESSAGE_RECIPIENT_IDENT + " TEXT, "
-				+ RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER + " TEXT, "
-				+ SENDER_ISDS_ID + " INTEGER NOT NULL," 
-				+ SENDER_NAME + " TEXT NOT NULL,"
-				+ SENDER_ADDRESS + " TEXT, " 
-				+ SENDER_DATABOX_TYPE + " TEXT, "
-				+ RECEIVED_MESSAGE_SENDER_IDENT + " TEXT, "
-				+ RECEIVED_MESSAGE_SENDER_REF_NUMBER + " TEXT, "
-				+ " FOREIGN KEY (" + RECEIVED_MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
-		
-		db.execSQL("CREATE TABLE " + SENT_MESSAGE_TB_NAME + " ("
-				+ SENT_MESSAGE_ID + " INTEGER PRIMARY KEY,"
-				+ SENT_MESSAGE_ISDS_ID + " INTEGER NOT NULL,"
-				+ SENT_MESSAGE_ANNOTATION + " TEXT NOT NULL,"
-				+ SENT_MESSAGE_ACCEPTANCE_DATE + " TEXT,"
-				+ SENT_MESSAGE_MSGBOX_ID + " INTEGER NOT NULL,"
-				+ SENT_MESSAGE_TYPE + " TEXT NOT NULL," 
-				+ SENT_MESSAGE_DM_TYPE + " TEXT, "
-				+ SENT_MESSAGE_TO_HANDS + " TEXT, "
-				+ SENT_MESSAGE_ALLOW_SUBST_DELIVERY + " TEXT, "
-				+ SENT_MESSAGE_PERSONAL_DELIVERY + " TEXT, "
-				+ SENT_MESSAGE_SENT_DATE + " TEXT, "
-				+ SENT_MESSAGE_LEGALTITLE_LAW  + " TEXT, "
-				+ SENT_MESSAGE_LEGALTITLE_PAR  + " TEXT, "
-				+ SENT_MESSAGE_LEGALTITLE_POINT  + " TEXT, "
-				+ SENT_MESSAGE_LEGALTITLE_SECT  + " TEXT, "
-				+ SENT_MESSAGE_LEGALTITLE_YEAR  + " TEXT, "
-				+ SENT_MESSAGE_IS_READ + " INTEGER NOT NULL,"
-				+ SENT_MESSAGE_ATTACHMENT_SIZE + " INTEGER,"
-				+ SENT_MESSAGE_STATE  + " INTEGER, "
-				+ SENT_MESSAGE_STATUS_CHANGED + " INTEGER NOT NULL,"
-				+ SENT_MESSAGE_SENDER_IDENT + " TEXT, "
-				+ SENT_MESSAGE_SENDER_REF_NUMBER + " TEXT, "
-				+ RECIPIENT_DATABOX_TYPE + " TEXT, "
-				+ SENT_MESSAGE_RECIPIENT_IDENT + " TEXT, "
-				+ SENT_MESSAGE_RECIPIENT_REF_NUMBER + " TEXT, "
-				+ RECIPIENT_ISDS_ID + " INTEGER NOT NULL," 
-				+ RECIPIENT_NAME + " TEXT NOT NULL,"
-				+ RECIPIENT_ADDRESS + " TEXT, " 
-				+ " FOREIGN KEY (" + SENT_MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
+		db.execSQL("CREATE TABLE " + MESSAGE_TB_NAME + " ("
+				+ MESSAGE_ID + " INTEGER PRIMARY KEY,"
+				+ MESSAGE_FOLDER + " INTEGER NOT NULL,"
+				+ MESSAGE_ISDS_ID + " INTEGER NOT NULL,"
+				+ MESSAGE_ANNOTATION + " TEXT NOT NULL,"
+				+ MESSAGE_ACCEPTANCE_DATE + " TEXT,"
+				+ MESSAGE_MSGBOX_ID + " INTEGER NOT NULL,"
+				+ MESSAGE_TYPE + " TEXT NOT NULL," 
+				+ MESSAGE_DM_TYPE + " TEXT, "
+				+ MESSAGE_TO_HANDS + " TEXT, "
+				+ MESSAGE_ALLOW_SUBST_DELIVERY + " TEXT, "
+				+ MESSAGE_PERSONAL_DELIVERY + " TEXT, "
+				+ MESSAGE_SENT_DATE + " TEXT, "
+				+ MESSAGE_LEGALTITLE_LAW  + " TEXT, "
+				+ MESSAGE_LEGALTITLE_PAR  + " TEXT, "
+				+ MESSAGE_LEGALTITLE_POINT  + " TEXT, "
+				+ MESSAGE_LEGALTITLE_SECT  + " TEXT, "
+				+ MESSAGE_LEGALTITLE_YEAR  + " TEXT, "
+				+ MESSAGE_IS_READ + " INTEGER NOT NULL,"
+				+ MESSAGE_ATTACHMENT_SIZE + " INTEGER,"
+				+ MESSAGE_STATE  + " INTEGER, "
+				+ MESSAGE_STATUS_CHANGED + " INTEGER NOT NULL,"
+				+ MESSAGE_SENDER_IDENT + " TEXT, "
+				+ MESSAGE_SENDER_REF_NUMBER + " TEXT, "
+				+ MESSAGE_OTHERSIDE_DATABOX_TYPE + " TEXT, "
+				+ MESSAGE_RECIPIENT_IDENT + " TEXT, "
+				+ MESSAGE_RECIPIENT_REF_NUMBER + " TEXT, "
+				+ MESSAGE_OTHERSIDE_ISDS_ID + " INTEGER NOT NULL," 
+				+ MESSAGE_OTHERSIDE_NAME + " TEXT NOT NULL,"
+				+ MESSAGE_OTHERSIDE_ADDRESS + " TEXT, " 
+				+ " FOREIGN KEY (" + MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
 		
 	}
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS " + MSGBOX_TB_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + RECEIVED_MESSAGE_TB_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + SENT_MESSAGE_TB_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + SENT_ATTACHMENTS_TB_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + RECV_ATTACHMENTS_TB_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_TB_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + ATTACHMENTS_TB_NAME);
 		
 		onCreate(db);
 	}

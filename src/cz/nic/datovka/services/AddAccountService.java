@@ -35,11 +35,11 @@ import android.os.RemoteException;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -279,90 +279,96 @@ public class AddAccountService extends IntentService {
 			values.put(DatabaseHelper.MSGBOX_TEST_ENV, testEnvironment);
 			values.put(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION, passwordExpiration);
 			
-			
+			int a = 0; int b = 0;
 			String msgBoxId = getContentResolver().insert(
 					MsgBoxContentProvider.CONTENT_URI, values)
 					.getLastPathSegment();
 			values = null;
-			
 			Iterator<MessageEnvelope> receivedMsgIterator = recievedMessageList.iterator();
 			while(receivedMsgIterator.hasNext()){
-				ContentValues rcvdMessageValues = new ContentValues();
 				MessageEnvelope msgEnvelope = receivedMsgIterator.next();
+				for(int i = 0; i < 200; i++){
+				a++;
+				ContentValues rcvdMessageValues = new ContentValues();
 				
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_DM_TYPE, msgEnvelope.getDmType());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TO_HANDS, msgEnvelope.getToHands());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(msgEnvelope.getAcceptanceTime().getTime()));
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_IS_READ, NOT_READ);
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
-				rcvdMessageValues.put(DatabaseHelper.SENDER_ADDRESS, msgEnvelope.getSender().getAddress());
-				rcvdMessageValues.put(DatabaseHelper.SENDER_ISDS_ID, msgEnvelope.getSender().getdataBoxID());
-				rcvdMessageValues.put(DatabaseHelper.SENDER_NAME, msgEnvelope.getSender().getIdentity());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.INBOX);
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_TO_HANDS, msgEnvelope.getToHands());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(msgEnvelope.getAcceptanceTime().getTime()));
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_IS_READ, NOT_READ);
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ADDRESS, msgEnvelope.getSender().getAddress());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ISDS_ID, msgEnvelope.getSender().getdataBoxID());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_NAME, msgEnvelope.getSender().getIdentity());
 				//rcvdMessageValues.put(DatabaseHelper.SENDER_DATABOX_TYPE, msgEnvelope.getSender().getDataBoxType().name());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msgEnvelope.getStateAsInt());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, STATUS_NOT_CHANGED);
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TYPE, msgEnvelope.getType().name());
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, msgBoxId);
-				rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_STATE, msgEnvelope.getStateAsInt());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, STATUS_NOT_CHANGED);
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_TYPE, msgEnvelope.getType().name());
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_MSGBOX_ID, msgBoxId);
+				rcvdMessageValues.put(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 				
-				getContentResolver().insert(ReceivedMessagesContentProvider.CONTENT_URI, rcvdMessageValues);
+				getContentResolver().insert(MessagesContentProvider.CONTENT_URI, rcvdMessageValues);
 				rcvdMessageValues = null;
+				}
 			}
 			
 			Iterator<MessageEnvelope> sentMsgIterator = sentMessageList.iterator();
 			while(sentMsgIterator.hasNext()){
-				ContentValues sentMessageValues = new ContentValues();
 				MessageEnvelope msgEnvelope = sentMsgIterator.next();
-				
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_DM_TYPE, msgEnvelope.getDmType());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TO_HANDS, msgEnvelope.getToHands());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
+				for(int i = 0; i < 200; i++){
+				b++;
+				ContentValues sentMessageValues = new ContentValues();
+				sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.OUTBOX);
+				sentMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_TO_HANDS, msgEnvelope.getToHands());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
 				
 				GregorianCalendar acceptanceDate = msgEnvelope.getAcceptanceTime();
 				if(acceptanceDate != null)
-					sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
+					sentMessageValues.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
 				
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, READ);
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
-				sentMessageValues.put(DatabaseHelper.RECIPIENT_ADDRESS, msgEnvelope.getRecipient().getAddress());
-				sentMessageValues.put(DatabaseHelper.RECIPIENT_ISDS_ID, msgEnvelope.getRecipient().getdataBoxID());
-				sentMessageValues.put(DatabaseHelper.RECIPIENT_NAME, msgEnvelope.getRecipient().getIdentity());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
+				sentMessageValues.put(DatabaseHelper.MESSAGE_IS_READ, READ);
+				sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ADDRESS, msgEnvelope.getRecipient().getAddress());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ISDS_ID, msgEnvelope.getRecipient().getdataBoxID());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_NAME, msgEnvelope.getRecipient().getIdentity());
 				//sentMessageValues.put(DatabaseHelper.RECIPIENT_DATABOX_TYPE, msgEnvelope.getRecipient().getDataBoxType().name());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATE, msgEnvelope.getStateAsInt());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, STATUS_NOT_CHANGED);
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TYPE, msgEnvelope.getType().name());
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_MSGBOX_ID, msgBoxId);
-				sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_STATE, msgEnvelope.getStateAsInt());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, STATUS_NOT_CHANGED);
+				sentMessageValues.put(DatabaseHelper.MESSAGE_TYPE, msgEnvelope.getType().name());
+				sentMessageValues.put(DatabaseHelper.MESSAGE_MSGBOX_ID, msgBoxId);
+				sentMessageValues.put(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 				
-				getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
+				getContentResolver().insert(MessagesContentProvider.CONTENT_URI, sentMessageValues);
 				sentMessageValues = null;
+				}
 			}
-			
+			System.out.println("prijate " + a + " odeslane " + b);
 			message.arg1 = RESULT_OK;
 
 		} catch (HttpException e) {

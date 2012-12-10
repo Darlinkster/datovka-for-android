@@ -48,25 +48,16 @@
             android:exported="false" >
         </provider>
         <provider
-            android:name=".contentProviders.ReceivedMessagesContentProvider"
-            android:authorities="cz.nic.datovka.contentproviders.receivedmessagescontentprovider"
+            android:name="cz.nic.datovka.contentProviders.MessagesContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.messagescontentprovider"
             android:exported="false" >
         </provider>
         <provider
-            android:name=".contentProviders.SentMessagesContentProvider"
-            android:authorities="cz.nic.datovka.contentproviders.sentmessagescontentprovider"
+            android:name="cz.nic.datovka.contentProviders.AttachmentsContentProvider"
+            android:authorities="cz.nic.datovka.contentproviders.attachments"
             android:exported="false" >
         </provider>
-        <provider
-            android:name=".contentProviders.RecvAttachmentsContentProvider"
-            android:authorities="cz.nic.datovka.contentproviders.recvattachments"
-            android:exported="false" >
-        </provider>
-        <provider
-            android:name=".contentProviders.SentAttachmentsContentProvider"
-            android:authorities="cz.nic.datovka.contentproviders.sentattachments"
-            android:exported="false" >
-        </provider>
+       
 
         <service android:name=".services.MessageDownloadService" >
         </service>

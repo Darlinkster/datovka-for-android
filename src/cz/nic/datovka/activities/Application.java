@@ -22,6 +22,8 @@ import android.content.Context;
 import android.os.Environment;
 
 public class Application {
+	public static final int INBOX = 0;
+	public static final int OUTBOX = 1;
 	public static Context ctx;
 	public static final String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
 }

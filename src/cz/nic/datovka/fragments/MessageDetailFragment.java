@@ -14,7 +14,7 @@ Datovka - An Android client for Datove schranky
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package cz.nic.datovka.fragments;
 
@@ -38,8 +38,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 
 import cz.nic.datovka.R;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
+import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class MessageDetailFragment extends SherlockFragment {
@@ -49,10 +48,10 @@ public class MessageDetailFragment extends SherlockFragment {
 	private static final int NOT_CHANGED = 0;
 	private static final int IS_READ = 1;
 	protected Logger logger = Logger.getLogger(this.getClass().getName());
-	
+
 	private Updater updater;
 	private Uri singleUri;
-	
+
 	public static MessageDetailFragment newInstance(long id, int folder) {
 		MessageDetailFragment f = new MessageDetailFragment();
 		Bundle args = new Bundle();
@@ -62,15 +61,15 @@ public class MessageDetailFragment extends SherlockFragment {
 		f.setArguments(args);
 		return f;
 	}
-	
+
 	@Override
-	public void onPause(){
+	public void onPause() {
 		super.onPause();
 		getActivity().getContentResolver().unregisterContentObserver(updater);
 	}
-	
+
 	@Override
-	public void onResume(){
+	public void onResume() {
 		super.onResume();
 		getActivity().getContentResolver().registerContentObserver(singleUri, false, updater);
 	}
@@ -82,16 +81,17 @@ public class MessageDetailFragment extends SherlockFragment {
 		View customActionBarView = inflater.inflate(R.layout.message_detail_actionbar, null);
 		updater = new Updater(new Handler());
 		setMessageRead();
-		
+
 		return fillFragment(v, customActionBarView);
 
-			}
-	
+	}
+
 	private View fillFragment(View v, View customActionBarView) {
 		Cursor message = getMessageCursor();
 
-//		TextView annotation = (TextView) v.findViewById(R.id.message_annotation);
-//		TextView messageId = (TextView) v.findViewById(R.id.message_id);
+		// TextView annotation = (TextView)
+		// v.findViewById(R.id.message_annotation);
+		// TextView messageId = (TextView) v.findViewById(R.id.message_id);
 		TextView deliveryDateTV = (TextView) v.findViewById(R.id.message_delivery_date);
 		TextView acceptanceDateTV = (TextView) v.findViewById(R.id.message_acceptance_date);
 		TextView senderTV = (TextView) v.findViewById(R.id.message_sender);
@@ -106,172 +106,151 @@ public class MessageDetailFragment extends SherlockFragment {
 		TextView recipientIdentTV = (TextView) v.findViewById(R.id.message_recipient_ident);
 		TextView senderRefNumTV = (TextView) v.findViewById(R.id.message_sender_ref_num);
 		TextView senderIdentTV = (TextView) v.findViewById(R.id.message_sender_ident);
-		
+
 		TextView senderDetailTV = (TextView) v.findViewById(R.id.sender_details);
 		TextView recipientDetailTV = (TextView) v.findViewById(R.id.recipient_details);
 		TextView senderRecpTV = (TextView) v.findViewById(R.id.message_sender_recipient);
 
-		int annotationColId;
-		int messageIdColId;
-		int messageDeliveryDateColId;
-		int messageAcceptanceDateColId;
-		int senderRecipientColId;
-		int senderRecipientAddressColId;
-		int messageStatusColId;
-		int messageAttachmentSizeColId;
-		int legalTitleLawColId;
-		int legalTitleParColId;
-		int legalTitlePointColId;
-		int legalTitleSectColId;
-		int legalTitleYearColId;
-		int personalDeliveryColId;
-		int substDeliveryColId;
-		int toHandsColId;
-		int recipientRefNumColId;
-		int recipientIdentColId;
-		int senderRefNumColId;
-		int senderIdentColId;
+		int annotationColId = message.getColumnIndex(DatabaseHelper.MESSAGE_ANNOTATION);
+		int messageIdColId = message.getColumnIndex(DatabaseHelper.MESSAGE_ISDS_ID);
+		int messageDeliveryDateColId = message.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
+		int messageAcceptanceDateColId = message.getColumnIndex(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE);
+		int senderRecipientColId = message.getColumnIndex(DatabaseHelper.MESSAGE_OTHERSIDE_NAME);
+		int senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.MESSAGE_OTHERSIDE_ADDRESS);
+		int messageStatusColId = message.getColumnIndex(DatabaseHelper.MESSAGE_STATE);
+		int messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE);
+		int legalTitleLawColId = message.getColumnIndex(DatabaseHelper.MESSAGE_LEGALTITLE_LAW);
+		int legalTitleParColId = message.getColumnIndex(DatabaseHelper.MESSAGE_LEGALTITLE_PAR);
+		int legalTitlePointColId = message.getColumnIndex(DatabaseHelper.MESSAGE_LEGALTITLE_POINT);
+		int legalTitleSectColId = message.getColumnIndex(DatabaseHelper.MESSAGE_LEGALTITLE_SECT);
+		int legalTitleYearColId = message.getColumnIndex(DatabaseHelper.MESSAGE_LEGALTITLE_YEAR);
+		int personalDeliveryColId = message.getColumnIndex(DatabaseHelper.MESSAGE_PERSONAL_DELIVERY);
+		int substDeliveryColId = message.getColumnIndex(DatabaseHelper.MESSAGE_ALLOW_SUBST_DELIVERY);
+		int toHandsColId = message.getColumnIndex(DatabaseHelper.MESSAGE_TO_HANDS);
+		int recipientRefNumColId = message.getColumnIndex(DatabaseHelper.MESSAGE_RECIPIENT_REF_NUMBER);
+		int recipientIdentColId = message.getColumnIndex(DatabaseHelper.MESSAGE_RECIPIENT_IDENT);
+		int senderRefNumColId = message.getColumnIndex(DatabaseHelper.MESSAGE_SENDER_REF_NUMBER);
+		int senderIdentColId = message.getColumnIndex(DatabaseHelper.MESSAGE_SENDER_IDENT);
 
 		int folder = getArguments().getInt(FOLDER, 0);
 		if (folder == INBOX) {
 			senderRecpTV.setText(getString(R.string.sender));
-			
-			annotationColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION);
-			messageIdColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID);
-			messageDeliveryDateColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE);
-			messageAcceptanceDateColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE);
-			senderRecipientColId = message.getColumnIndex(DatabaseHelper.SENDER_NAME);
-			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.SENDER_ADDRESS);
-			messageStatusColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_STATE);
-			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE);
-			legalTitleLawColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_LAW);
-			legalTitleParColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_PAR);
-			legalTitlePointColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_POINT);
-			legalTitleSectColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_SECT);
-			legalTitleYearColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_YEAR);
-			personalDeliveryColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_PERSONAL_DELIVERY);
-			substDeliveryColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY);
-			toHandsColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_TO_HANDS);
-			recipientRefNumColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER);
-			recipientIdentColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_IDENT);
-			senderRefNumColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_SENDER_REF_NUMBER);
-			senderIdentColId = message.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_SENDER_IDENT); 
 		} else { // OUTBOX
 			senderRecpTV.setText(getString(R.string.recipient));
-			
-			annotationColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ANNOTATION);
-			messageIdColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ISDS_ID);
-			messageDeliveryDateColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENT_DATE);
-			messageAcceptanceDateColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE);
-			senderRecipientColId = message.getColumnIndex(DatabaseHelper.RECIPIENT_NAME);
-			senderRecipientAddressColId = message.getColumnIndex(DatabaseHelper.RECIPIENT_ADDRESS);
-			messageStatusColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_STATE);
-			messageAttachmentSizeColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE);
-			legalTitleLawColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW);
-			legalTitleParColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_PAR);
-			legalTitlePointColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_POINT);
-			legalTitleSectColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_SECT);
-			legalTitleYearColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_YEAR);
-			personalDeliveryColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_PERSONAL_DELIVERY);
-			substDeliveryColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ALLOW_SUBST_DELIVERY);
-			toHandsColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_TO_HANDS);
-			recipientRefNumColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_RECIPIENT_REF_NUMBER);
-			recipientIdentColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_RECIPIENT_IDENT);
-			senderRefNumColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENDER_REF_NUMBER);
-			senderIdentColId = message.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENDER_IDENT);
 		}
 
-		if(customActionBarView != null){
+		if (customActionBarView != null) {
 			ActionBar ab = getSherlockActivity().getSupportActionBar();
-		    TextView annotationAB = (TextView) customActionBarView.findViewById(R.id.actionbar_annotation);
-		    TextView idAB = (TextView) customActionBarView.findViewById(R.id.actionbar_id);
-		    
-		    annotationAB.setText(message.getString(annotationColId));
-		    idAB.setText(getString(R.string.ID, message.getString(messageIdColId)));
-		    ab.setDisplayShowTitleEnabled(false);
-		    ab.setCustomView(customActionBarView);
-		    ab.setDisplayShowCustomEnabled(true);
+			TextView annotationAB = (TextView) customActionBarView.findViewById(R.id.actionbar_annotation);
+			TextView idAB = (TextView) customActionBarView.findViewById(R.id.actionbar_id);
+
+			annotationAB.setText(message.getString(annotationColId));
+			idAB.setText(getString(R.string.ID, message.getString(messageIdColId)));
+			ab.setDisplayShowTitleEnabled(false);
+			ab.setCustomView(customActionBarView);
+			ab.setDisplayShowCustomEnabled(true);
 		}
-		
-		//getSherlockActivity().getSupportActionBar().setTitle(message.getString(annotationColId) +" "+getString(R.string.ID, message.getString(messageIdColId)));
-		//annotation.setText(message.getString(annotationColId));
-		//messageId.setText(getString(R.string.ID, message.getString(messageIdColId)));
-	    	    
+
+		// getSherlockActivity().getSupportActionBar().setTitle(message.getString(annotationColId)
+		// +" "+getString(R.string.ID, message.getString(messageIdColId)));
+		// annotation.setText(message.getString(annotationColId));
+		// messageId.setText(getString(R.string.ID,
+		// message.getString(messageIdColId)));
+
 		deliveryDateTV.setText(getString(R.string.delivery_date, AndroidUtils.FromXmlToHumanReadableDateWithTime(message.getString(messageDeliveryDateColId))));
-		
+
 		String acceptanceDate = message.getString(messageAcceptanceDateColId);
 		if (acceptanceDate != null && !acceptanceDate.equals(""))
-			acceptanceDateTV.setText(getString(R.string.acceptance_date,AndroidUtils.FromXmlToHumanReadableDateWithTime(acceptanceDate)));
+			acceptanceDateTV.setText(getString(R.string.acceptance_date, AndroidUtils.FromXmlToHumanReadableDateWithTime(acceptanceDate)));
 		else
 			acceptanceDateTV.setText(getString(R.string.acceptance_date, getString(R.string.message_not_accepted_yet)));
-		
-		
+
 		senderTV.setText(message.getString(senderRecipientColId));
 		senderAddressTV.setText(message.getString(senderRecipientAddressColId));
-		
+
 		int status = message.getInt(messageStatusColId);
-		switch(status) {
-			case 1:  messageStatusTV.setText(R.string.message_status_1); break;
-			case 2:  messageStatusTV.setText(R.string.message_status_2); break;
-			case 3:  messageStatusTV.setText(R.string.message_status_3); break;
-			case 4:  messageStatusTV.setText(R.string.message_status_4); break;
-			case 5:  messageStatusTV.setText(R.string.message_status_5); break;
-			case 6:  messageStatusTV.setText(R.string.message_status_6); break;
-			case 7:  messageStatusTV.setText(R.string.message_status_7); break;
-			case 8:  messageStatusTV.setText(R.string.message_status_8); break;
-			case 9:  messageStatusTV.setText(R.string.message_status_9); break;
-			case 10:  messageStatusTV.setText(R.string.message_status_10); break;
-			default:	messageStatusTV.setText(R.string.message_status_unknown);
-						logger.log(Level.WARNING, "Unknown message status: " + status);
-						
+		switch (status) {
+		case 1:
+			messageStatusTV.setText(R.string.message_status_1);
+			break;
+		case 2:
+			messageStatusTV.setText(R.string.message_status_2);
+			break;
+		case 3:
+			messageStatusTV.setText(R.string.message_status_3);
+			break;
+		case 4:
+			messageStatusTV.setText(R.string.message_status_4);
+			break;
+		case 5:
+			messageStatusTV.setText(R.string.message_status_5);
+			break;
+		case 6:
+			messageStatusTV.setText(R.string.message_status_6);
+			break;
+		case 7:
+			messageStatusTV.setText(R.string.message_status_7);
+			break;
+		case 8:
+			messageStatusTV.setText(R.string.message_status_8);
+			break;
+		case 9:
+			messageStatusTV.setText(R.string.message_status_9);
+			break;
+		case 10:
+			messageStatusTV.setText(R.string.message_status_10);
+			break;
+		default:
+			messageStatusTV.setText(R.string.message_status_unknown);
+			logger.log(Level.WARNING, "Unknown message status: " + status);
+
 		}
 		messageAttachmentSizeTV.setText(getString(R.string.size_of_attachments, message.getInt(messageAttachmentSizeColId)));
 		personalDeliveryTV.setText(getString(R.string.personal_delivery, translateIntAnswerToString(message.getString(personalDeliveryColId))));
 		substDeliveryTV.setText(getString(R.string.subst_delivery, translateIntAnswerToString(message.getString(substDeliveryColId))));
-		
+
 		String toHands = message.getString(toHandsColId);
-		if(toHands.equalsIgnoreCase(""))
+		if (toHands.equalsIgnoreCase(""))
 			hideTextView(toHandsTV);
 		else
 			toHandsTV.setText(getString(R.string.to_hands, toHands));
-		
-		String legalTitle = createLegalTitle(message.getString(legalTitleLawColId), message.getString(legalTitleParColId), 
-															message.getString(legalTitlePointColId), message.getString(legalTitleSectColId), 
-															message.getString(legalTitleYearColId));
-		if(legalTitle.equalsIgnoreCase(""))
+
+		String legalTitle = createLegalTitle(message.getString(legalTitleLawColId), message.getString(legalTitleParColId),
+				message.getString(legalTitlePointColId), message.getString(legalTitleSectColId), message.getString(legalTitleYearColId));
+		if (legalTitle.equalsIgnoreCase(""))
 			hideTextView(legalTitleTV);
 		else
 			legalTitleTV.setText(getString(R.string.legal_title, legalTitle));
-		
+
 		String recipientIdent = message.getString(recipientIdentColId);
 		String recipientRefNum = message.getString(recipientRefNumColId);
-		if((recipientIdent.equalsIgnoreCase("") || (recipientRefNum.equalsIgnoreCase("")))){
+		if ((recipientIdent.equalsIgnoreCase("") || (recipientRefNum.equalsIgnoreCase("")))) {
 			hideTextView(recipientIdentTV);
 			hideTextView(recipientRefNumTV);
 			hideTextView(recipientDetailTV);
 		} else {
-			if(recipientIdent.equalsIgnoreCase(""))
+			if (recipientIdent.equalsIgnoreCase(""))
 				hideTextView(recipientIdentTV);
 			else
 				recipientIdentTV.setText(getString(R.string.doc_ident, recipientIdent));
-			if(recipientRefNum.equalsIgnoreCase(""))
+			if (recipientRefNum.equalsIgnoreCase(""))
 				hideTextView(recipientRefNumTV);
 			else
 				recipientRefNumTV.setText(getString(R.string.doc_ref_num, recipientRefNum));
 		}
-		
+
 		String senderIdent = message.getString(senderIdentColId);
 		String senderRefNum = message.getString(senderRefNumColId);
-		if((senderIdent.equalsIgnoreCase("") || (senderRefNum.equalsIgnoreCase("")))){
+		if ((senderIdent.equalsIgnoreCase("") || (senderRefNum.equalsIgnoreCase("")))) {
 			hideTextView(senderIdentTV);
 			hideTextView(senderRefNumTV);
 			hideTextView(senderDetailTV);
 		} else {
-			if(senderIdent.equalsIgnoreCase(""))
+			if (senderIdent.equalsIgnoreCase(""))
 				hideTextView(senderIdentTV);
 			else
 				senderIdentTV.setText(getString(R.string.doc_ident, senderIdent));
-			if(senderRefNum.equalsIgnoreCase(""))
+			if (senderRefNum.equalsIgnoreCase(""))
 				hideTextView(senderRefNumTV);
 			else
 				senderRefNumTV.setText(getString(R.string.doc_ref_num, senderRefNum));
@@ -281,43 +260,35 @@ public class MessageDetailFragment extends SherlockFragment {
 
 	}
 
-	private String createLegalTitle(String legalTitleLaw, String legalTitlePar, 
-			String legalTitlePoint, String legalTitleSect, String legalTitleYear) {
+	private String createLegalTitle(String legalTitleLaw, String legalTitlePar, String legalTitlePoint, String legalTitleSect, String legalTitleYear) {
 		String legalTitle = "";
-		
-		if((legalTitleLaw != null) && (!legalTitleLaw.equalsIgnoreCase(""))){
+
+		if ((legalTitleLaw != null) && (!legalTitleLaw.equalsIgnoreCase(""))) {
 			legalTitle += (legalTitleLaw + ", ");
 		}
-		if((legalTitleYear != null) && (!legalTitleYear.equalsIgnoreCase(""))){
+		if ((legalTitleYear != null) && (!legalTitleYear.equalsIgnoreCase(""))) {
 			legalTitle += (legalTitleYear + ", ");
 		}
-		if((legalTitleSect != null) && (!legalTitleSect.equalsIgnoreCase(""))){
+		if ((legalTitleSect != null) && (!legalTitleSect.equalsIgnoreCase(""))) {
 			legalTitle += (legalTitleSect + ", ");
 		}
-		if((legalTitlePar != null) && (!legalTitlePar.equalsIgnoreCase(""))){
+		if ((legalTitlePar != null) && (!legalTitlePar.equalsIgnoreCase(""))) {
 			legalTitle += (legalTitlePar + ", ");
 		}
-		if((legalTitlePoint != null) && (!legalTitlePoint.equalsIgnoreCase(""))){
+		if ((legalTitlePoint != null) && (!legalTitlePoint.equalsIgnoreCase(""))) {
 			legalTitle += legalTitlePoint;
 		}
-		
+
 		return legalTitle;
 	}
-	
+
 	private Cursor getMessageCursor() {
 		long id = getArguments().getLong(ID, 0);
-		int folder = getArguments().getInt(FOLDER, 0);
 
-		String[] projection;
-		if (folder == INBOX) {
-			singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, id);
-			projection = DatabaseHelper.received_message_columns;
-		} else { // if(folder == OUTBOX)
-			singleUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, id);
-			projection = DatabaseHelper.sent_message_columns;
-		}
+		singleUri = ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, id);
+		String[] projection = DatabaseHelper.message_columns;
 		Cursor cursor = getActivity().getContentResolver().query(singleUri, projection, null, null, null);
-		
+
 		if (cursor.moveToFirst()) {
 			return cursor;
 		}
@@ -327,52 +298,44 @@ public class MessageDetailFragment extends SherlockFragment {
 
 	private void setMessageRead() {
 		long id = getArguments().getLong(ID, 0);
-		int folder = getArguments().getInt(FOLDER, 0);
 
-		Uri singleUri;
+		Uri singleUri = ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, id);
 		ContentValues value = new ContentValues();
-		if (folder == INBOX) {
-			singleUri = ContentUris.withAppendedId(ReceivedMessagesContentProvider.CONTENT_URI, id);
-			value.put(DatabaseHelper.RECEIVED_MESSAGE_IS_READ, IS_READ);
-			value.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
-		} else { // if(folder == OUTBOX)
-			singleUri = ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, id);
-			value.put(DatabaseHelper.SENT_MESSAGE_IS_READ, IS_READ);
-			value.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
-		}
+		value.put(DatabaseHelper.MESSAGE_IS_READ, IS_READ);
+		value.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, NOT_CHANGED);
 
 		getActivity().getContentResolver().update(singleUri, value, null, null);
 	}
-	
+
 	private class Updater extends ContentObserver {
 
 		public Updater(Handler handler) {
 			super(handler);
-			
-		}
-		
-		@Override
-	    public boolean deliverSelfNotifications() {
-	        return false;
-	    }
 
-	    @Override
-	    public void onChange(boolean selfChange) {
-	    	fillFragment(getView(), null);
-	    }
+		}
+
+		@Override
+		public boolean deliverSelfNotifications() {
+			return false;
+		}
+
+		@Override
+		public void onChange(boolean selfChange) {
+			fillFragment(getView(), null);
+		}
 	}
-	
-	private String translateIntAnswerToString(String param){
-		if((param == null) || param.equalsIgnoreCase(""))
+
+	private String translateIntAnswerToString(String param) {
+		if ((param == null) || param.equalsIgnoreCase(""))
 			return getString(R.string.no);
-		else if(Integer.parseInt(param) == 1)
+		else if (Integer.parseInt(param) == 1)
 			return getString(R.string.yes);
 		else if (Integer.parseInt(param) == 0)
 			return getString(R.string.no);
-		
+
 		return getString(R.string.no);
 	}
-	
+
 	private void hideTextView(TextView param) {
 		param.setHeight(0);
 		param.setVisibility(View.INVISIBLE);

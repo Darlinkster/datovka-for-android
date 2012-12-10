@@ -39,9 +39,8 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
-import cz.nic.datovka.contentProviders.ReceivedMessagesContentProvider;
-import cz.nic.datovka.contentProviders.SentMessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -104,18 +103,20 @@ public class MessageBoxRefreshService extends Service {
 				String msgBoxIsdsId = msgBoxCursor.getString(msgBoxIsdsIdColIndex);
 				
 				// get last inbox message
-				Cursor inboxMsg = getContentResolver().query(ReceivedMessagesContentProvider.CONTENT_URI,
-						new String[] { DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID },
-						DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID + "=?", new String[] { Long.toString(msgBoxId) },
-						DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE);
-				int rcvdMsgBoxIdColIndex = inboxMsg.getColumnIndex(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE);
+				Cursor inboxMsg = getContentResolver().query(MessagesContentProvider.CONTENT_URI,
+						new String[] { DatabaseHelper.MESSAGE_SENT_DATE, DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_FOLDER },
+						DatabaseHelper.MESSAGE_MSGBOX_ID + "=? and " + DatabaseHelper.MESSAGE_FOLDER + "=?", 
+						new String[] { Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) },
+						DatabaseHelper.MESSAGE_SENT_DATE);
+				int rcvdMsgBoxIdColIndex = inboxMsg.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
 								
 				// get last outbox message
-				Cursor outboxMsg = getContentResolver().query(SentMessagesContentProvider.CONTENT_URI,
-						new String[] { DatabaseHelper.SENT_MESSAGE_SENT_DATE, DatabaseHelper.SENT_MESSAGE_MSGBOX_ID },
-						DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + "=?", new String[] { Long.toString(msgBoxId) },
-						DatabaseHelper.SENT_MESSAGE_SENT_DATE);
-				int sentMsgBoxIdColIndex = outboxMsg.getColumnIndex(DatabaseHelper.SENT_MESSAGE_SENT_DATE);
+				Cursor outboxMsg = getContentResolver().query(MessagesContentProvider.CONTENT_URI,
+						new String[] { DatabaseHelper.MESSAGE_SENT_DATE, DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_FOLDER },
+						DatabaseHelper.MESSAGE_MSGBOX_ID + "=? and " + DatabaseHelper.MESSAGE_FOLDER + "=?", 
+						new String[] { Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) },
+						DatabaseHelper.MESSAGE_SENT_DATE);
+				int sentMsgBoxIdColIndex = outboxMsg.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
 				
 				// convert dates
 				long lastInboxMsgTime;
@@ -164,39 +165,40 @@ public class MessageBoxRefreshService extends Service {
 						
 						//System.out.println(msgEnvelope.getAnnotation());
 						
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_DM_TYPE, msgEnvelope.getDmType());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TO_HANDS, msgEnvelope.getToHands());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.INBOX);
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_TO_HANDS, msgEnvelope.getToHands());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
 						
 						GregorianCalendar recvAcceptanceDate = msgEnvelope.getAcceptanceTime();
 						if(recvAcceptanceDate != null)
-							rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
+							rcvdMessageValues.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(recvAcceptanceDate.getTime()));
 						
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECEIVED_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_IS_READ, NOT_READ);
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
-						rcvdMessageValues.put(DatabaseHelper.SENDER_ADDRESS, msgEnvelope.getSender().getAddress());
-						rcvdMessageValues.put(DatabaseHelper.SENDER_ISDS_ID, msgEnvelope.getSender().getdataBoxID());
-						rcvdMessageValues.put(DatabaseHelper.SENDER_NAME, msgEnvelope.getSender().getIdentity());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_IS_READ, NOT_READ);
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ADDRESS, msgEnvelope.getSender().getAddress());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ISDS_ID, msgEnvelope.getSender().getdataBoxID());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_NAME, msgEnvelope.getSender().getIdentity());
 						//rcvdMessageValues.put(DatabaseHelper.SENDER_DATABOX_TYPE, msgEnvelope.getSender().getDataBoxType().name());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATE, msgEnvelope.getStateAsInt());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_TYPE, msgEnvelope.getType().name());
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_MSGBOX_ID, msgBoxId);
-						rcvdMessageValues.put(DatabaseHelper.RECEIVED_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_STATE, msgEnvelope.getStateAsInt());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, NOT_CHANGED);
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_TYPE, msgEnvelope.getType().name());
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_MSGBOX_ID, msgBoxId);
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 						
-						getContentResolver().insert(ReceivedMessagesContentProvider.CONTENT_URI, rcvdMessageValues);
+						getContentResolver().insert(MessagesContentProvider.CONTENT_URI, rcvdMessageValues);
 						newMessageCounter++;
 					}
 					
@@ -206,53 +208,55 @@ public class MessageBoxRefreshService extends Service {
 						
 						//System.out.println(msgEnvelope.getAnnotation());
 						
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_DM_TYPE, msgEnvelope.getDmType());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TO_HANDS, msgEnvelope.getToHands());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.OUTBOX);
+						sentMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_TO_HANDS, msgEnvelope.getToHands());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
 						
 						GregorianCalendar acceptanceDate = msgEnvelope.getAcceptanceTime();
 						if(acceptanceDate != null)
-							sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
+							sentMessageValues.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
 						
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_IS_READ, READ);
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
-						sentMessageValues.put(DatabaseHelper.RECIPIENT_ADDRESS, msgEnvelope.getRecipient().getAddress());
-						sentMessageValues.put(DatabaseHelper.RECIPIENT_ISDS_ID, msgEnvelope.getRecipient().getdataBoxID());
-						sentMessageValues.put(DatabaseHelper.RECIPIENT_NAME, msgEnvelope.getRecipient().getIdentity());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
+						sentMessageValues.put(DatabaseHelper.MESSAGE_IS_READ, READ);
+						sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_PAR, msgEnvelope.getLegalTitle().getPar());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_POINT, msgEnvelope.getLegalTitle().getPoint());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_SECT, msgEnvelope.getLegalTitle().getSect());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_YEAR, msgEnvelope.getLegalTitle().getYear());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ADDRESS, msgEnvelope.getRecipient().getAddress());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_ISDS_ID, msgEnvelope.getRecipient().getdataBoxID());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_OTHERSIDE_NAME, msgEnvelope.getRecipient().getIdentity());
 						//sentMessageValues.put(DatabaseHelper.RECIPIENT_DATABOX_TYPE, msgEnvelope.getRecipient().getDataBoxType().name());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATE, msgEnvelope.getStateAsInt());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, NOT_CHANGED);
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_TYPE, msgEnvelope.getType().name());
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_MSGBOX_ID, msgBoxId);
-						sentMessageValues.put(DatabaseHelper.SENT_MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_SENDER_IDENT, msgEnvelope.getSenderIdent().getIdent());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_SENDER_REF_NUMBER, msgEnvelope.getSenderIdent().getRefNumber());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_IDENT, msgEnvelope.getRecipientIdent().getIdent());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_RECIPIENT_REF_NUMBER, msgEnvelope.getRecipientIdent().getRefNumber());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_STATE, msgEnvelope.getStateAsInt());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, NOT_CHANGED);
+						sentMessageValues.put(DatabaseHelper.MESSAGE_TYPE, msgEnvelope.getType().name());
+						sentMessageValues.put(DatabaseHelper.MESSAGE_MSGBOX_ID, msgBoxId);
+						sentMessageValues.put(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE, msgEnvelope.getAttachmentSize());
 						
-						getContentResolver().insert(SentMessagesContentProvider.CONTENT_URI, sentMessageValues);
+						getContentResolver().insert(MessagesContentProvider.CONTENT_URI, sentMessageValues);
 						//newMessageCounter++;
 					}
 					
 					// Select all outbox messages with status lower than 6 and check if there is any status update
-					String select = DatabaseHelper.SENT_MESSAGE_STATE + " < ? AND " + DatabaseHelper.SENT_MESSAGE_MSGBOX_ID + " = ?";
-					String[] params = { "6", Long.toString(msgBoxId) };
-					String[] projection = { DatabaseHelper.SENT_MESSAGE_ID, 
-											DatabaseHelper.SENT_MESSAGE_STATE, 
-											DatabaseHelper.SENT_MESSAGE_ISDS_ID };
+					String select = DatabaseHelper.MESSAGE_STATE + " < ? AND " + DatabaseHelper.MESSAGE_MSGBOX_ID + " = ? and " + DatabaseHelper.MESSAGE_FOLDER + "=?";
+					String[] params = { "6", Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) };
+					String[] projection = { DatabaseHelper.MESSAGE_ID,
+											DatabaseHelper.MESSAGE_FOLDER, 
+											DatabaseHelper.MESSAGE_STATE, 
+											DatabaseHelper.MESSAGE_ISDS_ID };
 					
-					Cursor outboxMsgWithBadStatus = getContentResolver().query(SentMessagesContentProvider.CONTENT_URI, projection, select, params, null);
-					int outboxMsgIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ID);
-					int outboxMsgStateColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_STATE);
-					int outboxMsgIsdsIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.SENT_MESSAGE_ISDS_ID);
+					Cursor outboxMsgWithBadStatus = getContentResolver().query(MessagesContentProvider.CONTENT_URI, projection, select, params, null);
+					int outboxMsgIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.MESSAGE_ID);
+					int outboxMsgStateColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.MESSAGE_STATE);
+					int outboxMsgIsdsIdColId = outboxMsgWithBadStatus.getColumnIndex(DatabaseHelper.MESSAGE_ISDS_ID);
 					
 					while(outboxMsgWithBadStatus.moveToNext()) {
 						String msgIsdsId = outboxMsgWithBadStatus.getString(outboxMsgIsdsIdColId);
@@ -265,11 +269,11 @@ public class MessageBoxRefreshService extends Service {
 							
 							GregorianCalendar sentAcceptanceDate = msg.getAcceptanceTime();
 							if(sentAcceptanceDate != null)
-								val.put(DatabaseHelper.SENT_MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
-							val.put(DatabaseHelper.SENT_MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
-							val.put(DatabaseHelper.SENT_MESSAGE_STATE, msg.getStateAsInt());
-							val.put(DatabaseHelper.SENT_MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
-							Application.ctx.getContentResolver().update(ContentUris.withAppendedId(SentMessagesContentProvider.CONTENT_URI, msgId), val, null,
+								val.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(sentAcceptanceDate.getTime()));
+							val.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
+							val.put(DatabaseHelper.MESSAGE_STATE, msg.getStateAsInt());
+							val.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
+							Application.ctx.getContentResolver().update(ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, msgId), val, null,
 									null);			
 							messageStatusChangeCounter++;
 						}

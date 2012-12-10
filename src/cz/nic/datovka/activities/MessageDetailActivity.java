@@ -71,7 +71,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		this.folder = i.getIntExtra(FOLDER,0);
 		
 		mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
-		maf = MessageAttachmentsFragment.newInstance(this.messageId, this.folder);
+		maf = MessageAttachmentsFragment.newInstance(this.messageId);
 		
 		fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
@@ -103,7 +103,6 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			
 			Intent param = new Intent();
 			param.putExtra(MessageStatusRefresher.MSG_ID, this.messageId);
-			param.putExtra(MessageStatusRefresher.FOLDER, this.folder);
 			Messenger messenger = new Messenger(handler);
 			param.putExtra(MessageDownloadService.RECEIVER, messenger);
 			new MessageStatusRefresher(param).start();
