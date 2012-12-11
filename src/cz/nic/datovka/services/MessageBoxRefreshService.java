@@ -101,23 +101,23 @@ public class MessageBoxRefreshService extends Service {
 				// get msgbox id
 				long msgBoxId = msgBoxCursor.getLong(msgBoxIdColIndex);
 				String msgBoxIsdsId = msgBoxCursor.getString(msgBoxIsdsIdColIndex);
-				
+
 				// get last inbox message
 				Cursor inboxMsg = getContentResolver().query(MessagesContentProvider.CONTENT_URI,
 						new String[] { DatabaseHelper.MESSAGE_SENT_DATE, DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_FOLDER },
 						DatabaseHelper.MESSAGE_MSGBOX_ID + "=? and " + DatabaseHelper.MESSAGE_FOLDER + "=?", 
-						new String[] { Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) },
+						new String[] { Long.toString(msgBoxId), Integer.toString(Application.INBOX) },	
 						DatabaseHelper.MESSAGE_SENT_DATE);
 				int rcvdMsgBoxIdColIndex = inboxMsg.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
-								
+
 				// get last outbox message
 				Cursor outboxMsg = getContentResolver().query(MessagesContentProvider.CONTENT_URI,
 						new String[] { DatabaseHelper.MESSAGE_SENT_DATE, DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_FOLDER },
 						DatabaseHelper.MESSAGE_MSGBOX_ID + "=? and " + DatabaseHelper.MESSAGE_FOLDER + "=?", 
-						new String[] { Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) },
+						new String[] { Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) }, 
 						DatabaseHelper.MESSAGE_SENT_DATE);
 				int sentMsgBoxIdColIndex = outboxMsg.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
-				
+
 				// convert dates
 				long lastInboxMsgTime;
 				long lastOutboxMsgTime;
@@ -162,8 +162,6 @@ public class MessageBoxRefreshService extends Service {
 					while(newInboxMsgIterator.hasNext()){
 						MessageEnvelope msgEnvelope = newInboxMsgIterator.next();
 						ContentValues rcvdMessageValues = new ContentValues();
-						
-						//System.out.println(msgEnvelope.getAnnotation());
 						
 						rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.INBOX);
 						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
