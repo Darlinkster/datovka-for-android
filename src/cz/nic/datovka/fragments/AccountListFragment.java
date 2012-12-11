@@ -33,14 +33,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import cz.nic.datovka.R;
 import cz.nic.datovka.activities.AccountInfoActivity;
 import cz.nic.datovka.connector.DatabaseHelper;
-import cz.nic.datovka.connector.DatabaseTools;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 
 public class AccountListFragment extends SherlockListFragment implements LoaderCallbacks<Cursor> {
@@ -123,9 +121,8 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 		
 		switch (item.getItemId()) {
 		case R.id.account_delete:
-			DatabaseTools.deleteAccount(msgBoxId);
-			
-			Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_SHORT).show();
+			DeleteAccountWarningFragment dawf = DeleteAccountWarningFragment.newInstance(msgBoxId);
+			dawf.show(getFragmentManager(), "dawf");
 			return true;
 		case R.id.account_info:
 			Intent intent = new Intent(getActivity(), AccountInfoActivity.class);
