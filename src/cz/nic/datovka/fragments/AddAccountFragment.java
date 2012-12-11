@@ -58,6 +58,8 @@ public class AddAccountFragment extends SherlockDialogFragment {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		View dialogView = inflater.inflate(R.layout.add_account_dialog, null);
+		builder.setView(dialogView);
+		builder.setTitle(R.string.add_acount);
 		
 		final EditText loginTv = (EditText) dialogView.findViewById(R.id.username);
 		final EditText passwordTv = (EditText) dialogView.findViewById(R.id.password);
@@ -81,8 +83,7 @@ public class AddAccountFragment extends SherlockDialogFragment {
 			testEnvCheckbox.setChecked(testEnvArg);
 		}
 
-		builder.setView(dialogView);
-		builder.setTitle(R.string.add_acount);
+		
 		builder.setPositiveButton(R.string.add_account_button, new DialogInterface.OnClickListener() {
 
 			public void onClick(DialogInterface dialog, int which) {
@@ -98,6 +99,7 @@ public class AddAccountFragment extends SherlockDialogFragment {
 				AddAccountProgressBarFragment ipbf = AddAccountProgressBarFragment.newInstance(loginText, passwordText, testEnv);
 				ipbf.show(getFragmentManager(), null);
 				dialog.dismiss();
+				
 			}
 		});
 		builder.setNegativeButton(R.string.storno, new DialogInterface.OnClickListener() {
@@ -106,12 +108,12 @@ public class AddAccountFragment extends SherlockDialogFragment {
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
 			}
-			
+
 		});
 
 		return builder.create();
 	}
-	
+
 	private void reShow(String login, String password, boolean testEnv) {
 		AddAccountFragment aaf = AddAccountFragment.newInstance(login, password, testEnv);
 		aaf.show(getFragmentManager(), null);

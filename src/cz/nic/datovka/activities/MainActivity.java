@@ -153,7 +153,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		if (numberOfAccounts < 1) {
 			if(aaf == null){
 				aaf = new AddAccountFragment();
-				aaf.show(fragmentManager, null);
+				aaf.show(fragmentManager, "aaf_main");
 			}
 		}
 
