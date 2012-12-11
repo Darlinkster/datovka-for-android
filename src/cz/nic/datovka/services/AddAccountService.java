@@ -279,7 +279,6 @@ public class AddAccountService extends IntentService {
 			values.put(DatabaseHelper.MSGBOX_TEST_ENV, testEnvironment);
 			values.put(DatabaseHelper.MSGBOX_PASSWD_EXPIRATION, passwordExpiration);
 			
-			int a = 0; int b = 0;
 			String msgBoxId = getContentResolver().insert(
 					MsgBoxContentProvider.CONTENT_URI, values)
 					.getLastPathSegment();
@@ -287,8 +286,6 @@ public class AddAccountService extends IntentService {
 			Iterator<MessageEnvelope> receivedMsgIterator = recievedMessageList.iterator();
 			while(receivedMsgIterator.hasNext()){
 				MessageEnvelope msgEnvelope = receivedMsgIterator.next();
-				for(int i = 0; i < 200; i++){
-				a++;
 				ContentValues rcvdMessageValues = new ContentValues();
 				
 				rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.INBOX);
@@ -322,14 +319,11 @@ public class AddAccountService extends IntentService {
 				
 				getContentResolver().insert(MessagesContentProvider.CONTENT_URI, rcvdMessageValues);
 				rcvdMessageValues = null;
-				}
 			}
 			
 			Iterator<MessageEnvelope> sentMsgIterator = sentMessageList.iterator();
 			while(sentMsgIterator.hasNext()){
 				MessageEnvelope msgEnvelope = sentMsgIterator.next();
-				for(int i = 0; i < 200; i++){
-				b++;
 				ContentValues sentMessageValues = new ContentValues();
 				sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.OUTBOX);
 				sentMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
@@ -366,9 +360,7 @@ public class AddAccountService extends IntentService {
 				
 				getContentResolver().insert(MessagesContentProvider.CONTENT_URI, sentMessageValues);
 				sentMessageValues = null;
-				}
 			}
-			System.out.println("prijate " + a + " odeslane " + b);
 			message.arg1 = RESULT_OK;
 
 		} catch (HttpException e) {
