@@ -24,7 +24,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	protected static final String DATABASE_NAME = "datovka";
-	protected static final int DATABASE_VERSION = 2;
+	protected static final int DATABASE_VERSION = 3;
 
 	public static final String MSGBOX_TB_NAME = "msgbox";
 	public static final String MSGBOX_ID = "_id";
@@ -107,19 +107,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String MESSAGE_SENDER_REF_NUMBER = "sender_ref_number";
 	public static final String MESSAGE_RECIPIENT_IDENT = "recipient_ident";
 	public static final String MESSAGE_RECIPIENT_REF_NUMBER = "recipient_ref_num";
-	public static final String MESSAGE_OTHERSIDE_DATABOX_TYPE = "recipient_databox_type";
-	public static final String MESSAGE_OTHERSIDE_ISDS_ID = "recipient_isds_id";
-	public static final String MESSAGE_OTHERSIDE_NAME = "recipient_name";
-	public static final String MESSAGE_OTHERSIDE_ADDRESS = "recipient_address";
+	public static final String MESSAGE_OTHERSIDE_DATABOX_TYPE = "otherside_databox_type";
+	public static final String MESSAGE_OTHERSIDE_ISDS_ID = "otherside_isds_id";
+	public static final String MESSAGE_OTHERSIDE_NAME = "otherside_name";
+	public static final String MESSAGE_OTHERSIDE_ADDRESS = "otherside_address";
 	public static final String[] message_columns = { MESSAGE_FOLDER, MESSAGE_ID, MESSAGE_ISDS_ID, MESSAGE_ANNOTATION, MESSAGE_ACCEPTANCE_DATE,
 			MESSAGE_MSGBOX_ID, MESSAGE_OTHERSIDE_ISDS_ID, MESSAGE_OTHERSIDE_NAME, MESSAGE_OTHERSIDE_ADDRESS, MESSAGE_TYPE, MESSAGE_DM_TYPE, MESSAGE_TO_HANDS,
 			MESSAGE_ALLOW_SUBST_DELIVERY, MESSAGE_PERSONAL_DELIVERY, MESSAGE_SENT_DATE, MESSAGE_OTHERSIDE_DATABOX_TYPE, MESSAGE_RECIPIENT_IDENT,
 			MESSAGE_RECIPIENT_REF_NUMBER, MESSAGE_IS_READ, MESSAGE_ATTACHMENT_SIZE, MESSAGE_STATE, MESSAGE_STATUS_CHANGED, MESSAGE_LEGALTITLE_LAW,
 			MESSAGE_LEGALTITLE_PAR, MESSAGE_LEGALTITLE_POINT, MESSAGE_LEGALTITLE_SECT, MESSAGE_LEGALTITLE_YEAR, MESSAGE_SENDER_IDENT, MESSAGE_SENDER_REF_NUMBER };
 
-	// protected static final String ORDER_BY = ACCOUNT_ID + " DESC";
-
-	public static final String ATTACHMENTS_TB_NAME = "sent_attachments";
+	public static final String ATTACHMENTS_TB_NAME = "attachments";
 	public static final String ATTACHMENTS_MSG_ID = "attachment_msg_id";
 	public static final String ATTACHMENTS_ID = "_id";
 	public static final String ATTACHMENTS_PATH = "attachment_path";
@@ -224,11 +222,70 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + MSGBOX_TB_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_TB_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + ATTACHMENTS_TB_NAME);
+		if((oldVersion == 2) && (newVersion == 3)){
+			db.execSQL("DROP TABLE IF EXISTS recv_attachments");
+			db.execSQL("DROP TABLE IF EXISTS sent_attachments");
+			db.execSQL("DROP TABLE IF EXISTS sent_message");
+			db.execSQL("DROP TABLE IF EXISTS received_message");
+			
+			db.execSQL("CREATE TABLE " + ATTACHMENTS_TB_NAME + " (" 
+					+ ATTACHMENTS_ID	+ " INTEGER PRIMARY KEY,"
+					+ ATTACHMENTS_MSG_ID + " INTEGER NOT NULL,"
+					+ ATTACHMENTS_PATH + " TEXT NOT NULL UNIQUE, " 
+					+ ATTACHMENTS_MIME + " TEXT, "
+					+ ATTACHMENTS_FILENAME + " TEXT NOT NULL, "
+					+ " FOREIGN KEY (" + ATTACHMENTS_MSG_ID + ") REFERENCES " + MESSAGE_TB_NAME + " (" + MESSAGE_ID + ") ON DELETE CASCADE );");
+			
+			db.execSQL("CREATE TABLE " + MESSAGE_TB_NAME + " ("
+					+ MESSAGE_ID + " INTEGER PRIMARY KEY,"
+					+ MESSAGE_FOLDER + " INTEGER NOT NULL,"
+					+ MESSAGE_ISDS_ID + " INTEGER NOT NULL,"
+					+ MESSAGE_ANNOTATION + " TEXT NOT NULL,"
+					+ MESSAGE_ACCEPTANCE_DATE + " TEXT,"
+					+ MESSAGE_MSGBOX_ID + " INTEGER NOT NULL,"
+					+ MESSAGE_TYPE + " TEXT NOT NULL," 
+					+ MESSAGE_DM_TYPE + " TEXT, "
+					+ MESSAGE_TO_HANDS + " TEXT, "
+					+ MESSAGE_ALLOW_SUBST_DELIVERY + " TEXT, "
+					+ MESSAGE_PERSONAL_DELIVERY + " TEXT, "
+					+ MESSAGE_SENT_DATE + " TEXT, "
+					+ MESSAGE_LEGALTITLE_LAW  + " TEXT, "
+					+ MESSAGE_LEGALTITLE_PAR  + " TEXT, "
+					+ MESSAGE_LEGALTITLE_POINT  + " TEXT, "
+					+ MESSAGE_LEGALTITLE_SECT  + " TEXT, "
+					+ MESSAGE_LEGALTITLE_YEAR  + " TEXT, "
+					+ MESSAGE_IS_READ + " INTEGER NOT NULL,"
+					+ MESSAGE_ATTACHMENT_SIZE + " INTEGER,"
+					+ MESSAGE_STATE  + " INTEGER, "
+					+ MESSAGE_STATUS_CHANGED + " INTEGER NOT NULL,"
+					+ MESSAGE_SENDER_IDENT + " TEXT, "
+					+ MESSAGE_SENDER_REF_NUMBER + " TEXT, "
+					+ MESSAGE_OTHERSIDE_DATABOX_TYPE + " TEXT, "
+					+ MESSAGE_RECIPIENT_IDENT + " TEXT, "
+					+ MESSAGE_RECIPIENT_REF_NUMBER + " TEXT, "
+					+ MESSAGE_OTHERSIDE_ISDS_ID + " INTEGER NOT NULL," 
+					+ MESSAGE_OTHERSIDE_NAME + " TEXT NOT NULL,"
+					+ MESSAGE_OTHERSIDE_ADDRESS + " TEXT, " 
+					+ " FOREIGN KEY (" + MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
+			
+			db.execSQL("insert into " + MESSAGE_TB_NAME + "( " + MESSAGE_FOLDER + "," + MESSAGE_ISDS_ID + "," + MESSAGE_ANNOTATION + "," + MESSAGE_ACCEPTANCE_DATE 
+					+ "," + MESSAGE_MSGBOX_ID + "," + MESSAGE_TYPE + "," + MESSAGE_DM_TYPE + "," + MESSAGE_TO_HANDS + "," + MESSAGE_ALLOW_SUBST_DELIVERY + ","
+					+ MESSAGE_PERSONAL_DELIVERY + "," + MESSAGE_SENT_DATE + "," + MESSAGE_LEGALTITLE_LAW + "," + MESSAGE_LEGALTITLE_PAR + "," + MESSAGE_LEGALTITLE_POINT
+					+ "," + MESSAGE_LEGALTITLE_SECT + "," + MESSAGE_LEGALTITLE_YEAR + "," + MESSAGE_IS_READ + "," + MESSAGE_ATTACHMENT_SIZE + "," + MESSAGE_STATE + ","
+					+ MESSAGE_STATUS_CHANGED + "," +  MESSAGE_SENDER_IDENT + "," +MESSAGE_SENDER_REF_NUMBER + "," + MESSAGE_OTHERSIDE_DATABOX_TYPE + "," + MESSAGE_RECIPIENT_IDENT
+					+ "," + MESSAGE_RECIPIENT_REF_NUMBER + "," + MESSAGE_OTHERSIDE_ISDS_ID + "," + MESSAGE_OTHERSIDE_NAME + "," + MESSAGE_OTHERSIDE_ADDRESS + ")" 
+					+ " select "
+					+ "");
+			
+		}
+		else {
+			db.execSQL("DROP TABLE IF EXISTS " + MSGBOX_TB_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_TB_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + ATTACHMENTS_TB_NAME);
+			
+			onCreate(db);
+		}
 		
-		onCreate(db);
 	}
 	
 	@Override
