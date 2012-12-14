@@ -44,6 +44,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
 
 public class MessageBoxRefreshService extends Service {
 	public static final int ERROR = -1;
@@ -139,7 +140,14 @@ public class MessageBoxRefreshService extends Service {
 				outboxMsg = null;
 											
 				// Connect
-				Connector connector = Connector.connectToWs(msgBoxId);
+				Connector connector;
+				try {
+					connector = Connector.connectToWs(msgBoxId);
+				} catch (SSLCertificateException e2) {
+					// TODO DODELAT !!!!!!!!
+					e2.printStackTrace();
+					return;
+				}
 				if(!connector.checkConnection()){
 					Message msg1 = Message.obtain();
 					msg1.arg1 = ERROR_NO_CONNECTION;

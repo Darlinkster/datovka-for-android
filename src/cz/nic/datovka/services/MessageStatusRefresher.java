@@ -38,6 +38,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
 
 public class MessageStatusRefresher extends Thread {
 	public static final String MSG_ID = "msgid";
@@ -95,8 +96,9 @@ public class MessageStatusRefresher extends Thread {
 		msgBoxCursor = null;
 		
 		int statusChanged = 0;
-		Connector connector = Connector.connectToWs(msgboxId);
+		
 		try {
+			Connector connector = Connector.connectToWs(msgboxId);
 			MessageEnvelope msg = connector.GetDeliveryInfo(msgIsdsId);
 			if (msgStatus != msg.getStateAsInt()) {
 				ContentValues val = new ContentValues();
@@ -137,6 +139,9 @@ public class MessageStatusRefresher extends Thread {
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
+		} catch (SSLCertificateException e) {
+			// TODO DODELAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+			e.printStackTrace();
 		}
 		
 		Message message3 = Message.obtain();

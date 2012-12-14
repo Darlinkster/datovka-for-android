@@ -14,7 +14,7 @@ Datovka - An Android client for Datove schranky
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package cz.nic.datovka.fragments;
 
@@ -34,10 +34,12 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 
 public class AddAccountFragment extends SherlockDialogFragment {
+	public static final String DIALOG_ID = "AddAccountFragment";
+	
 	public static final String PASSWORD = "pass";
 	public static final String LOGIN = "login";
 	public static final String TESTENV = "testenv";
-	
+
 	private String loginText;
 	private String passwordText;
 
@@ -47,20 +49,19 @@ public class AddAccountFragment extends SherlockDialogFragment {
 		args.putString(LOGIN, login);
 		args.putString(PASSWORD, password);
 		args.putBoolean(TESTENV, testEnv);
-		
+
 		aaf.setArguments(args);
-		
+
 		return aaf;
 	}
-	
+
 	public Dialog onCreateDialog(Bundle SavedInstanceState) {
-		
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		View dialogView = inflater.inflate(R.layout.add_account_dialog, null);
 		builder.setView(dialogView);
 		builder.setTitle(R.string.add_acount);
-		
+
 		final EditText loginTv = (EditText) dialogView.findViewById(R.id.username);
 		final EditText passwordTv = (EditText) dialogView.findViewById(R.id.password);
 		final CheckBox testEnvCheckbox = (CheckBox) dialogView.findViewById(R.id.test_environment_checkbox);
@@ -83,9 +84,7 @@ public class AddAccountFragment extends SherlockDialogFragment {
 			testEnvCheckbox.setChecked(testEnvArg);
 		}
 
-		
 		builder.setPositiveButton(R.string.add_account_button, new DialogInterface.OnClickListener() {
-
 			public void onClick(DialogInterface dialog, int which) {
 				loginText = loginTv.getText().toString();
 				passwordText = passwordTv.getText().toString();
@@ -96,10 +95,9 @@ public class AddAccountFragment extends SherlockDialogFragment {
 					reShow(loginText, passwordText, testEnv);
 					return;
 				}
-				AddAccountProgressBarFragment ipbf = AddAccountProgressBarFragment.newInstance(loginText, passwordText, testEnv);
-				ipbf.show(getFragmentManager(), null);
-				dialog.dismiss();
 				
+				dialog.cancel();
+				AddAccountProgressBarFragment.newInstance(loginText, passwordText, testEnv).show(getActivity().getSupportFragmentManager(), AddAccountProgressBarFragment.DIALOG_ID);
 			}
 		});
 		builder.setNegativeButton(R.string.storno, new DialogInterface.OnClickListener() {
@@ -115,7 +113,6 @@ public class AddAccountFragment extends SherlockDialogFragment {
 	}
 
 	private void reShow(String login, String password, boolean testEnv) {
-		AddAccountFragment aaf = AddAccountFragment.newInstance(login, password, testEnv);
-		aaf.show(getFragmentManager(), null);
+		AddAccountFragment.newInstance(login, password, testEnv).show(getFragmentManager(), DIALOG_ID);
 	}
 }

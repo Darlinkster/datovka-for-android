@@ -45,6 +45,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.exceptions.StorageNotAwailableException;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class MessageDownloadService extends Service {
@@ -155,7 +156,13 @@ public class MessageDownloadService extends Service {
 
 			if(interrupted()) return;
 			// Connect to WS
-			connector = Connector.connectToWs(msgBoxId);
+			try {
+				connector = Connector.connectToWs(msgBoxId);
+			} catch (SSLCertificateException e2) {
+				// TODO DODELAT !!!!!
+				e2.printStackTrace();
+				return;
+			}
 			if(!connector.checkConnection()){
 				if( receiver!= null)
 					receiver.send(ERROR_NO_CONNECTION, null);

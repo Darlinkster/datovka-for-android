@@ -90,7 +90,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.download_attachment_menu_btn) {
 			MessageDownloadProgressFragment mdpf = MessageDownloadProgressFragment.newInstance(this.messageId, this.folder);
-			mdpf.show(fm, null);
+			mdpf.show(fm, MessageDownloadProgressFragment.DIALOG_ID);
 			return true;
 		}
 		else if (item.getItemId() == R.id.refresh_message_menu_btn) {

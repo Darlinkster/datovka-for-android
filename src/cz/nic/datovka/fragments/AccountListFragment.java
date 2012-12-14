@@ -122,7 +122,7 @@ public class AccountListFragment extends SherlockListFragment implements LoaderC
 		switch (item.getItemId()) {
 		case R.id.account_delete:
 			DeleteAccountWarningFragment dawf = DeleteAccountWarningFragment.newInstance(msgBoxId);
-			dawf.show(getFragmentManager(), "dawf");
+			dawf.show(getFragmentManager(), DeleteAccountWarningFragment.DIALOG_ID);
 			return true;
 		case R.id.account_info:
 			Intent intent = new Intent(getActivity(), AccountInfoActivity.class);

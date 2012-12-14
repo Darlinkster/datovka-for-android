@@ -33,7 +33,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
@@ -69,6 +73,7 @@ import cz.nic.datovka.R.raw;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 import cz.nic.datovka.tinyDB.responseparsers.AbstractResponseParser;
 import cz.nic.datovka.tinyDB.responseparsers.DownloadReceivedMessage;
@@ -124,13 +129,14 @@ public class DataBoxManager {
 	 *            jméno uživatele
 	 * @param password
 	 *            heslo uživatele
+	 * @throws SSLCertificateException 
 	 * @throws DataBoxException
 	 *             při přihlašování do DS došlo k chybě. Důvodem může být špatné
 	 *             heslo či uživatelské jméno, zacyklení při přesměrování či
 	 *             absence autorizační cookie.
 	 * 
 	 */
-	public static DataBoxManager login(int environment, String userName, String password) throws Exception {
+	public static DataBoxManager login(int environment, String userName, String password) throws SSLCertificateException {
 		DataBoxManager manager = new DataBoxManager(environment);
 		manager.loginImpl(userName, password);
 		return manager;
@@ -320,25 +326,44 @@ public class DataBoxManager {
 		this.storeRequest(post, "dz", os);
 	}
 
-	private void loginImpl(String username, String password) throws Exception {
+	private void loginImpl(String username, String password) throws SSLCertificateException  {
 		String userPassword = username + ":" + password;
 
 		authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
 
-		KeyStore keyStore = KeyStore.getInstance("BKS");
-		SSLContext sslcontext = SSLContext.getInstance("TLS");
-
-		InputStream keyStoreStream;
-		if(environment == PRODUCTION){
-			keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_production_env);
-		} else {
-			keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_test_env);
+		try {
+			KeyStore keyStore = KeyStore.getInstance("BKS");
+			SSLContext sslcontext = SSLContext.getInstance("TLS");
+			
+			InputStream keyStoreStream;
+			if(environment == PRODUCTION){
+				keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_production_env);
+			} else {
+				keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_test_env);
+			}
+			keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
+			
+			sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
+			this.socketFactory = sslcontext.getSocketFactory();
+			
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+			throw new SSLCertificateException(e.getMessage());
+		}catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			throw new SSLCertificateException(e.getMessage());
+		} catch (CertificateException e) {
+			e.printStackTrace();
+			throw new SSLCertificateException(e.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new SSLCertificateException(e.getMessage());
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+			throw new SSLCertificateException(e.getMessage());
 		}
-		
-		keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
 
-		sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
-		this.socketFactory = sslcontext.getSocketFactory();
+		
 	}
 
 	private void postAndParseResponse(String post, String prefix, AbstractResponseParser rp) throws HttpException, StreamInterruptedException, DSException {

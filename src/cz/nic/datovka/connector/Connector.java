@@ -41,6 +41,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
+import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
 import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class Connector {
@@ -50,9 +51,7 @@ public class Connector {
 	private static final int MAX_MSG_COUNT = 1000;
 	private DataBoxManager service;
 	
-	public void connect(String login, String password, int environment) throws Exception {
-		
-
+	public void connect(String login, String password, int environment) throws SSLCertificateException{
 		service = DataBoxManager.login(environment, login, new String(Base64.decode(password)));
 	}
 
@@ -253,7 +252,7 @@ public class Connector {
 		service = null;
 	}
 	
-	public static Connector connectToWs(long msgBoxId) {
+	public static Connector connectToWs(long msgBoxId) throws SSLCertificateException {
 		Connector conn = new Connector();
 		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
@@ -268,12 +267,9 @@ public class Connector {
 		String password = msgBoxCursor.getString(passwordIndex);
 		int environment = msgBoxCursor.getInt(envIndex);
 		msgBoxCursor.close();
-		try {
-			conn.connect(login, password, environment);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		
+		conn.connect(login, password, environment);
+		
 		return conn;
 	}
 	

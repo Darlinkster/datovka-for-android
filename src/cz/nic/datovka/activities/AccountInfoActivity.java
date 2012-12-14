@@ -67,12 +67,12 @@ public class AccountInfoActivity extends SherlockFragmentActivity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.remove_account_menu_btn) {
 			DeleteAccountWarningFragment dawf = DeleteAccountWarningFragment.newInstance(msgBoxId);
-			dawf.show(fm, "dawf");
+			dawf.show(fm, DeleteAccountWarningFragment.DIALOG_ID);
 			return true;
 		}
 		else if (item.getItemId() == R.id.change_passwd_account_menu_btn) {
 			ChangePasswordFragment cpf = ChangePasswordFragment.newInstance(this.msgBoxId);
-			cpf.show(fm, "cpf");
+			cpf.show(fm, ChangePasswordFragment.DIALOG_ID);
 			return true;
 		}
 		return false;

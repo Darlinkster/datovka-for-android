@@ -41,6 +41,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 
 public class ChangePasswordFragment extends SherlockDialogFragment {
 	public static final String MSGBOX_ID = "msgboxid";
+	public static final String DIALOG_ID = "ChangePasswordFragment";
 	
 	
 	public static ChangePasswordFragment newInstance(long msgBoxId){

@@ -60,7 +60,7 @@ public class AccountActivity extends SherlockFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.add_account_menu_btn) {
 			AddAccountFragment aaf = new AddAccountFragment();
-			aaf.show(fragmentManager, "aaf_account");
+			aaf.show(fragmentManager, AddAccountFragment.DIALOG_ID);
 			return true;
 		}
 		return false;

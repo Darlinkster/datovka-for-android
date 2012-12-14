@@ -13,6 +13,7 @@ import cz.nic.datovka.connector.DatabaseTools;
 
 public class DeleteAccountWarningFragment extends SherlockDialogFragment{
 	public static final String MSGBOX_ID = "msgboxid";
+	public static final String DIALOG_ID = "DeleteAccountWarningFragment";
 	
 	public static DeleteAccountWarningFragment newInstance(long msgboxId) {
 		DeleteAccountWarningFragment dawf = new DeleteAccountWarningFragment();

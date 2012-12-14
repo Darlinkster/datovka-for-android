@@ -1,7 +1,26 @@
+/*
+Datovka - An Android client for Datove schranky
+    Copyright (C) 2012  CZ NIC z.s.p.o. <podpora at nic dot cz>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package cz.nic.datovka.fragments;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +39,7 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 	public static final String PASSWORD = "pass";
 	public static final String LOGIN = "login";
 	public static final String TEST_ENV = "testenv";
+	public static final String DIALOG_ID = "AddAccountProgressBarFragment";
 	
 	private static ProgressDialog pd;
 	private static String login;
@@ -38,19 +58,36 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 		mdpf.setArguments(bundle);
 		return mdpf;
 	}
+
 	@Override
-	public void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public void onResume () {
+		super.onResume();
+		fragmentManager = getActivity().getSupportFragmentManager();
+	}
+	
+	@Override
+	public void onPause () {
+		super.onPause();
+		fragmentManager = null;
+	}
+	
+	@Override
+	public Dialog onCreateDialog(Bundle SavedInstanceState) {
+		SherlockDialogFragment sdf = (SherlockDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(AddAccountFragment.DIALOG_ID);
+		if(sdf != null){
+			sdf.dismiss();
+		}
 		
 		pd = new ProgressDialog(getActivity());
-		
-		Bundle args = getArguments();
-		login = args.getString(LOGIN);
-		password = args.getString(PASSWORD);
-		testEnv = args.getBoolean(TEST_ENV);
-		
+
 		if (run) {
 			run = false;
+			
+			Bundle args = getArguments();
+			login = args.getString(LOGIN);
+			password = args.getString(PASSWORD);
+			testEnv = args.getBoolean(TEST_ENV);
+			
 			Messenger messenger = new Messenger(handler);
 			Intent intent = new Intent(getActivity(), AddAccountService.class);
 			intent.putExtra(AddAccountService.HANDLER, messenger);
@@ -60,58 +97,61 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 
 			getActivity().startService(intent);
 		}
-	}
-	
-	@Override
-	public void onResume () {
-		super.onResume();
-		fragmentManager = getFragmentManager();
-	}
-	
-	@Override
-	public void onPause () {
-		super.onPause();
-		fragmentManager = null;
-		pd.dismiss();
-		pd = null;
-	}
-	
-	@Override
-	public Dialog onCreateDialog(Bundle SavedInstanceState) {
+
 		pd.setIndeterminate(true);
-		pd.setCancelable(false);
+		pd.setCancelable(true);
 		pd.setCanceledOnTouchOutside(false);
 		pd.setMessage(new String(getResources().getString(R.string.account_create_progress)));
-		
+
 		return pd;
 	}
 
+	@Override
+	public void onCancel(DialogInterface dialog) {
+		Application.ctx.stopService(new Intent(Application.ctx, AddAccountService.class));
+		super.onCancel(dialog);
+	}
+	
 	public static Handler handler = new Handler() {
 
 		public void handleMessage(Message message) {
-			if (pd != null) 
-				pd.dismiss();
 
 			if (message.arg1 == AddAccountService.RESULT_OK) {
 				Toast.makeText(Application.ctx, R.string.account_created, Toast.LENGTH_SHORT).show();
-				return;
+				dismissProgressBar();
 			} else if (message.arg1 == AddAccountService.RESULT_EXISTS) {
 				Toast.makeText(Application.ctx, R.string.account_exists, Toast.LENGTH_SHORT).show();
+				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_ERR) {
 				Toast.makeText(Application.ctx, R.string.account_create_error, Toast.LENGTH_SHORT).show();
+				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_BAD_LOGIN) {
 				Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
+				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_DS_ERR) {
 				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
+				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_NO_CONNECTION) {
 				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_SHORT).show();
+				showLoginForm();
+			} else if (message.arg1 == AddAccountService.RESULT_BAD_CERT) {
+				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_SHORT).show();
+				showLoginForm();
 			}
 
-			run = true;
+		}
+		
+		private void showLoginForm() {
+			dismissProgressBar();
 			if (fragmentManager != null) {
-				AddAccountFragment aaf = AddAccountFragment.newInstance(login, password, testEnv);
-				aaf.show(fragmentManager, null);
+				AddAccountFragment.newInstance(login, password, testEnv).show(fragmentManager, AddAccountFragment.DIALOG_ID);
 			}
+		}
+		
+		private void dismissProgressBar() {
+			run = true;
+			if (pd != null) 
+				pd.dismiss();
 		}
 	};
 }

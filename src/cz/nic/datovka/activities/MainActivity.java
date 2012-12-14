@@ -64,9 +64,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private static SimpleCursorAdapter account_adapter;
 	private static String selectedMsgBoxID;
 	private static int selectedFolder = 0;
-	
-	// private static final int INBOX = 0;
-	// private static final int OUTBOX = 1;
 
 	private FragmentManager fragmentManager;
 	private MyAdapter mAdapter;
@@ -153,7 +150,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		if (numberOfAccounts < 1) {
 			if(aaf == null){
 				aaf = new AddAccountFragment();
-				aaf.show(fragmentManager, "aaf_main");
+				aaf.show(fragmentManager, AddAccountFragment.DIALOG_ID);
 			}
 		}
 

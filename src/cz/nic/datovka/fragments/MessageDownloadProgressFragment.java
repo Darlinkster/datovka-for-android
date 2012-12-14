@@ -34,6 +34,7 @@ import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.services.MessageDownloadService;
 
 public class MessageDownloadProgressFragment extends SherlockDialogFragment {
+	public static final String DIALOG_ID = "MessageDownloadProgressFragment";
 	private static ProgressDialog mProgressDialog;
 	private static Handler handler;
 
