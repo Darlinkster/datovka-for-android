@@ -46,6 +46,7 @@ public class MessageStatusRefresher extends Thread {
 	public static final int ERROR_BAD_LOGIN = 100;
 	public static final int ERROR = 200;
 	public static final int STATUS_UPDATED = 300;
+	public static final int ERROR_CERT = 400;
 	private long msgId;
 	private Messenger messenger;
 
@@ -140,7 +141,14 @@ public class MessageStatusRefresher extends Thread {
 				e1.printStackTrace();
 			}
 		} catch (SSLCertificateException e) {
-			// TODO DODELAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+			// certicate error
+			Message message = Message.obtain();
+			message.arg1 = ERROR_CERT;
+			try {
+				messenger.send(message);
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		

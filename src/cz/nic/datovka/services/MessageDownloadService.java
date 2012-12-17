@@ -54,6 +54,7 @@ public class MessageDownloadService extends Service {
 	public static final int ERROR_NO_CONNECTION = 8366;
 	public static final int ERROR_STORAGE_NOT_AVAILABLE = 8377;
 	public static final int ERROR_STORAGE_LOW_SPACE = 8388;
+	public static final int ERROR_CERT = 8399;
 	public static final int RESULT_BAD_LOGIN = 401;
 	public static final int SERVICE_FINISHED = 999;
 	public static final String MSG_ID = "msgid";
@@ -159,8 +160,9 @@ public class MessageDownloadService extends Service {
 			try {
 				connector = Connector.connectToWs(msgBoxId);
 			} catch (SSLCertificateException e2) {
-				// TODO DODELAT !!!!!
-				e2.printStackTrace();
+				// Certificate error
+				if(receiver != null)
+					receiver.send(ERROR_CERT, null);
 				return;
 			}
 			if(!connector.checkConnection()){

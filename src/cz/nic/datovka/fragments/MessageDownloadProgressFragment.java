@@ -113,6 +113,10 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 			} else if (resultCode == MessageDownloadService.SERVICE_FINISHED) {
 				mProgressDialog.dismiss();
 				runService = true;
+			} else if (resultCode == MessageDownloadService.ERROR_CERT) {
+				mProgressDialog.dismiss();
+				runService = true;
+				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
 			}
 			
 

@@ -50,6 +50,7 @@ public class MessageBoxRefreshService extends Service {
 	public static final int ERROR = -1;
 	public static final int ERROR_NO_CONNECTION = -99;
 	public static final int ERROR_BAD_LOGIN = -401;
+	public static final int ERROR_CERT = -500;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
@@ -144,8 +145,14 @@ public class MessageBoxRefreshService extends Service {
 				try {
 					connector = Connector.connectToWs(msgBoxId);
 				} catch (SSLCertificateException e2) {
-					// TODO DODELAT !!!!!!!!
-					e2.printStackTrace();
+					// certicate error
+					Message message = Message.obtain();
+					message.arg1 = ERROR_CERT;
+					try {
+						messenger.send(message);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 					return;
 				}
 				if(!connector.checkConnection()){
@@ -332,4 +339,5 @@ public class MessageBoxRefreshService extends Service {
 	}
 
 }
+
 
