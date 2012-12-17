@@ -57,9 +57,13 @@ public class AddAccountService extends Service {
 	public static final int RESULT_EXISTS = 101;
 	public static final int RESULT_NO_CONNECTION = 102;
 	public static final int RESULT_BAD_LOGIN = 401;
-	public static final int RESULT_ERR = 99;
-	public static final int RESULT_DS_ERR = 999;
-	public static final int RESULT_BAD_CERT = 995;
+	public static final int RESULT_ERR = 103;
+	public static final int RESULT_DS_ERR = 104;
+	public static final int RESULT_BAD_CERT = 105;
+	public static final int PROGRESS_UPDATE = 106;
+	public static final int DATABOX_CREATING = 1;
+	public static final int INBOX_DOWNLOADING = 2;
+	public static final int OUTBOX_DOWNLOADING = 3;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
 	private static final int STATUS_NOT_CHANGED = 0;
@@ -242,6 +246,17 @@ public class AddAccountService extends Service {
 			Message message = Message.obtain();
 			try {
 				logger.log(Level.INFO, "Downloading user, owner and databox info.");
+				
+				Message msg1 = Message.obtain();
+				msg1.arg1 = PROGRESS_UPDATE;
+				msg1.arg2 = DATABOX_CREATING;
+				try {
+					messenger.send(msg1);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				msg1 = null;
+				
 				if(isInterrupted()) return;
 				GregorianCalendar cal = connector.getPasswordInfo();
 				UserInfo user = connector.getUserInfo();
@@ -317,6 +332,17 @@ public class AddAccountService extends Service {
 
 				if(isInterrupted()) return;
 				logger.log(Level.INFO, "Downloading inbox messages.");
+				
+				Message msg2 = Message.obtain();
+				msg2.arg1 = PROGRESS_UPDATE;
+				msg2.arg2 = INBOX_DOWNLOADING;
+				try {
+					messenger.send(msg2);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				msg2 = null;
+				
 				List<MessageEnvelope> recievedMessageList = connector.getRecievedMessageList();
 				Iterator<MessageEnvelope> receivedMsgIterator = recievedMessageList.iterator();
 				while (receivedMsgIterator.hasNext()) {
@@ -360,6 +386,17 @@ public class AddAccountService extends Service {
 
 				if(isInterrupted()) return;
 				logger.log(Level.INFO, "Downloading outbox messages");
+				
+				Message msg3 = Message.obtain();
+				msg3.arg1 = PROGRESS_UPDATE;
+				msg3.arg2 = OUTBOX_DOWNLOADING;
+				try {
+					messenger.send(msg3);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				msg3 = null;
+				
 				List<MessageEnvelope> sentMessageList = connector.getSentMessageList();
 				Iterator<MessageEnvelope> sentMsgIterator = sentMessageList.iterator();
 				while (sentMsgIterator.hasNext()) {

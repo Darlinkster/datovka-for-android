@@ -75,6 +75,9 @@
     <string name="delete_account_warning">Opravdu chcete tento účet smazat?</string>
     <string name="delete_account_btn">Smazat</string>
     <string name="cert_error">Chyba certifikátu!</string>
+    <string name="add_account_databox_creating">Vytváření schránky</string>
+    <string name="add_account_inbox_downloading">Stahování příchozích zpráv</string>
+    <string name="add_account_outbox_downloading">Stahování odchozích zpráv</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

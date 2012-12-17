@@ -48,6 +48,8 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 	private static boolean run = true;
 	private static FragmentManager fragmentManager;
 	
+	private static String message = "-1";
+	
 	public static AddAccountProgressBarFragment newInstance(String login, String password, boolean testEnv) {
 		AddAccountProgressBarFragment mdpf = new AddAccountProgressBarFragment();
 		Bundle bundle = new Bundle();
@@ -83,6 +85,8 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 		if (run) {
 			run = false;
 			
+			message = getResources().getString(R.string.account_create_progress);
+			
 			Bundle args = getArguments();
 			login = args.getString(LOGIN);
 			password = args.getString(PASSWORD);
@@ -94,14 +98,14 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 			intent.putExtra(AddAccountService.LOGIN, login);
 			intent.putExtra(AddAccountService.PASSWORD, password);
 			intent.putExtra(AddAccountService.TESTENV, testEnv);
-
+			
 			getActivity().startService(intent);
 		}
 
 		pd.setIndeterminate(true);
 		pd.setCancelable(true);
 		pd.setCanceledOnTouchOutside(false);
-		pd.setMessage(new String(getResources().getString(R.string.account_create_progress)));
+		pd.setMessage(message);
 
 		return pd;
 	}
@@ -138,8 +142,23 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 			} else if (message.arg1 == AddAccountService.RESULT_BAD_CERT) {
 				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_SHORT).show();
 				showLoginForm();
+			} else if (message.arg1 == AddAccountService.PROGRESS_UPDATE) {
+				if(message.arg2 == AddAccountService.DATABOX_CREATING){
+					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_databox_creating));
+				} else if(message.arg2 == AddAccountService.INBOX_DOWNLOADING){
+					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_inbox_downloading));
+				} else if(message.arg2 == AddAccountService.OUTBOX_DOWNLOADING){
+					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_outbox_downloading));
+				}
 			}
 
+		}
+		
+		private void updateProgressBarMessage(String param) {
+			if(pd != null){
+				message = param;
+				pd.setMessage(message);
+			}
 		}
 		
 		private void showLoginForm() {
