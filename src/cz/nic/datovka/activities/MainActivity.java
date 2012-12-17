@@ -265,7 +265,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			else if((message.arg1) == 0 && (message.arg2 == 0)){
 				Toast.makeText(Application.ctx, R.string.no_new_messages, Toast.LENGTH_LONG).show();
 			} 
-			else if((message.arg1) == 0 && (message.arg2 == 0)){
+			else if(message.arg1 == MessageBoxRefreshService.ERROR_CERT){
 				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
 			}
 			else {
