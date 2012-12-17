@@ -67,6 +67,7 @@ public class AddAccountService extends Service {
 	private Messenger messenger;
 	private DaemonThread thread;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
+	private Connector connector;
 
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -104,9 +105,15 @@ public class AddAccountService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		System.out.println("destroy");
-		thread.interrupt();
+		if(thread != null){
+			if(connector != null) {
+				connector.close();
+			}
+			thread.interrupt();
+		}
+		connector = null;
 		thread = null;
+		logger.log(Level.INFO, "Add Account service interrupted.");
 	}
 
 	
@@ -141,6 +148,7 @@ public class AddAccountService extends Service {
 		@Override
 		public void run() {
 			super.run();
+			logger.log(Level.INFO, "Downloading service started");
 			createAccount(login, password, testEnvironment);
 		}
 		
@@ -199,7 +207,7 @@ public class AddAccountService extends Service {
 		
 		private void createAccount(String login, String password, int testEnvironment) {
 			String encPassword = Base64.encode(password.getBytes());
-			Connector connector = new Connector();
+			connector = new Connector();
 			
 			if(isInterrupted()) return;
 			if (!connector.checkConnection()) {
@@ -233,6 +241,7 @@ public class AddAccountService extends Service {
 			// happend show the error message
 			Message message = Message.obtain();
 			try {
+				logger.log(Level.INFO, "Downloading user, owner and databox info.");
 				if(isInterrupted()) return;
 				GregorianCalendar cal = connector.getPasswordInfo();
 				UserInfo user = connector.getUserInfo();
@@ -253,7 +262,7 @@ public class AddAccountService extends Service {
 				} else {
 					passwordExpiration = Long.toString(cal.getTimeInMillis());
 				}
-
+				
 				ContentValues values = new ContentValues();
 				values.put(DatabaseHelper.OWNER_ADDRESS_CITY, owner.getAddressCity());
 				values.put(DatabaseHelper.OWNER_ADDRESS_MUNIC_NUMBER, owner.getAddressNumberInMunicipality());
@@ -307,6 +316,7 @@ public class AddAccountService extends Service {
 				values = null;
 
 				if(isInterrupted()) return;
+				logger.log(Level.INFO, "Downloading inbox messages.");
 				List<MessageEnvelope> recievedMessageList = connector.getRecievedMessageList();
 				Iterator<MessageEnvelope> receivedMsgIterator = recievedMessageList.iterator();
 				while (receivedMsgIterator.hasNext()) {
@@ -349,6 +359,7 @@ public class AddAccountService extends Service {
 				}
 
 				if(isInterrupted()) return;
+				logger.log(Level.INFO, "Downloading outbox messages");
 				List<MessageEnvelope> sentMessageList = connector.getSentMessageList();
 				Iterator<MessageEnvelope> sentMsgIterator = sentMessageList.iterator();
 				while (sentMsgIterator.hasNext()) {

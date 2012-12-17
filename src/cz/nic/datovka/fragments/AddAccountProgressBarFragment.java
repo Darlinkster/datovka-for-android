@@ -109,6 +109,7 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 	@Override
 	public void onCancel(DialogInterface dialog) {
 		Application.ctx.stopService(new Intent(Application.ctx, AddAccountService.class));
+		run = true;
 		super.onCancel(dialog);
 	}
 	
