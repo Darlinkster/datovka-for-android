@@ -28,6 +28,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,7 +168,9 @@ public class MessageDetailFragment extends SherlockFragment {
 			acceptanceDateTV.setText(getString(R.string.acceptance_date, getString(R.string.message_not_accepted_yet)));
 
 		senderTV.setText(message.getString(senderRecipientColId));
-		senderAddressTV.setText(message.getString(senderRecipientAddressColId));
+		SpannableString senderAddress = new SpannableString(message.getString(senderRecipientAddressColId));
+		senderAddress.setSpan(new UnderlineSpan(), 0, senderAddress.length(), 0);
+		senderAddressTV.setText(senderAddress);
 
 		int status = message.getInt(messageStatusColId);
 		switch (status) {

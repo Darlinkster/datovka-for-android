@@ -95,6 +95,9 @@
             android:paddingLeft="8dp"
             android:paddingBottom="8dp"
             android:singleLine="true"
+            android:textColor="@color/text_link"
+            android:clickable="true"
+            android:onClick="addressClicked"
             android:textSize="14sp" />
         
         

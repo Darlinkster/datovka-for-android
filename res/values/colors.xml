@@ -6,4 +6,5 @@
     
     <!--  Holo light blue -->
     <color name="item_pressed">#ff33b5e5</color>
+    <color name="text_link">#ff33b5e5</color>
 </resources>

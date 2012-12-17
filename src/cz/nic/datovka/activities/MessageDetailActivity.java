@@ -35,6 +35,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -131,6 +132,14 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			// Maybe wrong mime type in XML file, check the file suffix
 			openFileBySuffix(file);
 		}
+	}
+	
+	public void addressClicked(View view) {
+		String address = ((TextView) view).getText().toString();
+		//Toast.makeText(this, "co chces? " + address, Toast.LENGTH_LONG).show();
+		String uri = String.format("geo:0,0?q=%s", address);
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+		this.startActivity(intent);
 	}
 	
 	private void openFileBySuffix(File file) {
