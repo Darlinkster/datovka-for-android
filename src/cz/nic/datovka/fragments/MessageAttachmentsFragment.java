@@ -14,7 +14,7 @@ Datovka - An Android client for Datove schranky
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package cz.nic.datovka.fragments;
 
@@ -40,28 +40,31 @@ import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 public class MessageAttachmentsFragment extends SherlockListFragment implements LoaderCallbacks<Cursor> {
 	private SimpleCursorAdapter adapter;
 	public static final String ID = "id";
-	
+
 	public static MessageAttachmentsFragment newInstance(long id) {
 		MessageAttachmentsFragment f = new MessageAttachmentsFragment();
 		Bundle args = new Bundle();
 		args.putLong(ID, id);
-		
+
 		f.setArguments(args);
 		return f;
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState){
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		fillList();
+		setEmptyText(getText(R.string.empty_attachments_list));
+	}
+
+	public void fillList() {
 		final long messageId = getArguments().getLong(ID, 0);
-		
+
 		String[] from = new String[] { DatabaseHelper.ATTACHMENTS_FILENAME };
 		int[] to = { R.id.attachment_item_filename };
-		
+
 		getLoaderManager().initLoader(0, null, this);
-		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item,null, from, to, 0);
-		setListAdapter(adapter);
-		setEmptyText(getText(R.string.empty_attachments_list));
+		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item, null, from, to, 0);
 
 		adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
@@ -74,43 +77,42 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 					((View) view.getParent()).setTag(R.id.attachment_path_tag_id, attachmentPath);
 					// If any file from attachments is missing, then remove all
 					// attachments from db, and pretend that attachments wasn't
-					// downloaded yet. 
+					// downloaded yet.
 					File tmp = new File(Application.externalStoragePath + attachmentPath);
 					if (!tmp.exists()) {
 						Uri attachmentUri = AttachmentsContentProvider.CONTENT_URI;
 						String where = DatabaseHelper.ATTACHMENTS_MSG_ID + "=?";
-						getActivity().getContentResolver().delete(attachmentUri, where, new String[]{Long.toString(messageId)});
+						getActivity().getContentResolver().delete(attachmentUri, where, new String[] { Long.toString(messageId) });
 					}
 					tmp = null;
 				}
 				return false;
 			}
 		});
-
+		setListAdapter(adapter);
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		long messageId = getArguments().getLong(ID, 0);
-		
+
 		String[] projection = DatabaseHelper.attachments_columns;
 		Uri uri = AttachmentsContentProvider.CONTENT_URI;
 		String selection = DatabaseHelper.ATTACHMENTS_MSG_ID + "=?";
-		String selectionArgs[] = {Long.toString(messageId)};
+		String selectionArgs[] = { Long.toString(messageId) };
 
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri,
-				projection, selection, selectionArgs, null);
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, null);
 
 		return cursorLoader;
 	}
 
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
 		adapter.swapCursor(arg1);
-		
+
 	}
 
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		adapter.swapCursor(null);
-		
+
 	}
-	
+
 }

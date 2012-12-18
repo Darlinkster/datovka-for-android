@@ -71,14 +71,18 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		this.messageId = i.getLongExtra(ID, 0);
 		this.folder = i.getIntExtra(FOLDER,0);
 		
-		mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
-		maf = MessageAttachmentsFragment.newInstance(this.messageId);
+		if(mdf == null)
+			mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
+		if(maf == null)
+			maf = MessageAttachmentsFragment.newInstance(this.messageId);
 		
 		fm = getSupportFragmentManager();
-		FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.message_detail_activity, mdf);
-		ft.replace(R.id.message_attachment_activity, maf);
-		ft.commit();
+		if (savedInstanceState == null) {
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.replace(R.id.message_detail_activity, mdf);
+			ft.replace(R.id.message_attachment_activity, maf);
+			ft.commit();
+		}
 	}
 	
 	@Override
