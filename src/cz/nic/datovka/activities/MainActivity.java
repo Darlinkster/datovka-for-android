@@ -81,14 +81,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     }
 	
 	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		// If there is no account, jump on the create account dialogfragment
-		showAddAccountFragment();
-	}
-	
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
@@ -110,6 +102,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		else {
 			selectedMsgBoxID = Long.toString(actionBar.getSelectedNavigationIndex() + 1);
 		}
+		
+		// If there is no account, jump on the create account dialogfragment
+		showAddAccountFragment();
 	}
 	
 	// Listening on spinner with accounts. Recreates fragments in viewpager when
@@ -119,6 +114,12 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		TextView tv = (TextView) account_adapter.getView(itemPosition, null, null);
 		selectedMsgBoxID = (String) tv.getTag();
 
+		updateFragmentPager();
+		
+		return true;
+	}
+	
+	private void updateFragmentPager(){
 		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, new String(getString(R.string.inbox)), new String(getString(R.string.outbox)));
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
@@ -142,8 +143,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-
-		return true;
 	}
 
 	private void setupAccountSpinner() {
@@ -176,6 +175,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 				aaf = new AddAccountFragment();
 				aaf.show(fragmentManager, AddAccountFragment.DIALOG_ID);
 			}
+			updateFragmentPager();
 		}
 		msgBoxes = null;
 	}
