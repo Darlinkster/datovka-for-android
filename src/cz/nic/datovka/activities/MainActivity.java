@@ -229,7 +229,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 		Intent i = new Intent(this, MessageDetailActivity.class);
 		i.putExtra(MessageDetailActivity.ID, Long.parseLong(id));
-		i.putExtra(MessageDetailActivity.FOLDER, selectedFolder);
 
 		startActivity(i);
 	}

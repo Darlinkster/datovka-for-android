@@ -52,8 +52,6 @@ import cz.nic.datovka.services.MessageStatusRefresher;
 public class MessageDetailActivity  extends SherlockFragmentActivity {
 	
 	public static final String ID = "id";
-	public static final String FOLDER = "folder";
-	
 	private long messageId;
 	
 	private FragmentManager fm;

@@ -134,8 +134,6 @@ public class MessageDetailFragment extends SherlockFragment {
 		
 		int folder = message.getInt(message.getColumnIndex(DatabaseHelper.MESSAGE_FOLDER));
 		
-		System.out.println(folder);
-		
 		if (folder == Application.INBOX) {
 			senderRecpTV.setText(getString(R.string.sender));
 		} else { // OUTBOX
