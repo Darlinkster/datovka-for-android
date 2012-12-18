@@ -30,14 +30,11 @@ import cz.nic.datovka.activities.Application;
 public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
 
     private String outputDir = null;
-    private int folder;
     private long messageId;
 
-    public FileAttachmentStorerWithDBInsertion(String outputDir, int folder,
-			long messageId) {
+    public FileAttachmentStorerWithDBInsertion(String outputDir, long messageId) {
         
         this.outputDir = outputDir;
-        this.folder = folder;
         this.messageId = messageId;
         
     }
@@ -48,7 +45,7 @@ public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
         output.createNewFile();
         
         DatabaseTools.insertAttachmentToDb(outputDir + "/" + name,
-				attachment.getDescription(), attachment.getMimeType(), folder, messageId);
+				attachment.getDescription(), attachment.getMimeType(), messageId);
         
         return new FileOutputStream(output);
     }

@@ -55,7 +55,6 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	public static final String FOLDER = "folder";
 	
 	private long messageId;
-	private int folder;
 	
 	private FragmentManager fm;
 	private MessageDetailFragment mdf;
@@ -69,10 +68,9 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		
 		Intent i = getIntent();
 		this.messageId = i.getLongExtra(ID, 0);
-		this.folder = i.getIntExtra(FOLDER,0);
 		
 		if(mdf == null)
-			mdf = MessageDetailFragment.newInstance(this.messageId, this.folder);
+			mdf = MessageDetailFragment.newInstance(this.messageId);
 		if(maf == null)
 			maf = MessageAttachmentsFragment.newInstance(this.messageId);
 		
@@ -94,7 +92,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.download_attachment_menu_btn) {
-			MessageDownloadProgressFragment mdpf = MessageDownloadProgressFragment.newInstance(this.messageId, this.folder);
+			MessageDownloadProgressFragment mdpf = MessageDownloadProgressFragment.newInstance(this.messageId);
 			mdpf.show(fm, MessageDownloadProgressFragment.DIALOG_ID);
 			return true;
 		}

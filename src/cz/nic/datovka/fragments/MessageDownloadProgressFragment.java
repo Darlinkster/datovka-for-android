@@ -39,13 +39,11 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 	private static Handler handler;
 
 	private static final String MSG_ID = "msgid";
-	private static final String FOLDER = "folder";
 	private static boolean runService = true;
 
-	public static MessageDownloadProgressFragment newInstance(long messageId, int folder) {
+	public static MessageDownloadProgressFragment newInstance(long messageId) {
 		MessageDownloadProgressFragment mdpf = new MessageDownloadProgressFragment();
 		Bundle bundle = new Bundle();
-		bundle.putInt(FOLDER, folder);
 		bundle.putLong(MSG_ID, messageId);
 
 		mdpf.setArguments(bundle);
@@ -54,7 +52,6 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 
 	public Dialog onCreateDialog(Bundle SavedInstanceState) {
 		long messageId = getArguments().getLong(MSG_ID);
-		int folder = getArguments().getInt(FOLDER);
 
 		mProgressDialog = new ProgressDialog(getActivity());
 		mProgressDialog.setMessage(getResources().getString(R.string.download_attachment_progress));
@@ -65,7 +62,6 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 		if (runService) {
 			runService = false;
 			Intent intent = new Intent(getActivity(), MessageDownloadService.class);
-			intent.putExtra(MessageDownloadService.FOLDER, folder);
 			intent.putExtra(MessageDownloadService.MSG_ID, messageId);
 			handler = new Handler();
 			intent.putExtra(MessageDownloadService.RECEIVER, new DownloadReceiver(handler));

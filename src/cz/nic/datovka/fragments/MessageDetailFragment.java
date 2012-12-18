@@ -39,14 +39,13 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 
 import cz.nic.datovka.R;
+import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 
 public class MessageDetailFragment extends SherlockFragment {
 	public static final String ID = "id";
-	public static final String FOLDER = "folder";
-	private static final int INBOX = 0;
 	private static final int NOT_CHANGED = 0;
 	private static final int IS_READ = 1;
 	protected Logger logger = Logger.getLogger(this.getClass().getName());
@@ -54,11 +53,10 @@ public class MessageDetailFragment extends SherlockFragment {
 	private Updater updater;
 	private Uri singleUri;
 
-	public static MessageDetailFragment newInstance(long id, int folder) {
+	public static MessageDetailFragment newInstance(long id) {
 		MessageDetailFragment f = new MessageDetailFragment();
 		Bundle args = new Bundle();
 		args.putLong(ID, id);
-		args.putInt(FOLDER, folder);
 
 		f.setArguments(args);
 		return f;
@@ -78,7 +76,7 @@ public class MessageDetailFragment extends SherlockFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
 		View customActionBarView = inflater.inflate(R.layout.message_detail_actionbar, null);
 		updater = new Updater(new Handler());
@@ -133,9 +131,12 @@ public class MessageDetailFragment extends SherlockFragment {
 		int recipientIdentColId = message.getColumnIndex(DatabaseHelper.MESSAGE_RECIPIENT_IDENT);
 		int senderRefNumColId = message.getColumnIndex(DatabaseHelper.MESSAGE_SENDER_REF_NUMBER);
 		int senderIdentColId = message.getColumnIndex(DatabaseHelper.MESSAGE_SENDER_IDENT);
-
-		int folder = getArguments().getInt(FOLDER, 0);
-		if (folder == INBOX) {
+		
+		int folder = message.getInt(message.getColumnIndex(DatabaseHelper.MESSAGE_FOLDER));
+		
+		System.out.println(folder);
+		
+		if (folder == Application.INBOX) {
 			senderRecpTV.setText(getString(R.string.sender));
 		} else { // OUTBOX
 			senderRecpTV.setText(getString(R.string.recipient));

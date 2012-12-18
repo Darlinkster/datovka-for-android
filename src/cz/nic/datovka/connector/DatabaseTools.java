@@ -27,8 +27,7 @@ import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 
 public class DatabaseTools {
 
-	public static synchronized void insertAttachmentToDb(String path, String name, String mime, int folder,
-			long messageId) {
+	public static synchronized void insertAttachmentToDb(String path, String name, String mime,	long messageId) {
 		ContentValues value = new ContentValues();
 
 			value.put(DatabaseHelper.ATTACHMENTS_MSG_ID, messageId);

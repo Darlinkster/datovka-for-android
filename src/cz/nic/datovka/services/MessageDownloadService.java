@@ -58,13 +58,9 @@ public class MessageDownloadService extends Service {
 	public static final int RESULT_BAD_LOGIN = 401;
 	public static final int SERVICE_FINISHED = 999;
 	public static final String MSG_ID = "msgid";
-	public static final String FOLDER = "folder";
 	public static final String RECEIVER = "receiver";
 
-	private static final int INBOX = 0;
-
 	private long messageId;
-	private int folder;
 	private ResultReceiver receiver;
 	private DaemonThread thread;
 	private GaugeFileOutputStream fos;
@@ -79,7 +75,6 @@ public class MessageDownloadService extends Service {
 		}
 		
 		messageId = intent.getLongExtra(MSG_ID, 0);
-		folder = intent.getIntExtra(FOLDER, 0);
 		receiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER);
 
 		thread = new DaemonThread();
@@ -118,8 +113,10 @@ public class MessageDownloadService extends Service {
 			logger.log(Level.INFO, "Downloading service started");
 			// Get ISDS ID and MSGBOX ID of the message
 			Uri singleUri = ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, messageId);
-			String[] projection = new String[] { DatabaseHelper.MESSAGE_ISDS_ID,
-					DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_ATTACHMENT_SIZE };
+			String[] projection = new String[] {	DatabaseHelper.MESSAGE_ISDS_ID,
+												 	DatabaseHelper.MESSAGE_MSGBOX_ID, 
+												 	DatabaseHelper.MESSAGE_ATTACHMENT_SIZE,
+												 	DatabaseHelper.MESSAGE_FOLDER };
 			if(interrupted()) return;
 			Cursor msgCursor = getContentResolver().query(singleUri, projection, null, null, null);
 			msgCursor.moveToFirst();
@@ -127,6 +124,7 @@ public class MessageDownloadService extends Service {
 			int messageIsdsId = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_ISDS_ID));
 			long msgBoxId = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_MSGBOX_ID));
 			long fileSize = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_ATTACHMENT_SIZE));
+			int folder = msgCursor.getInt(msgCursor.getColumnIndex(DatabaseHelper.MESSAGE_FOLDER));
 			msgCursor.close();
 			msgCursor = null;
 			
@@ -199,7 +197,7 @@ public class MessageDownloadService extends Service {
 				outFileTmp = new File(destFolder, outFileName + ".tmp");
 				fos = new GaugeFileOutputStream(outFileTmp, receiver, UPDATE_PROGRESS, fileSize);
 
-				if (folder == INBOX) {
+				if (folder == Application.INBOX) {
 					connector.downloadSignedReceivedMessage(messageIsdsId, fos);
 				} else {
 					connector.downloadSignedSentMessage(messageIsdsId, fos);
@@ -234,7 +232,7 @@ public class MessageDownloadService extends Service {
 					input = null;
 					return;
 				}
-				connector.parseSignedMessage(outputDirectory, folder, messageId, csis, messageIsdsId);
+				connector.parseSignedMessage(outputDirectory, messageId, csis, messageIsdsId);
 				
 				// Send SERVICE_FINISHED to dismiss download progress bar
 				if(receiver != null)

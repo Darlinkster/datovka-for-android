@@ -241,8 +241,8 @@ public class Connector {
 		return service.verifyMessage(envelope);
 	}
 	
-	public void  parseSignedMessage(String outputDir, int folder, Long messageId, InputStream input, int messageIsdsId){
-		FileAttachmentStorerWithDBInsertion faswd = new FileAttachmentStorerWithDBInsertion(outputDir, folder, messageId);
+	public void  parseSignedMessage(String outputDir, Long messageId, InputStream input, int messageIsdsId){
+		FileAttachmentStorerWithDBInsertion faswd = new FileAttachmentStorerWithDBInsertion(outputDir, messageId);
 		
 		service.parseSignedMessage(faswd, messageIsdsId, input);
 	}
