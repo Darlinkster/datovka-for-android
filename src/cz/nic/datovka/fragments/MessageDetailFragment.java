@@ -34,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
@@ -88,6 +89,12 @@ public class MessageDetailFragment extends SherlockFragment {
 
 	private View fillFragment(View v, View customActionBarView) {
 		Cursor message = getMessageCursor();
+		
+		if(message == null){
+			// message with given ID was not found, show error msg and close the activity
+			Toast.makeText(Application.ctx, R.string.message_not_found, Toast.LENGTH_LONG).show();
+			getActivity().finish();
+		}
 
 		// TextView annotation = (TextView)
 		// v.findViewById(R.id.message_annotation);
@@ -295,8 +302,7 @@ public class MessageDetailFragment extends SherlockFragment {
 		if (cursor.moveToFirst()) {
 			return cursor;
 		}
-		// TODO
-		throw new RuntimeException("nic nenalezeno");
+		return null;
 	}
 
 	private void setMessageRead() {
