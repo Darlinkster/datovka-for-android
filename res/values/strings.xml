@@ -79,6 +79,7 @@
     <string name="add_account_inbox_downloading">Stahování příchozích zpráv</string>
     <string name="add_account_outbox_downloading">Stahování odchozích zpráv</string>
     <string name="message_not_found">Zpráva nebyla nalezena</string>
+    <string name="stream_interrupted">Spojení bylo přerušeno</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

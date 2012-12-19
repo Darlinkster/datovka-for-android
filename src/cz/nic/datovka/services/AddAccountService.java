@@ -47,6 +47,7 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
+import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class AddAccountService extends Service {
 	public static final String LOGIN = "login";
@@ -61,6 +62,7 @@ public class AddAccountService extends Service {
 	public static final int RESULT_DS_ERR = 104;
 	public static final int RESULT_BAD_CERT = 105;
 	public static final int PROGRESS_UPDATE = 106;
+	public static final int ERROR_INTERRUPTED = 107;
 	public static final int DATABOX_CREATING = 1;
 	public static final int INBOX_DOWNLOADING = 2;
 	public static final int OUTBOX_DOWNLOADING = 3;
@@ -262,15 +264,6 @@ public class AddAccountService extends Service {
 				UserInfo user = connector.getUserInfo();
 				OwnerInfo owner = connector.getOwnerInfo();
 
-				if (user == null && owner == null) { // Something is wrong,
-														// these
-														// variable shouldn't be
-														// null (what about
-														// iptables?)
-					message.arg1 = RESULT_ERR;
-					return;
-				}
-
 				String passwordExpiration;
 				if (cal == null) {
 					passwordExpiration = Integer.toString(-1);
@@ -450,6 +443,9 @@ public class AddAccountService extends Service {
 			} catch (DSException e) {
 				message.arg1 = RESULT_DS_ERR;
 				message.obj = (Object) e.getMessage();
+			} catch (StreamInterruptedException e1) {
+				message.arg1 = ERROR_INTERRUPTED;
+				e1.printStackTrace();
 			} finally {
 				if(isInterrupted()) return;
 				try {

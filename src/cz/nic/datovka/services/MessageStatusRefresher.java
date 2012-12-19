@@ -39,6 +39,7 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
+import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class MessageStatusRefresher extends Thread {
 	public static final String MSG_ID = "msgid";
@@ -47,6 +48,8 @@ public class MessageStatusRefresher extends Thread {
 	public static final int ERROR = 200;
 	public static final int STATUS_UPDATED = 300;
 	public static final int ERROR_CERT = 400;
+	public static final int ERROR_INTERRUPTED = 500;
+	
 	private long msgId;
 	private Messenger messenger;
 
@@ -144,6 +147,15 @@ public class MessageStatusRefresher extends Thread {
 			// certicate error
 			Message message = Message.obtain();
 			message.arg1 = ERROR_CERT;
+			try {
+				messenger.send(message);
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} catch (StreamInterruptedException e) {
+			Message message = Message.obtain();
+			message.arg1 = ERROR_INTERRUPTED;
 			try {
 				messenger.send(message);
 			} catch (RemoteException e1) {

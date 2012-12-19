@@ -241,6 +241,8 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 					Toast.makeText(Application.ctx, R.string.status_not_changed, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.ERROR_CERT) {
 				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
+			} else if (message.arg1 == MessageStatusRefresher.ERROR_INTERRUPTED) {
+				Toast.makeText(Application.ctx, R.string.stream_interrupted, Toast.LENGTH_LONG).show();
 			}
 		}
 	};

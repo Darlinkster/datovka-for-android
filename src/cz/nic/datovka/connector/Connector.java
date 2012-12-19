@@ -69,7 +69,7 @@ public class Connector {
 		service.downloadSignedSentMessage(messageIsdsId, fos);
 	}
 	
-	public UserInfo getUserInfo()throws HttpException, DSException {
+	public UserInfo getUserInfo()throws HttpException, DSException, StreamInterruptedException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -77,7 +77,7 @@ public class Connector {
 		return service.GetUserInfoFromLogin()  ;
 	}
 
-	public OwnerInfo getOwnerInfo()throws HttpException, DSException  {
+	public OwnerInfo getOwnerInfo()throws HttpException, DSException, StreamInterruptedException  {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -85,7 +85,7 @@ public class Connector {
 		return service.GetOwnerInfoFromLogin() ;
 	}
 
-	public GregorianCalendar getPasswordInfo() throws HttpException, DSException {
+	public GregorianCalendar getPasswordInfo() throws HttpException, DSException, StreamInterruptedException {
 		if (service == null) {
 			throw new IllegalStateException("Object not initialized");
 		}
@@ -93,7 +93,7 @@ public class Connector {
 		return service.GetPasswordInfo() ;
 	}
 
-	public List<MessageEnvelope> getRecievedMessageList() throws HttpException, DSException {
+	public List<MessageEnvelope> getRecievedMessageList() throws HttpException, DSException, StreamInterruptedException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
@@ -129,7 +129,7 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public List<MessageEnvelope> getSentMessageList() throws HttpException, DSException  {
+	public List<MessageEnvelope> getSentMessageList() throws HttpException, DSException, StreamInterruptedException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
@@ -165,7 +165,7 @@ public class Connector {
 		return sentMessageList;
 	}
 
-	public List<MessageEnvelope> getRecievedMessageListFromDate(long fromParam) throws HttpException, DSException {
+	public List<MessageEnvelope> getRecievedMessageListFromDate(long fromParam) throws HttpException, DSException, StreamInterruptedException {
 		List<MessageEnvelope> recievedMessageList;
 		int offset = 0;
 		
@@ -201,7 +201,7 @@ public class Connector {
 		return recievedMessageList;
 	}
 
-	public List<MessageEnvelope> getSentMessageListFromDate(long fromParam) throws HttpException, DSException  {
+	public List<MessageEnvelope> getSentMessageListFromDate(long fromParam) throws HttpException, DSException, StreamInterruptedException  {
 		List<MessageEnvelope> sentMessageList;
 		int offset = 0;
 
@@ -237,7 +237,7 @@ public class Connector {
 		return sentMessageList;
 	}
 	
-	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException, DSException  {
+	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException, DSException, StreamInterruptedException  {
 		return service.verifyMessage(envelope);
 	}
 	
@@ -273,7 +273,7 @@ public class Connector {
 		return conn;
 	}
 	
-	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException {
+	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException, StreamInterruptedException {
 		return service.GetDeliveryInfo(messageIsdsId);
 	}
 	

@@ -45,17 +45,18 @@ import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
+import cz.nic.datovka.tinyDB.exceptions.StreamInterruptedException;
 
 public class MessageBoxRefreshService extends Service {
 	public static final int ERROR = -1;
 	public static final int ERROR_NO_CONNECTION = -99;
 	public static final int ERROR_BAD_LOGIN = -401;
 	public static final int ERROR_CERT = -500;
+	public static final int ERROR_INTERRUPTED = -600;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
 	private static final int NOT_CHANGED = 0;
-//	private static final int OUTBOX = 1;
 	private static final int STATUS_CHANGED = 1;
 	public static final String HANDLER = "handler";
 	private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -323,6 +324,15 @@ public class MessageBoxRefreshService extends Service {
 					} catch (RemoteException e1) {
 						e1.printStackTrace();
 					}
+				} catch (StreamInterruptedException e) {
+					Message message = Message.obtain();
+					message.arg1 = ERROR_INTERRUPTED;
+					try {
+						messenger.send(message);
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+					e.printStackTrace();
 				}
 				
 			}

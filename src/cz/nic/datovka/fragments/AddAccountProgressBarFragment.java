@@ -142,6 +142,10 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 			} else if (message.arg1 == AddAccountService.RESULT_BAD_CERT) {
 				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_SHORT).show();
 				showLoginForm();
+			}
+			else if (message.arg1 == AddAccountService.ERROR_INTERRUPTED) {
+				Toast.makeText(Application.ctx, R.string.stream_interrupted, Toast.LENGTH_SHORT).show();
+				showLoginForm();
 			} else if (message.arg1 == AddAccountService.PROGRESS_UPDATE) {
 				if(message.arg2 == AddAccountService.DATABOX_CREATING){
 					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_databox_creating));

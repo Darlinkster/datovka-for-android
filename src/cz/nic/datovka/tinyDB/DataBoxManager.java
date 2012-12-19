@@ -144,7 +144,7 @@ public class DataBoxManager {
 
 	// metody z DataBoxMessages
 	public List<MessageEnvelope> getListOfReceivedMessages(Date from, Date to, EnumSet<MessageState> state, int offset, int limit) throws HttpException,
-			DSException {
+			DSException, StreamInterruptedException {
 
 		String resource = "/res/raw/get_list_of_received_messages.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -154,16 +154,13 @@ public class DataBoxManager {
 		post = post.replace("${OFFSET}", String.valueOf(offset));
 		post = post.replace("${LIMIT}", String.valueOf(limit));
 		GetListOfReceivedMessages result = new GetListOfReceivedMessages();
-		try {
-			this.postAndParseResponse(post, "dx", result);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "dx", result);
+		
 		return result.getMessages();
 	}
 
 	public List<MessageEnvelope> getListOfSentMessages(Date from, Date to, EnumSet<MessageState> state, int offset, int limit) throws HttpException,
-			DSException {
+			DSException, StreamInterruptedException {
 
 		String resource = "/res/raw/get_list_of_sent_messages.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
@@ -173,24 +170,18 @@ public class DataBoxManager {
 		post = post.replace("${OFFSET}", String.valueOf(offset));
 		post = post.replace("${LIMIT}", String.valueOf(limit));
 		GetListOfSentMessages result = new GetListOfSentMessages();
-		try {
-			this.postAndParseResponse(post, "dx", result);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "dx", result);
+
 		return result.getMessages();
 	}
 
-	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException, DSException {
+	public Hash verifyMessage(MessageEnvelope envelope) throws HttpException, DSException, StreamInterruptedException {
 		String resource = "/res/raw/verify_message.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", envelope.getMessageID());
 		VerifyMessage parser = new VerifyMessage();
-		try {
-			this.postAndParseResponse(post, "dx", parser);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "dx", parser);
+
 		return parser.getResult();
 	}
 
@@ -214,7 +205,7 @@ public class DataBoxManager {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 
 	}
 
@@ -240,41 +231,30 @@ public class DataBoxManager {
 
 	// metody z DataAccessService
 
-	public OwnerInfo GetOwnerInfoFromLogin() throws HttpException, DSException {
+	public OwnerInfo GetOwnerInfoFromLogin() throws HttpException, DSException, StreamInterruptedException {
 		String resource = "/res/raw/get_owner_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetOwnerInfoFromLogin parser = new GetOwnerInfoFromLogin();
-		try {
-			this.postAndParseResponse(post, "DsManage", parser);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "DsManage", parser);
 
 		return parser.getOwnerInfo();
 	}
 
-	public UserInfo GetUserInfoFromLogin() throws HttpException, DSException {
+	public UserInfo GetUserInfoFromLogin() throws HttpException, DSException, StreamInterruptedException {
 		String resource = "/res/raw/get_user_info_from_login.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetUserInfoFromLogin parser = new GetUserInfoFromLogin();
-		try {
-			this.postAndParseResponse(post, "DsManage", parser);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "DsManage", parser);
 
 		return parser.getUserInfo();
 	}
 
-	public GregorianCalendar GetPasswordInfo() throws HttpException, DSException {
+	public GregorianCalendar GetPasswordInfo() throws HttpException, DSException, StreamInterruptedException {
 		String resource = "/res/raw/get_password_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		GetPasswordInfo parser = new GetPasswordInfo();
-		try {
-			this.postAndParseResponse(post, "DsManage", parser);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "DsManage", parser);
+		
 
 		GregorianCalendar cal = new GregorianCalendar();
 		PasswordExpirationInfo pei = parser.getPasswordInfo();
@@ -291,16 +271,12 @@ public class DataBoxManager {
 		return cal;
 	}
 
-	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException {
+	public MessageEnvelope GetDeliveryInfo(String messageIsdsId) throws HttpException, DSException, StreamInterruptedException {
 		String resource = "/res/raw/get_delivery_info.xml";
 		String post = Utils.readResourceAsString(this.getClass(), resource);
 		post = post.replace("${ID}", messageIsdsId);
 		GetDeliveryInfo parser = new GetDeliveryInfo();
-		try {
-			this.postAndParseResponse(post, "dx", parser);
-		} catch (StreamInterruptedException e) {
-			e.printStackTrace();
-		}
+		this.postAndParseResponse(post, "dx", parser);
 
 		return parser.getDeliveryInfo();
 	}
