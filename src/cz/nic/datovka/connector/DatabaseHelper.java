@@ -267,7 +267,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					+ MESSAGE_OTHERSIDE_NAME + " TEXT NOT NULL,"
 					+ MESSAGE_OTHERSIDE_ADDRESS + " TEXT, " 
 					+ " FOREIGN KEY (" + MESSAGE_MSGBOX_ID + ") REFERENCES " + MSGBOX_TB_NAME + " (" + MSGBOX_ID + ") ON DELETE CASCADE );");
-			
+			/*
 			db.execSQL("insert into " + MESSAGE_TB_NAME + "( " + MESSAGE_FOLDER + "," + MESSAGE_ISDS_ID + "," + MESSAGE_ANNOTATION + "," + MESSAGE_ACCEPTANCE_DATE 
 					+ "," + MESSAGE_MSGBOX_ID + "," + MESSAGE_TYPE + "," + MESSAGE_DM_TYPE + "," + MESSAGE_TO_HANDS + "," + MESSAGE_ALLOW_SUBST_DELIVERY + ","
 					+ MESSAGE_PERSONAL_DELIVERY + "," + MESSAGE_SENT_DATE + "," + MESSAGE_LEGALTITLE_LAW + "," + MESSAGE_LEGALTITLE_PAR + "," + MESSAGE_LEGALTITLE_POINT
@@ -276,7 +276,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					+ "," + MESSAGE_RECIPIENT_REF_NUMBER + "," + MESSAGE_OTHERSIDE_ISDS_ID + "," + MESSAGE_OTHERSIDE_NAME + "," + MESSAGE_OTHERSIDE_ADDRESS + ")" 
 					+ " select "
 					+ "");
-			
+			*/
 		}
 		else {
 			db.execSQL("DROP TABLE IF EXISTS " + MSGBOX_TB_NAME);
