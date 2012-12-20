@@ -154,7 +154,7 @@ public class AddAccountService extends Service {
 		@Override
 		public void run() {
 			super.run();
-			logger.log(Level.INFO, "Downloading service started");
+			logger.log(Level.INFO, "Add acccount service started");
 			createAccount(login, password, testEnvironment);
 		}
 		

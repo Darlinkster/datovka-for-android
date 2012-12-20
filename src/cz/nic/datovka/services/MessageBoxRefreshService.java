@@ -66,11 +66,11 @@ public class MessageBoxRefreshService extends Service {
 	
 	public void onStart(Intent intent, int startId) {
 		if(intent == null || intent.getExtras() == null){
-			logger.log(Level.WARNING, "Service started with empty intent extras. Aborting.");
+			logger.log(Level.WARNING, "Message Box refresh service started with empty intent extras. Aborting.");
 			return;
 		}
 		if(thread != null && thread.isAlive()){
-			logger.log(Level.WARNING, "Service started but previous thread is still running. Aborting.");
+			logger.log(Level.WARNING, "Message Box refresh service started but previous thread is still running. Aborting.");
 			return;
 		}
 		
