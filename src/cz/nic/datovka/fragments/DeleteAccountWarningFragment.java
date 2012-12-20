@@ -1,5 +1,6 @@
 package cz.nic.datovka.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import cz.nic.datovka.R;
+import cz.nic.datovka.activities.AccountInfoActivity;
 import cz.nic.datovka.connector.DatabaseTools;
 
 public class DeleteAccountWarningFragment extends SherlockDialogFragment{
@@ -33,7 +35,13 @@ public class DeleteAccountWarningFragment extends SherlockDialogFragment{
                    public void onClick(DialogInterface dialog, int id) {
                 	   DatabaseTools.deleteAccount(getArguments().getLong(MSGBOX_ID));
                 	   Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_SHORT).show();
-                	   getActivity().finish();
+                	   
+                	   // if activity is AccountInfoActivity finish it
+                	   Activity act = getActivity();
+                	   if(act instanceof AccountInfoActivity) {
+                		   act.finish();
+                		   act = null;
+                	   }
                    }
                })
                .setNegativeButton(R.string.storno, new DialogInterface.OnClickListener() {
