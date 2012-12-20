@@ -20,13 +20,17 @@ package cz.nic.datovka.activities;
 
 import java.util.Locale;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -38,6 +42,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,6 +117,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		
 		// If there is no account, jump on the create account dialogfragment
 		showAddAccountFragment();
+		showOnUpdateWarning();
 	}
 	
 	// Listening on spinner with accounts. Recreates fragments in viewpager when
@@ -361,6 +367,41 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		@Override
 		public CharSequence getPageTitle(int position) {
 			return TITLES[position % NUM_TITLES].toUpperCase(Locale.getDefault());
+		}
+	}
+	
+	private void showOnUpdateWarning() {
+		final String VERSION_KEY = "datovka_version";
+		final int NO_VERSION = -1;
+		
+		int thisVersion = NO_VERSION;
+		try {
+			thisVersion = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionCode;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		int lastVersion = sp.getInt(VERSION_KEY, NO_VERSION);
+		
+		if ((thisVersion == 4) && (lastVersion < thisVersion)) {
+			Cursor msgBoxes = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
+					DatabaseHelper.msgbox_columns, null, null, null);
+			int numberOfAccounts = msgBoxes.getCount();
+			msgBoxes.close();
+			msgBoxes = null;
+			if (numberOfAccounts > 0) {
+				Log.d(this.getLocalClassName(), "Showing warning message. thisVersion " + thisVersion + " lastVersion " + lastVersion);
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Aktualizace");
+				builder.setMessage("Vzhledem k rozsáhlým změnám interní databáze této aplikace, bylo nutné odstranit veškeré lokálně stažené zprávy. "
+						+ "Nastavení účtů zůstalo zachováno. Pro opětovné stažení vašich zpráv stiskněte tlačítko obnovení v pravém horním rohu (dvě šipky).");
+				builder.setPositiveButton("OK", null);
+				builder.show();
+			}
+			SharedPreferences.Editor editor = sp.edit();
+			editor.putInt(VERSION_KEY, thisVersion);
+			editor.commit();
 		}
 	}
 }
