@@ -28,7 +28,7 @@ import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.activities.Application;
 
 public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
-
+	private static final char[] RESTRICTED_CHARS = { '\\', '|', '/', ':', '?', '"', '*', '<', '>' };
     private String outputDir = null;
     private long messageId;
 
@@ -53,6 +53,11 @@ public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
     protected String name(MessageEnvelope envelope, Attachment attachment) {
         String prefix = envelope.getMessageID();
         String description = attachment.getDescription();
+        
+        for(int i = 0; i < RESTRICTED_CHARS.length; i++) {
+        	description = description.replace(RESTRICTED_CHARS[i], '_');
+        }
+        
         return prefix + "_" + description;
     }
     
