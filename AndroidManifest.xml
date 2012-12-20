@@ -65,6 +65,8 @@
         </service>
         <service android:name=".services.MessageBoxRefreshService" >
         </service>
+        <service android:name=".services.MessageStatusRefresher" >
+        </service>
     </application>
 
 </manifest>

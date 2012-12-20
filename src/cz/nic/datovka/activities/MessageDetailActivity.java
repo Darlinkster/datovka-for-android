@@ -46,7 +46,6 @@ import cz.nic.datovka.R;
 import cz.nic.datovka.fragments.MessageAttachmentsFragment;
 import cz.nic.datovka.fragments.MessageDetailFragment;
 import cz.nic.datovka.fragments.MessageDownloadProgressFragment;
-import cz.nic.datovka.services.MessageDownloadService;
 import cz.nic.datovka.services.MessageStatusRefresher;
 
 public class MessageDetailActivity  extends SherlockFragmentActivity {
@@ -111,12 +110,12 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		else if (item.getItemId() == R.id.refresh_message_menu_btn) {
 			refreshButtonItem = item;
 			setAnimationOnRefreshButton();
-			
-			Intent param = new Intent();
-			param.putExtra(MessageStatusRefresher.MSG_ID, this.messageId);
+
 			Messenger messenger = new Messenger(handler);
-			param.putExtra(MessageDownloadService.RECEIVER, messenger);
-			new MessageStatusRefresher(param).start();
+			Intent intent = new Intent(this, MessageStatusRefresher.class);
+			intent.putExtra(MessageStatusRefresher.MSG_ID, messageId);
+			intent.putExtra(MessageStatusRefresher.RECEIVER, messenger);
+			startService(intent);
 		}
 		return false;
 	}
