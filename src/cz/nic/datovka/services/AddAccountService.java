@@ -88,7 +88,7 @@ public class AddAccountService extends Service {
 		String password = extras.getString(PASSWORD);
 		int testEnvironment = extras.getBoolean(TESTENV) ? 1 : 0;
 
-		if (checkIfAccountExists(login, password)) {
+		if (checkIfAccountExists(login)) {
 			// Account already exists
 			Message message = Message.obtain();
 			message.arg1 = RESULT_EXISTS;
@@ -124,15 +124,16 @@ public class AddAccountService extends Service {
 
 	
 
-	private boolean checkIfAccountExists(String login, String password) {
-		String[] projection = { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD };
-		String selection = DatabaseHelper.MSGBOX_LOGIN + " = ? and " + DatabaseHelper.MSGBOX_PASSWORD + " = ?";
-		String[] selectionArgs = { login, Base64.encode(password.getBytes()) };
+	private boolean checkIfAccountExists(String login) {
+		String[] projection = { DatabaseHelper.MSGBOX_LOGIN };
+		String selection = DatabaseHelper.MSGBOX_LOGIN + " = ? ";
+		String[] selectionArgs = { login };
 
 		Cursor cursor = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 
 		int rowCount = cursor.getCount();
 		cursor.close();
+		cursor = null;
 
 		if (rowCount > 0)
 			return true;
