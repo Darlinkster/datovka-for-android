@@ -85,9 +85,9 @@ public class MessageStatusRefresher extends Service {
 			}
 			thread.interrupt();
 		}
+		thread = null;
 		connector = null;
 		messenger = null;
-		thread = null;
 		
 		super.onDestroy();
 		logger.log(Level.INFO, "Message status refresh service interrupted.");
@@ -96,11 +96,14 @@ public class MessageStatusRefresher extends Service {
 	private class DaemonThread extends Thread {
 		@Override
 		public void run() {
+			logger.log(Level.INFO, "Message status refresh service is running.");
 			Uri msgUri = ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, msgId);
 			String msgIsdsIdTb = DatabaseHelper.MESSAGE_ISDS_ID;
 			String msgboxIdTb = DatabaseHelper.MESSAGE_MSGBOX_ID;
 			String msgStatusTb = DatabaseHelper.MESSAGE_STATE;
 
+			if(isInterrupted()) return;
+			
 			String[] msgProjection = { msgIsdsIdTb, msgboxIdTb, msgStatusTb };
 			Cursor msgCursor = Application.ctx.getContentResolver().query(msgUri, msgProjection, null, null, null);
 			if (!msgCursor.moveToFirst()) {
@@ -122,6 +125,9 @@ public class MessageStatusRefresher extends Service {
 			long msgboxId = msgCursor.getLong(msgCursor.getColumnIndex(msgboxIdTb));
 			int msgStatus = msgCursor.getInt(msgCursor.getColumnIndex(msgStatusTb));
 			msgCursor.close();
+			msgCursor = null;
+			
+			if(isInterrupted()) return;
 
 			// Get MsgBox ISDS ID
 			String msgBoxIsdsId = "-1";
@@ -135,8 +141,12 @@ public class MessageStatusRefresher extends Service {
 
 			int statusChanged = 0;
 
+			Message message = null;
 			try {
 				connector = Connector.connectToWs(msgboxId);
+				
+				if(isInterrupted()) return;
+				
 				MessageEnvelope msg = connector.GetDeliveryInfo(msgIsdsId);
 				if (msgStatus != msg.getStateAsInt()) {
 					ContentValues val = new ContentValues();
@@ -147,13 +157,20 @@ public class MessageStatusRefresher extends Service {
 					val.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
 					val.put(DatabaseHelper.MESSAGE_STATE, msg.getStateAsInt());
 
+					if(isInterrupted()) return;
+					
 					Application.ctx.getContentResolver().update(msgUri, val, null, null);
 					statusChanged = 1;
 				}
+				
+				message = Message.obtain();
+				message.arg1 = STATUS_UPDATED;
+				message.arg2 = statusChanged;
+				
 
 			} catch (HttpException e) {
 				e.printStackTrace();
-				Message message = Message.obtain();
+				message = Message.obtain();
 				if (e.getErrorCode() == 401) {
 					String msg = Application.ctx.getString(R.string.cannot_login, msgBoxIsdsId);
 					message.arg1 = ERROR_BAD_LOGIN;
@@ -162,56 +179,42 @@ public class MessageStatusRefresher extends Service {
 					message.arg1 = ERROR;
 					message.obj = e.getMessage();
 				}
-				try {
-					messenger.send(message);
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
 			} catch (DSException e) {
 				e.printStackTrace();
-				Message message2 = Message.obtain();
-				message2.arg1 = ERROR;
-				message2.obj = e.getMessage();
-				try {
-					messenger.send(message2);
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
+				message = Message.obtain();
+				message.arg1 = ERROR;
+				message.obj = e.getMessage();
 			} catch (SSLCertificateException e) {
 				// certicate error
-				Message message = Message.obtain();
+				message = Message.obtain();
 				message.arg1 = ERROR_CERT;
-				try {
-					messenger.send(message);
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
 				e.printStackTrace();
 			} catch (StreamInterruptedException e) {
-				Message message = Message.obtain();
+				message = Message.obtain();
 				message.arg1 = ERROR_INTERRUPTED;
-				try {
-					messenger.send(message);
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
 				e.printStackTrace();
-			}
-
-			Message message3 = Message.obtain();
-			message3.arg1 = STATUS_UPDATED;
-			message3.arg2 = statusChanged;
-			try {
-				messenger.send(message3);
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
+			} catch (NullPointerException e){
+				logger.log(Level.WARNING, "Null pointer Exception: User probably killed download thread.");
+				e.printStackTrace();
+				message = Message.obtain();
+				message.arg1 = ERROR;
+				message.obj = Application.ctx.getString(R.string.download_crashed);
+			} finally {
+				if(message != null) {
+					if(messenger != null) {
+						try {
+							messenger.send(message);
+						} catch (RemoteException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
 			}
 		}
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -408,10 +408,12 @@ public class DataBoxManager {
 	}
 
 	private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, HttpException {
-		if (!OKCodes.contains(con.getResponseCode())) {
-			String message = "Pozadavek selhal se stavovym kodem" + " " + con.getResponseCode() + ", " + con.getResponseMessage() + ".";
-			logger.log(Level.SEVERE, message);
-			throw new HttpException(con.getResponseMessage(), con.getResponseCode());
+		if (con != null) {
+			if (!OKCodes.contains(con.getResponseCode())) {
+				String message = "Pozadavek selhal se stavovym kodem" + " " + con.getResponseCode() + ", " + con.getResponseMessage() + ".";
+				logger.log(Level.SEVERE, message);
+				throw new HttpException(con.getResponseMessage(), con.getResponseCode());
+			}
 		}
 	}
 

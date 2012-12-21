@@ -268,7 +268,7 @@ public class MessageDownloadService extends Service {
 			} catch (NullPointerException e){
 				Bundle resultData = new Bundle();
 				logger.log(Level.WARNING, "Null pointer Exception: User probably killed download thread.");
-				resultData.putString("error", getString(R.string.message_download_crashed));
+				resultData.putString("error", getString(R.string.download_crashed));
 				if( receiver!= null)
 					receiver.send(ERROR, resultData);
 			}

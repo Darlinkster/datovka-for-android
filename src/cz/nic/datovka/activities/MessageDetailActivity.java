@@ -67,6 +67,17 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
     	outState.putBoolean(ICON_ANIMATION_STATE, animateRefreshIcon);
     }
 	
+	@Override
+	protected void onDestroy() {
+		if(isFinishing()) {
+			Intent intent = new Intent(this, MessageStatusRefresher.class);
+			stopService(intent);
+			removeAnimationFromRefreshButton();
+			animateRefreshIcon = false;
+		}
+		super.onDestroy();
+	}
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState != null) {
@@ -173,7 +184,6 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	
 	public void addressClicked(View view) {
 		String address = ((TextView) view).getText().toString();
-		//Toast.makeText(this, "co chces? " + address, Toast.LENGTH_LONG).show();
 		String uri = String.format("geo:0,0?q=%s", address);
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 		this.startActivity(intent);
