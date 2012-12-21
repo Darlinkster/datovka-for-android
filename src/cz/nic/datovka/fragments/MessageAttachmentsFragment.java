@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.View;
 
@@ -35,10 +34,11 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import cz.nic.datovka.R;
 import cz.nic.datovka.activities.Application;
 import cz.nic.datovka.connector.DatabaseHelper;
+import cz.nic.datovka.contentProviders.AttachmentListCursorAdapter;
 import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 
 public class MessageAttachmentsFragment extends SherlockListFragment implements LoaderCallbacks<Cursor> {
-	private SimpleCursorAdapter adapter;
+	private AttachmentListCursorAdapter adapter;
 	public static final String ID = "id";
 
 	public static MessageAttachmentsFragment newInstance(long id) {
@@ -64,7 +64,7 @@ public class MessageAttachmentsFragment extends SherlockListFragment implements 
 		int[] to = { R.id.attachment_item_filename };
 
 		getLoaderManager().initLoader(0, null, this);
-		adapter = new SimpleCursorAdapter(getActivity(), R.layout.attachment_item, null, from, to, 0);
+		adapter = new AttachmentListCursorAdapter(getActivity(), R.layout.attachment_item, null, from, to, 0);
 
 		adapter.setViewBinder(new ViewBinder() {
 			public boolean setViewValue(View view, Cursor cursor, int colIndex) {
