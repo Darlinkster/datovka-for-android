@@ -42,18 +42,22 @@ public class AttachmentListCursorAdapter extends SimpleCursorAdapter{
 	public void bindView(View view, Context context, Cursor cursor) {
 		super.bindView(view, context, cursor);
 		TextView tv = (TextView) view.findViewById(R.id.attachment_item_filename);
+		View icon = view.findViewById(R.id.attachment_item_fileicon);
 		String filePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ATTACHMENTS_PATH));
 		String suffix = filePath.substring(filePath.lastIndexOf('.') + 1).toLowerCase(Locale.getDefault());
 		int iconDrawableId = Application.ctx.getResources().getIdentifier("fileicon_"+suffix, "drawable", Application.ctx.getPackageName());
 		
 		tv.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ATTACHMENTS_FILENAME)));
 		if(iconDrawableId != 0){
-			tv.setCompoundDrawablesWithIntrinsicBounds(Application.ctx.getResources().getDrawable(iconDrawableId), null, null, null);
+			icon.setBackgroundResource(iconDrawableId);
+			//tv.setCompoundDrawablesWithIntrinsicBounds(Application.ctx.getResources().getDrawable(iconDrawableId), null, null, null);
 		} else {
-			tv.setCompoundDrawablesWithIntrinsicBounds(Application.ctx.getResources().getDrawable(R.drawable.fileicon_blank), null, null, null);
+			icon.setBackgroundResource(R.drawable.fileicon_blank);
+			//tv.setCompoundDrawablesWithIntrinsicBounds(Application.ctx.getResources().getDrawable(R.drawable.fileicon_blank), null, null, null);
 		}
 
 		tv = null;
+		icon = null;
 		filePath = null;
 		suffix = null;
 	}

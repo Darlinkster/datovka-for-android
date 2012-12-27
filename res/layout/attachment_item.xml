@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/msgListItem"
     android:layout_width="match_parent"
-    android:orientation="horizontal"
     android:clickable="true"
     android:onClick="attachmentClicked"
-    android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    style="@style/msgListItem"
-     >    
-        
+    android:paddingTop="8dp" 
+    android:orientation="vertical" >
+
+    <View
+        android:id="@+id/attachment_item_fileicon"
+        android:layout_alignParentLeft="true"
+        android:layout_width="45dp"
+        android:layout_height="45dp" />
+
     <TextView
         android:id="@+id/attachment_item_filename"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/attachment_item_fileicon"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textStyle="bold"
         android:textSize="16sp"
-        android:gravity="center_vertical"
-        
-         />
-<!-- 
+        android:textStyle="bold" />
+    <!--
     <TextView
         android:id="@+id/attachment_item_path"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textStyle="normal" />
- -->
-</LinearLayout>
+    -->
+
+</RelativeLayout>
