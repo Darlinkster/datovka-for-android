@@ -50,10 +50,8 @@ public class AttachmentListCursorAdapter extends SimpleCursorAdapter{
 		tv.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ATTACHMENTS_FILENAME)));
 		if(iconDrawableId != 0){
 			icon.setBackgroundResource(iconDrawableId);
-			//tv.setCompoundDrawablesWithIntrinsicBounds(Application.ctx.getResources().getDrawable(iconDrawableId), null, null, null);
 		} else {
 			icon.setBackgroundResource(R.drawable.fileicon_blank);
-			//tv.setCompoundDrawablesWithIntrinsicBounds(Application.ctx.getResources().getDrawable(R.drawable.fileicon_blank), null, null, null);
 		}
 
 		tv = null;
