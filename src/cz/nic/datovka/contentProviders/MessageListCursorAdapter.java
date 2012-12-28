@@ -20,7 +20,7 @@ package cz.nic.datovka.contentProviders;
 
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -57,7 +57,7 @@ public class MessageListCursorAdapter extends SimpleCursorAdapter{
 		View notification = view.findViewById(R.id.message_item_notification_strip);
 		View pictogram = view.findViewById(R.id.message_item_pictogram);
 		
-		if(folder == Application.OUTBOX){
+		if(folder == AppUtils.OUTBOX){
 			if(status < 6) {
 				pictogram.setBackgroundResource(R.drawable.message_sent);
 			}

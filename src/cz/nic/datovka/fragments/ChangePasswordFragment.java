@@ -35,7 +35,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 
@@ -76,13 +76,13 @@ public class ChangePasswordFragment extends SherlockDialogFragment {
 				
 				int passwordLength = newPass.length();
 				if ((passwordLength < 8) || (passwordLength > 32)) {
-					Toast.makeText(Application.ctx, R.string.passwd_change_fail, Toast.LENGTH_LONG).show();
+					Toast.makeText(AppUtils.ctx, R.string.passwd_change_fail, Toast.LENGTH_LONG).show();
 				} else {
 
-					if (Application.ctx.getContentResolver().update(uri, values, null, null) > 0) {
-						Toast.makeText(Application.ctx, R.string.passwd_change_success, Toast.LENGTH_LONG).show();
+					if (AppUtils.ctx.getContentResolver().update(uri, values, null, null) > 0) {
+						Toast.makeText(AppUtils.ctx, R.string.passwd_change_success, Toast.LENGTH_LONG).show();
 					} else {
-						Toast.makeText(Application.ctx, R.string.passwd_change_fail, Toast.LENGTH_LONG).show();
+						Toast.makeText(AppUtils.ctx, R.string.passwd_change_fail, Toast.LENGTH_LONG).show();
 					}
 				}
 

@@ -70,7 +70,7 @@ import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
 import cz.nic.datovka.R.raw;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
@@ -313,9 +313,9 @@ public class DataBoxManager {
 			
 			InputStream keyStoreStream;
 			if(environment == PRODUCTION){
-				keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_production_env);
+				keyStoreStream = AppUtils.ctx.getResources().openRawResource(raw.key_store_production_env);
 			} else {
-				keyStoreStream = Application.ctx.getResources().openRawResource(raw.key_store_test_env);
+				keyStoreStream = AppUtils.ctx.getResources().openRawResource(raw.key_store_test_env);
 			}
 			keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
 			

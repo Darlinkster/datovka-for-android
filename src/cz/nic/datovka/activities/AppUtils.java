@@ -21,7 +21,7 @@ package cz.nic.datovka.activities;
 import android.content.Context;
 import android.os.Environment;
 
-public class Application {
+public class AppUtils {
 	public static final int INBOX = 0;
 	public static final int OUTBOX = 1;
 	public static Context ctx;

@@ -36,7 +36,7 @@ import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
@@ -257,7 +257,7 @@ public class Connector {
 		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
 				DatabaseHelper.MSGBOX_TEST_ENV };
-		Cursor msgBoxCursor = Application.ctx.getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
+		Cursor msgBoxCursor = AppUtils.ctx.getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
 		msgBoxCursor.moveToFirst();
 
 		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
@@ -278,7 +278,7 @@ public class Connector {
 	}
 	
 	public boolean checkConnection() {
-		final ConnectivityManager conMgr =  (ConnectivityManager) Application.ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final ConnectivityManager conMgr =  (ConnectivityManager) AppUtils.ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
 		if (activeNetwork != null && activeNetwork.isConnected()) {
 		    return true;

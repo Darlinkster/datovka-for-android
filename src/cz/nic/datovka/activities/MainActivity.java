@@ -98,7 +98,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		
 		setContentView(R.layout.activity_main);
 		fragmentManager = getSupportFragmentManager();
-		Application.ctx = getApplicationContext();
+		AppUtils.ctx = getApplicationContext();
 
 		actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -283,9 +283,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private static final void setAnimationOnRefreshButton() {
 		if(refreshButtonItem != null) {
 			animateRefreshIcon = true;
-			LayoutInflater inflater = (LayoutInflater) Application.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) AppUtils.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			ImageView refreshButtonView = (ImageView) inflater.inflate(R.layout.refresh_button_view, null);
-			Animation rotation = AnimationUtils.loadAnimation(Application.ctx, R.anim.anim_rotate);
+			Animation rotation = AnimationUtils.loadAnimation(AppUtils.ctx, R.anim.anim_rotate);
 			refreshButtonView.startAnimation(rotation);
 			refreshButtonItem.setActionView(refreshButtonView);
 		}
@@ -298,26 +298,26 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			animateRefreshIcon = false;
 			
 			if(message.arg1 == MessageBoxRefreshService.ERROR){
-				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			}
 			else if(message.arg1 == MessageBoxRefreshService.ERROR_NO_CONNECTION){
-				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
 			}
 			else if(message.arg1 == MessageBoxRefreshService.ERROR_BAD_LOGIN){
-				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			}
 			else if((message.arg1) == 0 && (message.arg2 == 0)){
-				Toast.makeText(Application.ctx, R.string.no_new_messages, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.no_new_messages, Toast.LENGTH_LONG).show();
 			} 
 			else if(message.arg1 == MessageBoxRefreshService.ERROR_CERT){
-				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
 			}
 			else if(message.arg1 == MessageBoxRefreshService.ERROR_INTERRUPTED){
-				Toast.makeText(Application.ctx, R.string.stream_interrupted, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.stream_interrupted, Toast.LENGTH_LONG).show();
 			}
 			else {
-				String newMessages = new String(Application.ctx.getResources().getString(R.string.new_messages_with_count, message.arg1, message.arg2));
-				Toast.makeText(Application.ctx, newMessages, Toast.LENGTH_LONG).show();
+				String newMessages = new String(AppUtils.ctx.getResources().getString(R.string.new_messages_with_count, message.arg1, message.arg2));
+				Toast.makeText(AppUtils.ctx, newMessages, Toast.LENGTH_LONG).show();
 			}
 		}
 	};
@@ -348,9 +348,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return MessageListFragment.getInstance(msgBoxID, Application.INBOX);
+				return MessageListFragment.getInstance(msgBoxID, AppUtils.INBOX);
 			case 1:
-				return MessageListFragment.getInstance(msgBoxID, Application.OUTBOX);
+				return MessageListFragment.getInstance(msgBoxID, AppUtils.OUTBOX);
 			default:
 				return null;
 			}

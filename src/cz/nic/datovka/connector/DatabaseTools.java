@@ -20,7 +20,7 @@ package cz.nic.datovka.connector;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.net.Uri;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.contentProviders.AttachmentsContentProvider;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
@@ -34,16 +34,16 @@ public class DatabaseTools {
 			value.put(DatabaseHelper.ATTACHMENTS_PATH, path);
 			value.put(DatabaseHelper.ATTACHMENTS_FILENAME, name);
 			value.put(DatabaseHelper.ATTACHMENTS_MIME, mime);
-			Application.ctx.getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
+			AppUtils.ctx.getContentResolver().insert(AttachmentsContentProvider.CONTENT_URI, value);
 	}
 	
 	public static synchronized void deleteAccount(Long msgBoxId){
 		Uri userUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
-		Application.ctx.getContentResolver().delete(userUri, null, null);
-		Application.ctx.getContentResolver().notifyChange(MessagesContentProvider.CONTENT_URI, null);
-		Application.ctx.getContentResolver().notifyChange(MessagesContentProvider.CONTENT_URI, null);
-		Application.ctx.getContentResolver().notifyChange(AttachmentsContentProvider.CONTENT_URI, null);
-		Application.ctx.getContentResolver().notifyChange(AttachmentsContentProvider.CONTENT_URI, null);
+		AppUtils.ctx.getContentResolver().delete(userUri, null, null);
+		AppUtils.ctx.getContentResolver().notifyChange(MessagesContentProvider.CONTENT_URI, null);
+		AppUtils.ctx.getContentResolver().notifyChange(MessagesContentProvider.CONTENT_URI, null);
+		AppUtils.ctx.getContentResolver().notifyChange(AttachmentsContentProvider.CONTENT_URI, null);
+		AppUtils.ctx.getContentResolver().notifyChange(AttachmentsContentProvider.CONTENT_URI, null);
 		
 	}
 }

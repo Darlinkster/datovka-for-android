@@ -30,7 +30,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.services.MessageDownloadService;
 
 public class MessageDownloadProgressFragment extends SherlockDialogFragment {
@@ -73,7 +73,7 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 
 	@Override
 	public void onCancel(DialogInterface dialog) {
-		Application.ctx.stopService(new Intent(Application.ctx, MessageDownloadService.class));
+		AppUtils.ctx.stopService(new Intent(AppUtils.ctx, MessageDownloadService.class));
 		runService = true;
 		super.onCancel(dialog);
 	}
@@ -93,26 +93,26 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 				String msg = resultData.getString("error");
 				mProgressDialog.dismiss();
 				runService = true;
-				Toast.makeText(Application.ctx, msg, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, msg, Toast.LENGTH_LONG).show();
 			} else if (resultCode == MessageDownloadService.ERROR_NO_CONNECTION) {
 				mProgressDialog.dismiss();
 				runService = true;
-				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.no_connection, Toast.LENGTH_LONG).show();
 			} else if (resultCode == MessageDownloadService.ERROR_STORAGE_NOT_AVAILABLE) {
 				mProgressDialog.dismiss();
 				runService = true;
-				Toast.makeText(Application.ctx, R.string.storage_not_available, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.storage_not_available, Toast.LENGTH_LONG).show();
 			} else if (resultCode == MessageDownloadService.ERROR_STORAGE_LOW_SPACE) {
 				mProgressDialog.dismiss();
 				runService = true;
-				Toast.makeText(Application.ctx, R.string.storage_low_space, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.storage_low_space, Toast.LENGTH_LONG).show();
 			} else if (resultCode == MessageDownloadService.SERVICE_FINISHED) {
 				mProgressDialog.dismiss();
 				runService = true;
 			} else if (resultCode == MessageDownloadService.ERROR_CERT) {
 				mProgressDialog.dismiss();
 				runService = true;
-				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
 			}
 			
 

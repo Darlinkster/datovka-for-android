@@ -38,7 +38,7 @@ import android.os.RemoteException;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
@@ -344,7 +344,7 @@ public class AddAccountService extends Service {
 					MessageEnvelope msgEnvelope = receivedMsgIterator.next();
 					ContentValues rcvdMessageValues = new ContentValues();
 
-					rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.INBOX);
+					rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, AppUtils.INBOX);
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
@@ -397,7 +397,7 @@ public class AddAccountService extends Service {
 					if(isInterrupted()) return;
 					MessageEnvelope msgEnvelope = sentMsgIterator.next();
 					ContentValues sentMessageValues = new ContentValues();
-					sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.OUTBOX);
+					sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, AppUtils.OUTBOX);
 					sentMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
 					sentMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
 					sentMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());

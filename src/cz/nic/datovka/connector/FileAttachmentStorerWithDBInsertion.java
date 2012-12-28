@@ -25,7 +25,7 @@ import java.io.OutputStream;
 import cz.abclinuxu.datoveschranky.common.entities.Attachment;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 
 public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
 	private static final char[] RESTRICTED_CHARS = { '\\', '|', '/', ':', '?', '"', '*', '<', '>' };
@@ -41,7 +41,7 @@ public class FileAttachmentStorerWithDBInsertion implements AttachmentStorer {
     
     public OutputStream store(MessageEnvelope envelope, Attachment attachment) throws IOException {
         String name = name(envelope, attachment);
-        File output = new File(Application.externalStoragePath + outputDir, name);
+        File output = new File(AppUtils.externalStoragePath + outputDir, name);
         output.createNewFile();
         
         DatabaseTools.insertAttachmentToDb(outputDir + "/" + name,

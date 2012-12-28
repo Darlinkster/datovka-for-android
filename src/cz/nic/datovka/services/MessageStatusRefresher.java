@@ -34,7 +34,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
@@ -105,11 +105,11 @@ public class MessageStatusRefresher extends Service {
 			if(isInterrupted()) return;
 			
 			String[] msgProjection = { msgIsdsIdTb, msgboxIdTb, msgStatusTb };
-			Cursor msgCursor = Application.ctx.getContentResolver().query(msgUri, msgProjection, null, null, null);
+			Cursor msgCursor = AppUtils.ctx.getContentResolver().query(msgUri, msgProjection, null, null, null);
 			if (!msgCursor.moveToFirst()) {
 				// There is no message with that ID, send an error message
 				msgCursor.close();
-				String msg = Application.ctx.getString(R.string.message_with_id_not_found, msgId);
+				String msg = AppUtils.ctx.getString(R.string.message_with_id_not_found, msgId);
 				Message message = Message.obtain();
 				message.arg1 = ERROR;
 				message.obj = msg;
@@ -132,7 +132,7 @@ public class MessageStatusRefresher extends Service {
 			// Get MsgBox ISDS ID
 			String msgBoxIsdsId = "-1";
 			Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgboxId);
-			Cursor msgBoxCursor = Application.ctx.getContentResolver().query(msgBoxUri, new String[] { DatabaseHelper.MSGBOX_ISDS_ID }, null, null, null);
+			Cursor msgBoxCursor = AppUtils.ctx.getContentResolver().query(msgBoxUri, new String[] { DatabaseHelper.MSGBOX_ISDS_ID }, null, null, null);
 			if (msgBoxCursor.moveToFirst()) {
 				msgBoxIsdsId = msgBoxCursor.getString(msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID));
 			}
@@ -159,7 +159,7 @@ public class MessageStatusRefresher extends Service {
 
 					if(isInterrupted()) return;
 					
-					Application.ctx.getContentResolver().update(msgUri, val, null, null);
+					AppUtils.ctx.getContentResolver().update(msgUri, val, null, null);
 					statusChanged = 1;
 				}
 				
@@ -172,7 +172,7 @@ public class MessageStatusRefresher extends Service {
 				e.printStackTrace();
 				message = Message.obtain();
 				if (e.getErrorCode() == 401) {
-					String msg = Application.ctx.getString(R.string.cannot_login, msgBoxIsdsId);
+					String msg = AppUtils.ctx.getString(R.string.cannot_login, msgBoxIsdsId);
 					message.arg1 = ERROR_BAD_LOGIN;
 					message.obj = msg;
 				} else {
@@ -198,7 +198,7 @@ public class MessageStatusRefresher extends Service {
 				e.printStackTrace();
 				message = Message.obtain();
 				message.arg1 = ERROR;
-				message.obj = Application.ctx.getString(R.string.download_crashed);
+				message.obj = AppUtils.ctx.getString(R.string.download_crashed);
 			} finally {
 				if(message != null) {
 					if(messenger != null) {

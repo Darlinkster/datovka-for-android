@@ -22,7 +22,7 @@ package cz.nic.datovka.contentProviders;
 import java.util.Locale;
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.DatabaseHelper;
 import android.content.Context;
 import android.database.Cursor;
@@ -45,7 +45,7 @@ public class AttachmentListCursorAdapter extends SimpleCursorAdapter{
 		View icon = view.findViewById(R.id.attachment_item_fileicon);
 		String filePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.ATTACHMENTS_PATH));
 		String suffix = filePath.substring(filePath.lastIndexOf('.') + 1).toLowerCase(Locale.getDefault());
-		int iconDrawableId = Application.ctx.getResources().getIdentifier("fileicon_"+suffix, "drawable", Application.ctx.getPackageName());
+		int iconDrawableId = AppUtils.ctx.getResources().getIdentifier("fileicon_"+suffix, "drawable", AppUtils.ctx.getPackageName());
 		
 		tv.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ATTACHMENTS_FILENAME)));
 		if(iconDrawableId != 0){

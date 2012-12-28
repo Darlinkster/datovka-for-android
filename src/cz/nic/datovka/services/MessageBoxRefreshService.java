@@ -36,7 +36,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
@@ -109,7 +109,7 @@ public class MessageBoxRefreshService extends Service {
 				Cursor inboxMsg = getContentResolver().query(MessagesContentProvider.CONTENT_URI,
 						new String[] { DatabaseHelper.MESSAGE_SENT_DATE, DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_FOLDER },
 						DatabaseHelper.MESSAGE_MSGBOX_ID + "=? and " + DatabaseHelper.MESSAGE_FOLDER + "=?", 
-						new String[] { Long.toString(msgBoxId), Integer.toString(Application.INBOX) },	
+						new String[] { Long.toString(msgBoxId), Integer.toString(AppUtils.INBOX) },	
 						DatabaseHelper.MESSAGE_SENT_DATE);
 				int rcvdMsgBoxIdColIndex = inboxMsg.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
 
@@ -117,7 +117,7 @@ public class MessageBoxRefreshService extends Service {
 				Cursor outboxMsg = getContentResolver().query(MessagesContentProvider.CONTENT_URI,
 						new String[] { DatabaseHelper.MESSAGE_SENT_DATE, DatabaseHelper.MESSAGE_MSGBOX_ID, DatabaseHelper.MESSAGE_FOLDER },
 						DatabaseHelper.MESSAGE_MSGBOX_ID + "=? and " + DatabaseHelper.MESSAGE_FOLDER + "=?", 
-						new String[] { Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) }, 
+						new String[] { Long.toString(msgBoxId), Integer.toString(AppUtils.OUTBOX) }, 
 						DatabaseHelper.MESSAGE_SENT_DATE);
 				int sentMsgBoxIdColIndex = outboxMsg.getColumnIndex(DatabaseHelper.MESSAGE_SENT_DATE);
 
@@ -179,7 +179,7 @@ public class MessageBoxRefreshService extends Service {
 						MessageEnvelope msgEnvelope = newInboxMsgIterator.next();
 						ContentValues rcvdMessageValues = new ContentValues();
 						
-						rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.INBOX);
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, AppUtils.INBOX);
 						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
 						rcvdMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
 						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
@@ -222,7 +222,7 @@ public class MessageBoxRefreshService extends Service {
 						
 						//System.out.println(msgEnvelope.getAnnotation());
 						
-						sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, Application.OUTBOX);
+						sentMessageValues.put(DatabaseHelper.MESSAGE_FOLDER, AppUtils.OUTBOX);
 						sentMessageValues.put(DatabaseHelper.MESSAGE_ANNOTATION, msgEnvelope.getAnnotation());
 						sentMessageValues.put(DatabaseHelper.MESSAGE_DM_TYPE, msgEnvelope.getDmType());
 						sentMessageValues.put(DatabaseHelper.MESSAGE_ISDS_ID, msgEnvelope.getMessageID());
@@ -261,7 +261,7 @@ public class MessageBoxRefreshService extends Service {
 					
 					// Select all outbox messages with status lower than 6 and check if there is any status update
 					String select = DatabaseHelper.MESSAGE_STATE + " < ? AND " + DatabaseHelper.MESSAGE_MSGBOX_ID + " = ? and " + DatabaseHelper.MESSAGE_FOLDER + "=?";
-					String[] params = { "6", Long.toString(msgBoxId), Integer.toString(Application.OUTBOX) };
+					String[] params = { "6", Long.toString(msgBoxId), Integer.toString(AppUtils.OUTBOX) };
 					String[] projection = { DatabaseHelper.MESSAGE_ID,
 											DatabaseHelper.MESSAGE_FOLDER, 
 											DatabaseHelper.MESSAGE_STATE, 
@@ -287,7 +287,7 @@ public class MessageBoxRefreshService extends Service {
 							val.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msg.getDeliveryTime().getTime()));
 							val.put(DatabaseHelper.MESSAGE_STATE, msg.getStateAsInt());
 							val.put(DatabaseHelper.MESSAGE_STATUS_CHANGED, STATUS_CHANGED);
-							Application.ctx.getContentResolver().update(ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, msgId), val, null,
+							AppUtils.ctx.getContentResolver().update(ContentUris.withAppendedId(MessagesContentProvider.CONTENT_URI, msgId), val, null,
 									null);			
 							messageStatusChangeCounter++;
 						}

@@ -31,7 +31,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 
 public class AddAccountFragment extends SherlockDialogFragment {
 	public static final String DIALOG_ID = "AddAccountFragment";
@@ -91,7 +91,7 @@ public class AddAccountFragment extends SherlockDialogFragment {
 				boolean testEnv = testEnvCheckbox.isChecked();
 				
 				if ((loginText.length() == 0) || (passwordText.length() < 8) || (passwordText.length() > 32)) {
-					Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
+					Toast.makeText(AppUtils.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
 					reShow(loginText, passwordText, testEnv);
 					return;
 				}

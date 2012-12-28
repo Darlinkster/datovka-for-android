@@ -40,7 +40,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.tinyDB.AndroidUtils;
@@ -92,7 +92,7 @@ public class MessageDetailFragment extends SherlockFragment {
 		
 		if(message == null){
 			// message with given ID was not found, show error msg and close the activity
-			Toast.makeText(Application.ctx, R.string.message_not_found, Toast.LENGTH_LONG).show();
+			Toast.makeText(AppUtils.ctx, R.string.message_not_found, Toast.LENGTH_LONG).show();
 			getActivity().finish();
 		}
 
@@ -141,7 +141,7 @@ public class MessageDetailFragment extends SherlockFragment {
 		
 		int folder = message.getInt(message.getColumnIndex(DatabaseHelper.MESSAGE_FOLDER));
 		
-		if (folder == Application.INBOX) {
+		if (folder == AppUtils.INBOX) {
 			senderRecpTV.setText(getString(R.string.sender));
 		} else { // OUTBOX
 			senderRecpTV.setText(getString(R.string.recipient));

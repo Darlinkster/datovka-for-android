@@ -37,7 +37,7 @@ import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.os.StatFs;
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
@@ -178,7 +178,7 @@ public class MessageDownloadService extends Service {
 				return;
 			}
 			String outputDirectory = "/Datovka/" + Integer.toString(messageIsdsId) + "_" + Long.toString(messageId) + "/";
-			File destFolder = new File(Application.externalStoragePath + outputDirectory);
+			File destFolder = new File(AppUtils.externalStoragePath + outputDirectory);
 			if (!destFolder.exists()) {
 				if (!destFolder.mkdirs()) {
 					try {
@@ -197,7 +197,7 @@ public class MessageDownloadService extends Service {
 				outFileTmp = new File(destFolder, outFileName + ".tmp");
 				fos = new GaugeFileOutputStream(outFileTmp, receiver, UPDATE_PROGRESS, fileSize);
 
-				if (folder == Application.INBOX) {
+				if (folder == AppUtils.INBOX) {
 					connector.downloadSignedReceivedMessage(messageIsdsId, fos);
 				} else {
 					connector.downloadSignedSentMessage(messageIsdsId, fos);

@@ -158,9 +158,9 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 	private static final void setAnimationOnRefreshButton() {
 		if (refreshButtonItem != null) {
 			animateRefreshIcon = true;
-			LayoutInflater inflater = (LayoutInflater) Application.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) AppUtils.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			ImageView refreshButtonView = (ImageView) inflater.inflate(R.layout.refresh_button_view, null);
-			Animation rotation = AnimationUtils.loadAnimation(Application.ctx, R.anim.anim_rotate);
+			Animation rotation = AnimationUtils.loadAnimation(AppUtils.ctx, R.anim.anim_rotate);
 			refreshButtonView.startAnimation(rotation);
 			refreshButtonItem.setActionView(refreshButtonView);
 		}
@@ -171,7 +171,7 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		Intent intent = new Intent();
 		intent.setAction(android.content.Intent.ACTION_VIEW);
 		
-		File file = new File(Application.externalStoragePath + view.getTag(R.id.attachment_path_tag_id).toString());
+		File file = new File(AppUtils.externalStoragePath + view.getTag(R.id.attachment_path_tag_id).toString());
 		String mimeType = (String) view.getTag();
 		intent.setDataAndType(Uri.fromFile(file), mimeType);
 		try{
@@ -240,18 +240,18 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 			animateRefreshIcon = false;
 			
 			if (message.arg1 == MessageStatusRefresher.ERROR) {
-				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.ERROR_BAD_LOGIN) {
-				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, (String) message.obj, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.STATUS_UPDATED) {
 				if(message.arg2 > 0)
-					Toast.makeText(Application.ctx, R.string.status_changed, Toast.LENGTH_LONG).show();
+					Toast.makeText(AppUtils.ctx, R.string.status_changed, Toast.LENGTH_LONG).show();
 				else
-					Toast.makeText(Application.ctx, R.string.status_not_changed, Toast.LENGTH_LONG).show();
+					Toast.makeText(AppUtils.ctx, R.string.status_not_changed, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.ERROR_CERT) {
-				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
 			} else if (message.arg1 == MessageStatusRefresher.ERROR_INTERRUPTED) {
-				Toast.makeText(Application.ctx, R.string.stream_interrupted, Toast.LENGTH_LONG).show();
+				Toast.makeText(AppUtils.ctx, R.string.stream_interrupted, Toast.LENGTH_LONG).show();
 			}
 		}
 	};

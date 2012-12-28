@@ -32,7 +32,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import cz.nic.datovka.R;
-import cz.nic.datovka.activities.Application;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.services.AddAccountService;
 
 public class AddAccountProgressBarFragment extends SherlockDialogFragment {
@@ -112,7 +112,7 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 
 	@Override
 	public void onCancel(DialogInterface dialog) {
-		Application.ctx.stopService(new Intent(Application.ctx, AddAccountService.class));
+		AppUtils.ctx.stopService(new Intent(AppUtils.ctx, AddAccountService.class));
 		run = true;
 		super.onCancel(dialog);
 	}
@@ -122,37 +122,37 @@ public class AddAccountProgressBarFragment extends SherlockDialogFragment {
 		public void handleMessage(Message message) {
 
 			if (message.arg1 == AddAccountService.RESULT_OK) {
-				Toast.makeText(Application.ctx, R.string.account_created, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.account_created, Toast.LENGTH_SHORT).show();
 				dismissProgressBar();
 			} else if (message.arg1 == AddAccountService.RESULT_EXISTS) {
-				Toast.makeText(Application.ctx, R.string.account_exists, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.account_exists, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_ERR) {
-				Toast.makeText(Application.ctx, R.string.account_create_error, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.account_create_error, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_BAD_LOGIN) {
-				Toast.makeText(Application.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.account_create_bad_login, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_DS_ERR) {
-				Toast.makeText(Application.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, (String) message.obj, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_NO_CONNECTION) {
-				Toast.makeText(Application.ctx, R.string.no_connection, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.no_connection, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			} else if (message.arg1 == AddAccountService.RESULT_BAD_CERT) {
-				Toast.makeText(Application.ctx, R.string.cert_error, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.cert_error, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			}
 			else if (message.arg1 == AddAccountService.ERROR_INTERRUPTED) {
-				Toast.makeText(Application.ctx, R.string.stream_interrupted, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AppUtils.ctx, R.string.stream_interrupted, Toast.LENGTH_SHORT).show();
 				showLoginForm();
 			} else if (message.arg1 == AddAccountService.PROGRESS_UPDATE) {
 				if(message.arg2 == AddAccountService.DATABOX_CREATING){
-					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_databox_creating));
+					updateProgressBarMessage(AppUtils.ctx.getString(R.string.add_account_databox_creating));
 				} else if(message.arg2 == AddAccountService.INBOX_DOWNLOADING){
-					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_inbox_downloading));
+					updateProgressBarMessage(AppUtils.ctx.getString(R.string.add_account_inbox_downloading));
 				} else if(message.arg2 == AddAccountService.OUTBOX_DOWNLOADING){
-					updateProgressBarMessage(Application.ctx.getString(R.string.add_account_outbox_downloading));
+					updateProgressBarMessage(AppUtils.ctx.getString(R.string.add_account_outbox_downloading));
 				}
 			}
 
