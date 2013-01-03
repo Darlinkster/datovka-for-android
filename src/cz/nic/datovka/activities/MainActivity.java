@@ -20,7 +20,6 @@ package cz.nic.datovka.activities;
 
 import java.util.Locale;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -64,6 +63,7 @@ import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
 import cz.nic.datovka.fragments.AddAccountFragment;
 import cz.nic.datovka.fragments.MessageListFragment;
+import cz.nic.datovka.fragments.UpdateNoticeFragment;
 import cz.nic.datovka.services.MessageBoxRefreshService;
 
 public class MainActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener, LoaderCallbacks<Cursor> {
@@ -394,12 +394,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			msgBoxes = null;
 			if (numberOfAccounts > 0) {
 				Log.d(this.getLocalClassName(), "Showing warning message. thisVersion " + thisVersion + " lastVersion " + lastVersion);
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Aktualizace");
-				builder.setMessage("Vzhledem k rozsáhlým změnám interní databáze této aplikace, bylo nutné odstranit veškeré lokálně stažené zprávy. "
-						+ "Nastavení účtů zůstalo zachováno. Pro opětovné stažení vašich zpráv stiskněte tlačítko obnovení v pravém horním rohu (dvě šipky).");
-				builder.setPositiveButton("OK", null);
-				builder.show();
+				String msg = "Vzhledem k rozsáhlým změnám interní databáze této aplikace, bylo nutné odstranit veškeré lokálně stažené zprávy. "
+						+ "Nastavení účtů zůstalo zachováno. Pro opětovné stažení vašich zpráv stiskněte tlačítko obnovení v pravém horním rohu (dvě šipky).";
+				UpdateNoticeFragment.newInstance(msg).show(fragmentManager, UpdateNoticeFragment.DIALOG_ID);
 			}
 			SharedPreferences.Editor editor = sp.edit();
 			editor.putInt(VERSION_KEY, thisVersion);
