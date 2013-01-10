@@ -13,6 +13,7 @@
     <string name="password">Heslo</string>
     <string name="add_account_button">Přidat účet</string>
     <string name="storno">Storno</string>
+    <string name="ok">OK</string>
     <string name="account_created">Účet vytvořen</string>
     <string name="account_exists">Účet již existuje</string>
     <string name="account_create_error">Chyba při vytváření účtu</string>
@@ -80,6 +81,20 @@
     <string name="add_account_outbox_downloading">Stahování odchozích zpráv</string>
     <string name="message_not_found">Zpráva nebyla nalezena</string>
     <string name="stream_interrupted">Spojení bylo přerušeno</string>
+    <string name="title_activity_prefs">Nastavení</string>
+    <string name="settings_group_security">Bezpečnost</string>
+    <string name="set_pin_code">Nastavit PIN kód</string>
+    <string name="use_pin_code">Používat PIN kód</string>
+    <string name="use_pin_code_summary">PIN kód je nutné zadat při každém spuštění aplikace.</string>
+    <string name="new_pin_code">Nový PIN kód</string>
+    <string name="new_pin_code_again">Nový PIN kód (znovu)</string>
+    <string name="old_pin_code">Současný PIN kód</string>
+    <string name="pin_code">PIN kód</string>
+    <string name="enter_new_pin_code">Zadejte nový PIN kód</string>
+    <string name="enter_pin_code">Zadejte PIN kód</string>
+    <string name="wrong_pin_code">Špatný PIN kód</string>
+    <string name="new_pin_code_not_equal">Nový PIN kód není zadán 2x totožně</string>
+    <string name="short_pin_code">PIN kód je příliš krátký (použijte alespoň 3 čísla)</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="security"
+        android:title="@string/settings_group_security" >
+        <cz.nic.datovka.xmlElements.MyCheckBoxPreference
+            android:summary="@string/use_pin_code_summary"
+            android:title="@string/use_pin_code"
+            android:defaultValue="false"
+            android:key="use_pin_code" />
+        <cz.nic.datovka.xmlElements.Base64DialogPreference
+            android:title="@string/set_pin_code"
+            android:dependency="use_pin_code"
+            android:dialogLayout="@layout/pin_change_dialog"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

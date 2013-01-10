@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/pinChangeOldPin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="numberPassword"
+        android:password="true"
+        android:hint="@string/old_pin_code" >
+    </EditText>
+
+    <EditText
+        android:id="@+id/pinChangeNewPin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="numberPassword"
+        android:password="true"
+        android:hint="@string/new_pin_code" >
+    </EditText>
+
+    <EditText
+        android:id="@+id/pinChangeNewPin2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="numberPassword"
+        android:password="true"
+        android:hint="@string/new_pin_code_again" >
+    </EditText>
+
+</LinearLayout>

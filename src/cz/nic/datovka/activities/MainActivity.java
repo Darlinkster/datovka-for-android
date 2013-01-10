@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -93,7 +94,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(getApplicationContext(), "a8ef5a0c");
+	//	BugSenseHandler.initAndStartSession(getApplicationContext(), "a8ef5a0c");
 		if(savedInstanceState != null) {
 			animateRefreshIcon = savedInstanceState.getBoolean(ICON_ANIMATION_STATE, false);
 		}
@@ -209,10 +210,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		case R.id.menu_accounts:
 			startActivity(new Intent(this, AccountActivity.class));
 			return true;
-	// TODO Settings disabled till next release
-	/*	case R.id.menu_settings:
-			Toast.makeText(this, "nastaveni", Toast.LENGTH_SHORT).show();
-			return true; */
+	
+		case R.id.menu_settings:
+			startActivity(new Intent(this, PrefsActivity.class));
+			return true; 
+			
 		case R.id.refresh_all:
 			refreshButtonItem = item;
 			setAnimationOnRefreshButton();

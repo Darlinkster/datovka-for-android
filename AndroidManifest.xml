@@ -42,6 +42,14 @@
             android:name=".activities.AccountInfoActivity"
             android:label="@string/title_activity_account_info" >
         </activity>
+        <activity
+            android:name=".activities.ModernPrefsActivity"
+            android:label="@string/title_activity_prefs" >
+        </activity>
+        <activity
+            android:name="cz.nic.datovka.activities.PrefsActivity"
+            android:label="@string/title_activity_prefs" >
+        </activity>
 
         <provider
             android:name=".contentProviders.MsgBoxContentProvider"
