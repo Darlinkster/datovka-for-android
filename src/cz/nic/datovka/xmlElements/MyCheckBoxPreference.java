@@ -7,13 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 import cz.nic.datovka.R;
 
@@ -22,6 +23,8 @@ public class MyCheckBoxPreference extends CheckBoxPreference {
 	private boolean checked;
 	private SharedPreferences prefs;
 	private Context ctx;
+	private int dialogType;
+	private EditText pinTV, pin2TV;
 	
 	public static final String PIN_PREF_ID = "pin_code";
 	
@@ -47,13 +50,23 @@ public class MyCheckBoxPreference extends CheckBoxPreference {
 	}
 	
 	private void createDialog(Context ctx, int type) {
+		dialogType = type;
 		final int typeFinal = type;
+		final EditText pinTV, pin2TV;
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-		final View view;
-		if(type == ENTER_PIN)
+		View view;
+		if(type == ENTER_PIN) {
 			view = LayoutInflater.from(ctx).inflate(R.layout.enter_pin_code_dialog, null);
-		else
+			builder.setTitle(R.string.enter_pin_code);
+			this.pinTV = pinTV = ((EditText) view.findViewById(R.id.enter_pin_dialog));
+			this.pin2TV = pin2TV = null;
+		}
+		else {
 			view = LayoutInflater.from(ctx).inflate(R.layout.enter_new_pin_code_dialog, null);
+			builder.setTitle(R.string.enter_new_pin_code);
+			this.pinTV = pinTV = ((EditText) view.findViewById(R.id.enter_new_pin_dialog));
+			this.pin2TV = pin2TV = ((EditText) view.findViewById(R.id.enter_new_pin_dialog2));
+		}
 		
 		builder.setView(view);
 		builder.setNegativeButton(R.string.storno, new OnClickListener() {
@@ -66,11 +79,9 @@ public class MyCheckBoxPreference extends CheckBoxPreference {
 			public void onClick(DialogInterface dialog, int which) {
 				String pin;
 				String pin2;
-				if(typeFinal == ENTER_PIN)
-					pin = ((TextView) view.findViewById(R.id.enter_pin_dialog)).getText().toString();
-				else {
-					pin = ((TextView) view.findViewById(R.id.enter_new_pin_dialog)).getText().toString();
-					pin2 = ((TextView) view.findViewById(R.id.enter_new_pin_dialog2)).getText().toString();
+				pin = pinTV.getText().toString();
+				if(typeFinal == ENTER_NEW_PIN){
+					pin2 = pin2TV.getText().toString();
 					
 					if(!pin.equals(pin2)) {
 						Toast.makeText(getContext(), R.string.new_pin_code_not_equal, Toast.LENGTH_LONG).show();
@@ -89,14 +100,11 @@ public class MyCheckBoxPreference extends CheckBoxPreference {
 		if(checked) {
 			// turn pin code OFF
 			createDialog(ctx, ENTER_PIN);
-			dialog.setTitle(R.string.enter_pin_code);
-			dialog.show();
 		} else {
 			// turn pin code ON
 			createDialog(ctx, ENTER_NEW_PIN);
-			dialog.setTitle(R.string.enter_new_pin_code);
-			dialog.show();
 		}
+		dialog.show();
 	}
 	
 	private void dialogClickOk(String pin){
@@ -124,12 +132,60 @@ public class MyCheckBoxPreference extends CheckBoxPreference {
 	
 	@Override
 	protected Parcelable onSaveInstanceState() {
-		Parcelable bundle = super.onSaveInstanceState();
+		Parcelable superParcel = super.onSaveInstanceState();
+		
 		if (dialog != null) {
+			Bundle bundle = new Bundle();
+			bundle.putParcelable("parcel", superParcel);
+			bundle.putInt("dialogtype", dialogType);
+			bundle.putString("pin", pinTV.getText().toString());
+			if (dialogType == ENTER_NEW_PIN) {
+				bundle.putString("pin2", pin2TV.getText().toString());
+				if(pin2TV.isFocused()) {
+					bundle.putInt("selectedET", 2);
+					bundle.putInt("selStart", pin2TV.getSelectionStart());
+					bundle.putInt("selEnd", pin2TV.getSelectionEnd());
+				} else {
+					bundle.putInt("selectedET", 1);
+					bundle.putInt("selStart", pinTV.getSelectionStart());
+					bundle.putInt("selEnd", pinTV.getSelectionEnd());
+				}
+			} else {
+				bundle.putInt("selectedET", 1);
+				bundle.putInt("selStart", pinTV.getSelectionStart());
+				bundle.putInt("selEnd", pinTV.getSelectionEnd());
+			}
 			dialog.dismiss();
-			dialog = null;
+			return bundle;
 		}
-		prefs = null;
-		return bundle;
+		return superParcel;
 	}
+	
+	@Override
+	protected void onRestoreInstanceState(Parcelable state) {
+		if(state instanceof Bundle) {
+			Parcelable parcel = ((Bundle) state).getParcelable("parcel");
+			int dialogType = ((Bundle) state).getInt("dialogtype");
+			if(dialogType != 0) {
+				createDialog(ctx, dialogType);
+				pinTV.setText(((Bundle) state).getString("pin"));
+				if (dialogType == ENTER_NEW_PIN) {
+					pin2TV.setText(((Bundle) state).getString("pin2"));
+				}
+				if(((Bundle) state).getInt("selectedET") == 1) {
+					pinTV.requestFocus();
+					pinTV.setSelection(((Bundle) state).getInt("selStart"), ((Bundle) state).getInt("selEnd"));
+				} else {
+					pin2TV.requestFocus();
+					pin2TV.setSelection(((Bundle) state).getInt("selStart"), ((Bundle) state).getInt("selEnd"));
+				}
+				dialog.show();
+			}
+			
+			super.onRestoreInstanceState(parcel);
+		} else {
+			super.onRestoreInstanceState(state);
+		}
+	}
+		
 }

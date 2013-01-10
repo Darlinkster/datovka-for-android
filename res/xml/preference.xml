@@ -13,6 +13,7 @@
             android:title="@string/set_pin_code"
             android:dependency="use_pin_code"
             android:dialogLayout="@layout/pin_change_dialog"
+            android:key="pin_change_dialog"
             />
     </PreferenceCategory>
 

@@ -2,7 +2,6 @@ package cz.nic.datovka.xmlElements;
 
 import org.kobjects.base64.Base64;
 
-import cz.nic.datovka.R;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.DialogPreference;
@@ -11,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import cz.nic.datovka.R;
 
 public class Base64DialogPreference extends DialogPreference {
 	private EditText oldPasswd, newPasswd2, newPasswd;
@@ -71,5 +71,4 @@ public class Base64DialogPreference extends DialogPreference {
 			
 		}
 	}
-	
 }

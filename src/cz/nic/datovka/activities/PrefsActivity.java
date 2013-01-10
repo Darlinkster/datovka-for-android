@@ -11,16 +11,7 @@ public class PrefsActivity extends SherlockPreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	//	if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			addPreferencesFromResource(R.xml.preference);
-	//	}
+		addPreferencesFromResource(R.xml.preference);
 		
 	}
-/*	
-	@SuppressLint("NewApi")
-	@Override
-	public void onBuildHeaders(List<Header> target) {
-		loadHeadersFromResource(R.xml.preference_headers, target);
-	}
-	*/
 }
