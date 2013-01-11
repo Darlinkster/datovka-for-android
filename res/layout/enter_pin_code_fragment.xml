@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/enter_pin_code_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="30dp" >
+
+        <ImageView
+            android:id="@+id/launcher_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Launcher Icon"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/launcher_icon"
+            android:paddingLeft="10dp"
+            android:text="Datovka"
+            android:textSize="40sp"
+            android:textStyle="bold|italic" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/enter_pin_code_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/enter_pin_code_top"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="30dp" >
+
+        <EditText
+            android:id="@+id/pin_edittext"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_pin_code"
+            android:inputType="numberPassword" />
+
+        <Button
+            android:id="@+id/send_pin_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="70dp"
+            android:layout_toRightOf="@+id/pin_edittext"
+            android:text="@string/ok"
+            android:onClick="okClicked" />
+    </RelativeLayout>
+
+</RelativeLayout>
