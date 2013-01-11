@@ -55,6 +55,9 @@ public class EntryActivity extends SherlockFragmentActivity{
 			startActivity(new Intent(this, MainActivity.class));
 		} else {
 			Toast.makeText(this, R.string.wrong_pin_code, Toast.LENGTH_LONG).show();
+			et.setBackgroundColor(getResources().getColor(R.color.wrong_pin_edit_text_color));
+			et.setText("");
+			et.setHint(getResources().getString(R.string.wrong_pin_code));
 		}
 	}
 }
