@@ -79,7 +79,6 @@ public class EntryActivity extends SherlockFragmentActivity{
 			
 			et.setBackgroundColor(getResources().getColor(R.color.wrong_pin_edit_text_color));
 			et.setText("");
-			//et.setHint(getResources().getString(R.string.wrong_pin_code));
 		}
 	}
 }
