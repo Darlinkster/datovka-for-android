@@ -78,6 +78,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private static MenuItem refreshButtonItem;
 	private static AddAccountFragment aaf;
 	private SharedPreferences prefs;
+	private boolean usePinStatus;
 	
 	private static final String ICON_ANIMATION_STATE = "refresh_icon_animation"; 
 	
@@ -94,8 +95,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		usePinStatus = prefs.getBoolean("use_pin_code", false);
+		
 		if(savedInstanceState != null) {
 			animateRefreshIcon = savedInstanceState.getBoolean(ICON_ANIMATION_STATE, false);
+			
 		}
 		
 		setContentView(R.layout.activity_main);
@@ -193,15 +197,18 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		}
 		msgBoxes = null;
 	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if(!usePinStatus)
+			menu.removeItem(R.id.menu_lock_app);
+		return super.onPrepareOptionsMenu(menu);
+	}
 
 	// Constructs actionbar menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if(prefs.getBoolean("use_pin_code", false))
-			getSupportMenuInflater().inflate(R.menu.activity_main_with_locker, menu);
-		else
-			getSupportMenuInflater().inflate(R.menu.activity_main, menu);
-		
+		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
 		refreshButtonItem = menu.findItem(R.id.refresh_all);
 		return true;
 	}
@@ -233,7 +240,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			return true;
 		}
 
-		return false;
+		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
@@ -242,19 +249,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			if(animateRefreshIcon){
 				setAnimationOnRefreshButton();
 			}
+			boolean usePinStatus = prefs.getBoolean("use_pin_code", false);
+			if(this.usePinStatus != usePinStatus) {
+				this.usePinStatus = usePinStatus;
+				invalidateOptionsMenu();
+			}
 		} else {
 			removeAnimationFromRefreshButton();
 		}
 		super.onWindowFocusChanged(hasFocus);
 	}
 	
-/*
-	@Override
-	public void onPause() {
-		super.onPause();
-		removeAnimationFromRefreshButton();
-	}
-	*/
 	// This method takes care about clicking on messages
 	public void itemClicked(View view) {
 		String id = (String) view.getTag();
