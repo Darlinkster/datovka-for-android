@@ -135,28 +135,30 @@ public class MyCheckBoxPreference extends CheckBoxPreference {
 		Parcelable superParcel = super.onSaveInstanceState();
 		
 		if (dialog != null) {
-			Bundle bundle = new Bundle();
-			bundle.putParcelable("parcel", superParcel);
-			bundle.putInt("dialogtype", dialogType);
-			bundle.putString("pin", pinTV.getText().toString());
-			if (dialogType == ENTER_NEW_PIN) {
-				bundle.putString("pin2", pin2TV.getText().toString());
-				if(pin2TV.isFocused()) {
-					bundle.putInt("selectedET", 2);
-					bundle.putInt("selStart", pin2TV.getSelectionStart());
-					bundle.putInt("selEnd", pin2TV.getSelectionEnd());
+			if (dialog.isShowing()) {
+				Bundle bundle = new Bundle();
+				bundle.putParcelable("parcel", superParcel);
+				bundle.putInt("dialogtype", dialogType);
+				bundle.putString("pin", pinTV.getText().toString());
+				if (dialogType == ENTER_NEW_PIN) {
+					bundle.putString("pin2", pin2TV.getText().toString());
+					if (pin2TV.isFocused()) {
+						bundle.putInt("selectedET", 2);
+						bundle.putInt("selStart", pin2TV.getSelectionStart());
+						bundle.putInt("selEnd", pin2TV.getSelectionEnd());
+					} else {
+						bundle.putInt("selectedET", 1);
+						bundle.putInt("selStart", pinTV.getSelectionStart());
+						bundle.putInt("selEnd", pinTV.getSelectionEnd());
+					}
 				} else {
 					bundle.putInt("selectedET", 1);
 					bundle.putInt("selStart", pinTV.getSelectionStart());
 					bundle.putInt("selEnd", pinTV.getSelectionEnd());
 				}
-			} else {
-				bundle.putInt("selectedET", 1);
-				bundle.putInt("selStart", pinTV.getSelectionStart());
-				bundle.putInt("selEnd", pinTV.getSelectionEnd());
+				dialog.dismiss();
+				return bundle;
 			}
-			dialog.dismiss();
-			return bundle;
 		}
 		return superParcel;
 	}
