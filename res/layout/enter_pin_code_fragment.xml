@@ -8,7 +8,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:paddingTop="30dp" >
+        android:paddingTop="30dp"
+        android:layout_gravity="bottom" >
 
         <ImageView
             android:id="@+id/launcher_icon"
@@ -21,6 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/launcher_icon"
+            android:layout_alignBaseline="@+id/launcher_icon"
             android:paddingLeft="10dp"
             android:text="Datovka"
             android:textSize="40sp"
@@ -33,7 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/enter_pin_code_top"
         android:layout_centerHorizontal="true"
-        android:paddingTop="30dp" >
+        android:paddingTop="30dp"
+        android:layout_gravity="bottom" >
 
         <EditText
             android:id="@+id/pin_edittext"
@@ -48,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="70dp"
+            android:layout_alignBaseline="@+id/pin_edittext"
             android:layout_toRightOf="@+id/pin_edittext"
             android:text="@string/ok"
             android:onClick="okClicked" />
