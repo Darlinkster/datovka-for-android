@@ -3,6 +3,7 @@
     <string name="app_name">Datovka</string>
     <string name="menu_settings">Nastavení</string>
     <string name="menu_accounts">Účty</string>
+    <string name="menu_lock_app">Uzamknout</string>
     <string name="title_activity_main">Datovka</string>
     <string name="title_activity_accounts">Účty</string>
     <string name="title_activity_account_info">Informace o účtu</string>

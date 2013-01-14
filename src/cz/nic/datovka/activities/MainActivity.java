@@ -77,6 +77,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private ViewPager mPager;
 	private static MenuItem refreshButtonItem;
 	private static AddAccountFragment aaf;
+	private SharedPreferences prefs;
 	
 	private static final String ICON_ANIMATION_STATE = "refresh_icon_animation"; 
 	
@@ -92,6 +93,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		if(savedInstanceState != null) {
 			animateRefreshIcon = savedInstanceState.getBoolean(ICON_ANIMATION_STATE, false);
 		}
@@ -195,7 +197,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	// Constructs actionbar menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
+		if(prefs.getBoolean("use_pin_code", false))
+			getSupportMenuInflater().inflate(R.menu.activity_main_with_locker, menu);
+		else
+			getSupportMenuInflater().inflate(R.menu.activity_main, menu);
+		
 		refreshButtonItem = menu.findItem(R.id.refresh_all);
 		return true;
 	}
@@ -220,6 +226,10 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			Intent intent = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
 			intent.putExtra(MessageBoxRefreshService.HANDLER, messenger);
 			startService(intent);
+			return true;
+		
+		case R.id.menu_lock_app:
+			this.finish();
 			return true;
 		}
 
@@ -382,8 +392,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			e.printStackTrace();
 		}
 		
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		int lastVersion = sp.getInt(VERSION_KEY, NO_VERSION);
+		int lastVersion = prefs.getInt(VERSION_KEY, NO_VERSION);
 		
 		if ((thisVersion == 4) && (lastVersion < thisVersion)) {
 			Cursor msgBoxes = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
@@ -397,7 +406,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 						+ "Nastavení účtů zůstalo zachováno. Pro opětovné stažení vašich zpráv stiskněte tlačítko obnovení v pravém horním rohu (dvě šipky).";
 				UpdateNoticeFragment.newInstance(msg).show(fragmentManager, UpdateNoticeFragment.DIALOG_ID);
 			}
-			SharedPreferences.Editor editor = sp.edit();
+			SharedPreferences.Editor editor = prefs.edit();
 			editor.putInt(VERSION_KEY, thisVersion);
 			editor.commit();
 		}
