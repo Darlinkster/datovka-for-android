@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -72,10 +73,13 @@ public class EntryActivity extends SherlockFragmentActivity{
 		if(enteredPin.equals(savedPin)) {
 			startActivity(new Intent(this, MainActivity.class));
 		} else {
-			Toast.makeText(this, R.string.wrong_pin_code, Toast.LENGTH_LONG).show();
+			Toast toast = Toast.makeText(this, R.string.wrong_pin_code, Toast.LENGTH_LONG);
+			toast.setGravity(Gravity.TOP, 0, 200);
+			toast.show();
+			
 			et.setBackgroundColor(getResources().getColor(R.color.wrong_pin_edit_text_color));
 			et.setText("");
-			et.setHint(getResources().getString(R.string.wrong_pin_code));
+			//et.setHint(getResources().getString(R.string.wrong_pin_code));
 		}
 	}
 }
