@@ -376,12 +376,12 @@ public class DataBoxManager {
 				throw new DSException(rp.getStatus().getStatusMesssage(), Integer.parseInt(rp.getStatus().getStatusCode()));
 			} 
 		} catch (SAXException sax) {
-			System.out.println(sax.getCause().getMessage());
+			//System.out.println(sax.getCause().getMessage());
 			throw new DSException("Cannot parse xml.");
 		} catch (ParserConfigurationException pce) {
 			throw new DSException("Bad configuration of the SAX parser.");
 		} catch (IOException ioe) {
-			logger.log(Level.INFO, post);
+			//logger.log(Level.INFO, post);
 			String message = "IOException, error while reading answer. The input stream may be closed by user decision.";
 			throw new StreamInterruptedException(message);
 		} finally {
@@ -442,7 +442,7 @@ public class DataBoxManager {
 			}
 		}
 
-		is = null;
-		con = null;
+	//	is = null;
+	//	con = null;
 	}
 }
