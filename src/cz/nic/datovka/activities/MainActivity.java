@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -56,7 +55,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.bugsense.trace.BugSenseHandler;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import cz.nic.datovka.R;
@@ -94,7 +92,6 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	//	BugSenseHandler.initAndStartSession(getApplicationContext(), "a8ef5a0c");
 		if(savedInstanceState != null) {
 			animateRefreshIcon = savedInstanceState.getBoolean(ICON_ANIMATION_STATE, false);
 		}
