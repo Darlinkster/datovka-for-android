@@ -48,7 +48,7 @@ public class AccountInfoFragment extends SherlockFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.account_info_fragment, container, false);
 		long msgBoxId = getArguments().getLong(MSGBOX_ID);
 
