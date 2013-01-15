@@ -138,10 +138,17 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	}
 	
 	private void updateFragmentPager(){
-		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, new String(getString(R.string.inbox)), new String(getString(R.string.outbox)));
+		mAdapter = new MyAdapter(fragmentManager, selectedMsgBoxID, getString(R.string.inbox), getString(R.string.outbox));
 		mPager = (ViewPager) findViewById(R.id.boxpager);
 		mPager.setAdapter(mAdapter);
 		mPager.setCurrentItem(selectedFolder);
+		/* HACK !!!!!!!
+		 * Obcas se na Nexus7 s JB stava ze ViewPager zobrazi prazdnou View, 
+		 * zrejme kvuli tomu ze adapter nestaci ve svem vlakne dokoncit vytvoreni instance fragmentu.
+		 * Nasledujici prikaz zaruci, ze bude View znovu prekreslena (teoreticky je to pomale, prakticky jsem si nevsim)
+		 * a tim padem spravne zobrazena.
+		 * */
+		mPager.requestLayout();
 		
 		TitlePageIndicator titleIndicator = (TitlePageIndicator) findViewById(R.id.pagertitles);
 		titleIndicator.setViewPager(mPager);
@@ -340,7 +347,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 
 	// Class for loading fragments to viewpager
 	public static class MyAdapter extends FragmentPagerAdapter {
-		private FragmentManager fm;
+		private static FragmentManager fm;
 
 		private static String[] TITLES;
 		private static int NUM_TITLES;
@@ -348,7 +355,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		
 		public MyAdapter(FragmentManager fm, String msgBoxID, String inbox, String outbox) {
 			super(fm);
-			this.fm = fm;
+			MyAdapter.fm = fm;
 			MyAdapter.msgBoxID = msgBoxID;
 
 			TITLES = new String[] { inbox, outbox };
@@ -359,7 +366,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		public int getCount() {
 			return 2;
 		}
-
+	
 		@Override
 		public Fragment getItem(int position) {
 			switch (position) {
