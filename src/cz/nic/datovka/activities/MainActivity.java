@@ -147,6 +147,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		 * zrejme kvuli tomu ze adapter nestaci ve svem vlakne dokoncit vytvoreni instance fragmentu.
 		 * Nasledujici prikaz zaruci, ze bude View znovu prekreslena (teoreticky je to pomale, prakticky jsem si nevsim)
 		 * a tim padem spravne zobrazena.
+		 * Mozna se to vstahuje k tomuto http://code.google.com/p/android/issues/detail?id=19211.
 		 * */
 		mPager.requestLayout();
 		
