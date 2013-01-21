@@ -169,7 +169,7 @@ public class MessageBoxRefreshService extends Service {
 					return;
 				}
 				
-				if(!connector.checkConnection()){
+				if(!connector.checkConnection(getApplicationContext())){
 					Message msg1 = Message.obtain();
 					msg1.arg1 = ERROR_NO_CONNECTION;
 					try {

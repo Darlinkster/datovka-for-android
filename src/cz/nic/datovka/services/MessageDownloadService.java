@@ -170,7 +170,7 @@ public class MessageDownloadService extends Service {
 					receiver.send(ERROR_MSGBOXID_NOTKNOWN, null);
 				return;
 			}
-			if(!connector.checkConnection()){
+			if(!connector.checkConnection(getApplicationContext())){
 				if( receiver!= null)
 					receiver.send(ERROR_NO_CONNECTION, null);
 				return;

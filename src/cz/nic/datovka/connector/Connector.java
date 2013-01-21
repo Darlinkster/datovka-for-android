@@ -281,8 +281,12 @@ public class Connector {
 		return service.GetDeliveryInfo(messageIsdsId);
 	}
 	
-	public boolean checkConnection() {
-		final ConnectivityManager conMgr =  (ConnectivityManager) AppUtils.ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+	public boolean checkConnection(Context ctx) {
+		final ConnectivityManager conMgr =  (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		// TODO if conMgr is null, what to do?
+		if(conMgr == null)
+			return false;
+			
 		final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
 		if (activeNetwork != null && activeNetwork.isConnected()) {
 		    return true;

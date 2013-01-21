@@ -217,7 +217,7 @@ public class AddAccountService extends Service {
 			connector = new Connector();
 			
 			if(isInterrupted()) return;
-			if (!connector.checkConnection()) {
+			if (!connector.checkConnection(getApplicationContext())) {
 				Message message = Message.obtain();
 				message.arg1 = RESULT_NO_CONNECTION;
 				try {
