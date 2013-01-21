@@ -113,6 +113,10 @@ public class MessageDownloadProgressFragment extends SherlockDialogFragment {
 				mProgressDialog.dismiss();
 				runService = true;
 				Toast.makeText(AppUtils.ctx, R.string.cert_error, Toast.LENGTH_LONG).show();
+			} else if (resultCode == MessageDownloadService.ERROR_MSGBOXID_NOTKNOWN) {
+				mProgressDialog.dismiss();
+				runService = true;
+				Toast.makeText(AppUtils.ctx, R.string.msgbox_id_not_known, Toast.LENGTH_LONG).show();
 			}
 			
 

@@ -41,6 +41,7 @@ import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.exceptions.MessageBoxIdNotKnown;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -53,6 +54,7 @@ public class MessageBoxRefreshService extends Service {
 	public static final int ERROR_BAD_LOGIN = -401;
 	public static final int ERROR_CERT = -500;
 	public static final int ERROR_INTERRUPTED = -600;
+	public static final int ERROR_MSGBOXID_NOTKNOWN = -700;
 	private DaemonThread thread;
 	private static final int NOT_READ = 0;
 	private static final int READ = 1;
@@ -155,7 +157,18 @@ public class MessageBoxRefreshService extends Service {
 						e.printStackTrace();
 					}
 					return;
+				} catch (MessageBoxIdNotKnown e) {
+					e.printStackTrace();
+					Message msg1 = Message.obtain();
+					msg1.arg1 = ERROR_MSGBOXID_NOTKNOWN;
+					try {
+						messenger.send(msg1);
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+					return;
 				}
+				
 				if(!connector.checkConnection()){
 					Message msg1 = Message.obtain();
 					msg1.arg1 = ERROR_NO_CONNECTION;

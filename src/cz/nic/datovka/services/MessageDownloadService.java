@@ -42,6 +42,7 @@ import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.exceptions.MessageBoxIdNotKnown;
 import cz.nic.datovka.exceptions.StorageNotAwailableException;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -55,6 +56,7 @@ public class MessageDownloadService extends Service {
 	public static final int ERROR_STORAGE_NOT_AVAILABLE = 8377;
 	public static final int ERROR_STORAGE_LOW_SPACE = 8388;
 	public static final int ERROR_CERT = 8399;
+	public static final int ERROR_MSGBOXID_NOTKNOWN = 8400;
 	public static final int RESULT_BAD_LOGIN = 401;
 	public static final int SERVICE_FINISHED = 999;
 	public static final String MSG_ID = "msgid";
@@ -161,6 +163,11 @@ public class MessageDownloadService extends Service {
 				// Certificate error
 				if(receiver != null)
 					receiver.send(ERROR_CERT, null);
+				return;
+			} catch (MessageBoxIdNotKnown e) {
+				e.printStackTrace();
+				if(receiver != null)
+					receiver.send(ERROR_MSGBOXID_NOTKNOWN, null);
 				return;
 			}
 			if(!connector.checkConnection()){

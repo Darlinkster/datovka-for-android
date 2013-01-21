@@ -339,6 +339,9 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			else if(message.arg1 == MessageBoxRefreshService.ERROR_INTERRUPTED){
 				Toast.makeText(AppUtils.ctx, R.string.stream_interrupted, Toast.LENGTH_LONG).show();
 			}
+			else if(message.arg1 == MessageBoxRefreshService.ERROR_MSGBOXID_NOTKNOWN){
+				Toast.makeText(AppUtils.ctx, R.string.msgbox_id_not_known, Toast.LENGTH_LONG).show();
+			}
 			else {
 				String newMessages = new String(AppUtils.ctx.getResources().getString(R.string.new_messages_with_count, message.arg1, message.arg2));
 				Toast.makeText(AppUtils.ctx, newMessages, Toast.LENGTH_LONG).show();

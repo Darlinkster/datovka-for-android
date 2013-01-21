@@ -38,6 +38,7 @@ import cz.abclinuxu.datoveschranky.common.entities.OwnerInfo;
 import cz.abclinuxu.datoveschranky.common.entities.UserInfo;
 import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.exceptions.MessageBoxIdNotKnown;
 import cz.nic.datovka.tinyDB.DataBoxManager;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -252,13 +253,16 @@ public class Connector {
 		service = null;
 	}
 	
-	public static Connector connectToWs(long msgBoxId) throws SSLCertificateException {
+	public static Connector connectToWs(long msgBoxId) throws SSLCertificateException, MessageBoxIdNotKnown {
 		Connector conn = new Connector();
 		Uri msgBoxUri = ContentUris.withAppendedId(MsgBoxContentProvider.CONTENT_URI, msgBoxId);
 		String[] msgBoxProjection = new String[] { DatabaseHelper.MSGBOX_LOGIN, DatabaseHelper.MSGBOX_PASSWORD,
 				DatabaseHelper.MSGBOX_TEST_ENV };
 		Cursor msgBoxCursor = AppUtils.ctx.getContentResolver().query(msgBoxUri, msgBoxProjection, null, null, null);
-		msgBoxCursor.moveToFirst();
+		
+		if(msgBoxCursor.moveToFirst() == false) {
+			throw new MessageBoxIdNotKnown("Message box ID " + Long.toString(msgBoxId) + " not known");
+		}
 
 		int loginIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_LOGIN);
 		int passwordIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_PASSWORD);

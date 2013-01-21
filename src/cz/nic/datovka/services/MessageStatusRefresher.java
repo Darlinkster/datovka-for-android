@@ -39,6 +39,7 @@ import cz.nic.datovka.connector.Connector;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
 import cz.nic.datovka.contentProviders.MsgBoxContentProvider;
+import cz.nic.datovka.exceptions.MessageBoxIdNotKnown;
 import cz.nic.datovka.tinyDB.AndroidUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
@@ -141,7 +142,7 @@ public class MessageStatusRefresher extends Service {
 
 			int statusChanged = 0;
 
-			Message message = null;
+			Message message = Message.obtain();
 			try {
 				connector = Connector.connectToWs(msgboxId);
 				
@@ -163,7 +164,6 @@ public class MessageStatusRefresher extends Service {
 					statusChanged = 1;
 				}
 				
-				message = Message.obtain();
 				message.arg1 = STATUS_UPDATED;
 				message.arg2 = statusChanged;
 				
@@ -199,6 +199,10 @@ public class MessageStatusRefresher extends Service {
 				message = Message.obtain();
 				message.arg1 = ERROR;
 				message.obj = AppUtils.ctx.getString(R.string.download_crashed);
+			} catch (MessageBoxIdNotKnown e) {
+				e.printStackTrace();
+				message.arg1 = ERROR;
+				message.obj = AppUtils.ctx.getString(R.string.msgbox_id_not_known);
 			} finally {
 				if(message != null) {
 					if(messenger != null) {
