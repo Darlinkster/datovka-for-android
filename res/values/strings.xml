@@ -97,6 +97,7 @@
     <string name="new_pin_code_not_equal">Nový PIN kód není zadán 2x totožně</string>
     <string name="short_pin_code">PIN kód je příliš krátký (použijte alespoň 3 čísla)</string>
     <string name="msgbox_id_not_known">Neznámé ID schránky</string>
+    <string name="no_map_application">Nenalezena žádná mapová aplikace</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

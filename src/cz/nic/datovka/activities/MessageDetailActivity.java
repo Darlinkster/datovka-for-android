@@ -20,6 +20,7 @@ package cz.nic.datovka.activities;
 import java.io.File;
 import java.util.Locale;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -186,7 +187,11 @@ public class MessageDetailActivity  extends SherlockFragmentActivity {
 		String address = ((TextView) view).getText().toString();
 		String uri = String.format("geo:0,0?q=%s", address);
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-		this.startActivity(intent);
+		try{
+			this.startActivity(intent);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(this, R.string.no_map_application, Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	private void openFileBySuffix(File file) {
