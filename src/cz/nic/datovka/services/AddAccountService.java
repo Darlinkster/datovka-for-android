@@ -351,7 +351,11 @@ public class AddAccountService extends Service {
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_TO_HANDS, msgEnvelope.getToHands());
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_ALLOW_SUBST_DELIVERY, msgEnvelope.getAllowSubstDelivery());
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_PERSONAL_DELIVERY, msgEnvelope.getPersonalDelivery());
-					rcvdMessageValues.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(msgEnvelope.getAcceptanceTime().getTime()));
+					
+					GregorianCalendar acceptanceDate = msgEnvelope.getAcceptanceTime();
+					if(acceptanceDate != null)
+						rcvdMessageValues.put(DatabaseHelper.MESSAGE_ACCEPTANCE_DATE, AndroidUtils.toXmlDate(acceptanceDate.getTime()));
+					
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_SENT_DATE, AndroidUtils.toXmlDate(msgEnvelope.getDeliveryTime().getTime()));
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_IS_READ, NOT_READ);
 					rcvdMessageValues.put(DatabaseHelper.MESSAGE_LEGALTITLE_LAW, msgEnvelope.getLegalTitle().getLaw());
