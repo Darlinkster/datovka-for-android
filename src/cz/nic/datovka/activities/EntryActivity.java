@@ -47,7 +47,7 @@ public class EntryActivity extends SherlockFragmentActivity{
 		}
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		if(!prefs.getBoolean("use_pin_code", true)) {
+		if(!prefs.getBoolean("use_pin_code", false)) {
 			startActivity(new Intent(this, MainActivity.class));
 		}
 		
