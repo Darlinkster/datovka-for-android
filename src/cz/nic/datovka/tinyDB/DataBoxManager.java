@@ -434,15 +434,11 @@ public class DataBoxManager {
 			con.disconnect();
 		}
 		
-		if (is != null) {
-			try {
+		try {
+			if (is != null)
 				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
-	//	is = null;
-	//	con = null;
 	}
 }
