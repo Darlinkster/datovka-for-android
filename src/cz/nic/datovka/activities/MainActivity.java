@@ -410,7 +410,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		
 		int lastVersion = prefs.getInt(VERSION_KEY, NO_VERSION);
 		
-		if ((thisVersion == 4) && (lastVersion < thisVersion)) {
+		if ((thisVersion >= 4) && (lastVersion <= 3)) {
 			Cursor msgBoxes = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
 					DatabaseHelper.msgbox_columns, null, null, null);
 			int numberOfAccounts = msgBoxes.getCount();

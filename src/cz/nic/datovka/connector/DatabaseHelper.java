@@ -222,7 +222,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if((oldVersion == 2) && (newVersion == 3)){
+		if((oldVersion <= 2) && (newVersion >= 3)){
 			db.execSQL("DROP TABLE IF EXISTS recv_attachments");
 			db.execSQL("DROP TABLE IF EXISTS sent_attachments");
 			db.execSQL("DROP TABLE IF EXISTS sent_message");
