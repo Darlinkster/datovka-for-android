@@ -61,10 +61,12 @@ public class MessageBoxRefreshService extends Service {
 	private static final int NOT_CHANGED = 0;
 	private static final int STATUS_CHANGED = 1;
 	public static final String HANDLER = "handler";
+	public static final String MSGBOX_ID = "msgboxid";
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private Message message;
 	private Messenger messenger;
+	private String messageBoxId;
 	
 	public void onStart(Intent intent, int startId) {
 		if(intent == null || intent.getExtras() == null){
@@ -77,6 +79,7 @@ public class MessageBoxRefreshService extends Service {
 		}
 		
 		Bundle extras = intent.getExtras();
+		messageBoxId = extras.getString(MSGBOX_ID);
 		messenger = (Messenger) extras.get(HANDLER);
 		message = Message.obtain();
 		
@@ -92,8 +95,14 @@ public class MessageBoxRefreshService extends Service {
 	private class DaemonThread extends Thread {
 		public void run() {
 			//System.out.println("thread started");
-			Cursor msgBoxCursor = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
-					new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.MSGBOX_ISDS_ID }, null, null, null);
+			Cursor msgBoxCursor;
+			if(messageBoxId == null) { 
+				msgBoxCursor = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
+						new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.MSGBOX_ISDS_ID }, null, null, null);
+			} else {
+				msgBoxCursor = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
+						new String[] { DatabaseHelper.MSGBOX_ID, DatabaseHelper.MSGBOX_ISDS_ID }, DatabaseHelper.MSGBOX_ID + "=?", new String[]{ messageBoxId }, null);
+			}
 			int msgBoxIdColIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ID);
 			int msgBoxIsdsIdColIndex = msgBoxCursor.getColumnIndex(DatabaseHelper.MSGBOX_ISDS_ID);
 			

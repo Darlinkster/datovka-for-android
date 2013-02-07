@@ -98,6 +98,9 @@
     <string name="short_pin_code">PIN kód je příliš krátký (použijte alespoň 3 čísla)</string>
     <string name="msgbox_id_not_known">Neznámé ID schránky</string>
     <string name="no_map_application">Nenalezena žádná mapová aplikace</string>
+    <string name="overflow_menu_name">Více</string>
+    <string name="all_message_boxes">Všechny schránky</string>
+    <string name="only_this_message_box">Pouze tuto schránku</string>
     
     <string name="message_status_1">Zpráva byla podána.</string>
     <string name="message_status_2">Podepsáno časovým razítkem.</string>

@@ -75,10 +75,11 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	private FragmentManager fragmentManager;
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
-	private static MenuItem refreshButtonItem;
+	private static MenuItem displayedRefreshButtonItem;
 	private static AddAccountFragment aaf;
 	private SharedPreferences prefs;
 	private boolean usePinStatus;
+	private int messageBoxCount;
 	
 	private static final String ICON_ANIMATION_STATE = "refresh_icon_animation"; 
 	
@@ -191,25 +192,54 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 		actionBar.setListNavigationCallbacks(account_adapter, this);
 	}
 	
-	private void showAddAccountFragment() {
+	private int getMessageBoxCount() {
 		Cursor msgBoxes = getContentResolver().query(MsgBoxContentProvider.CONTENT_URI,
 				DatabaseHelper.msgbox_columns, null, null, null);
 		int numberOfAccounts = msgBoxes.getCount();
 		msgBoxes.close();
-		if (numberOfAccounts < 1) {
+		
+		return numberOfAccounts;
+	}
+	
+	private void showAddAccountFragment() {
+		if (getMessageBoxCount() < 1) {
 			if(aaf == null){
 				aaf = new AddAccountFragment();
 				aaf.show(fragmentManager, AddAccountFragment.DIALOG_ID);
 			}
 			updateFragmentPager();
 		}
-		msgBoxes = null;
 	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if(!usePinStatus)
-			menu.removeItem(R.id.menu_lock_app);
+		if(!usePinStatus){
+			MenuItem lockButton = menu.findItem(R.id.menu_lock_app);
+			if (lockButton != null) {
+				lockButton.setVisible(false);
+				lockButton.setEnabled(false);
+			}
+		}
+		
+		MenuItem refreshButton = menu.findItem(R.id.refresh_all);
+		MenuItem refreshButtonSubMenu = menu.findItem(R.id.refresh_all_submenu);
+		messageBoxCount = getMessageBoxCount();
+		if(messageBoxCount > 1) {
+			displayedRefreshButtonItem = refreshButtonSubMenu;
+			refreshButtonSubMenu.setVisible(true);
+			refreshButtonSubMenu.setEnabled(true);
+			
+			refreshButton.setVisible(false);
+			refreshButton.setEnabled(false);
+		} else {
+			displayedRefreshButtonItem = refreshButton;
+			refreshButton.setVisible(true);
+			refreshButton.setEnabled(true);
+			
+			refreshButtonSubMenu.setVisible(false);
+			refreshButtonSubMenu.setEnabled(false);
+		}
+		
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -217,7 +247,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
-		refreshButtonItem = menu.findItem(R.id.refresh_all);
+		//refreshButtonItem = menu.findItem(R.id.refresh_all);
 		return true;
 	}
 	
@@ -234,13 +264,25 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			return true; 
 			
 		case R.id.refresh_all:
-			refreshButtonItem = item;
+		case R.id.refresh_all_msgbox:
+			//refreshButtonItem = item;
 			setAnimationOnRefreshButton();
 			
 			Messenger messenger = new Messenger(handler);
 			Intent intent = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
 			intent.putExtra(MessageBoxRefreshService.HANDLER, messenger);
 			startService(intent);
+			return true;
+		
+		case R.id.refresh_only_this_msgbox:
+			//refreshButtonItem = item;
+			setAnimationOnRefreshButton();
+			
+			Messenger messenger2 = new Messenger(handler);
+			Intent intent2 = new Intent(getApplicationContext(), MessageBoxRefreshService.class);
+			intent2.putExtra(MessageBoxRefreshService.HANDLER, messenger2);
+			intent2.putExtra(MessageBoxRefreshService.MSGBOX_ID, selectedMsgBoxID);
+			startService(intent2);
 			return true;
 		
 		case R.id.menu_lock_app:
@@ -257,9 +299,14 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 			if(animateRefreshIcon){
 				setAnimationOnRefreshButton();
 			}
+			
 			boolean usePinStatus = prefs.getBoolean("use_pin_code", false);
 			if(this.usePinStatus != usePinStatus) {
 				this.usePinStatus = usePinStatus;
+				invalidateOptionsMenu();
+			}
+			
+			if(getMessageBoxCount() != messageBoxCount) {
 				invalidateOptionsMenu();
 			}
 		} else {
@@ -293,25 +340,27 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
 	}
 	
 	private static final void removeAnimationFromRefreshButton(){
-		if(refreshButtonItem != null) {
-			View actionView = refreshButtonItem.getActionView();
+		if(displayedRefreshButtonItem != null) {
+			View actionView = displayedRefreshButtonItem.getActionView();
 			if(actionView != null){
 				actionView.clearAnimation();
 				actionView = null;
-				refreshButtonItem.setActionView(null);
+				displayedRefreshButtonItem.setActionView(null);
 			}
 			//refreshButtonItem = null;
 		} 
 	}
 	
 	private static final void setAnimationOnRefreshButton() {
-		if(refreshButtonItem != null) {
-			animateRefreshIcon = true;
-			LayoutInflater inflater = (LayoutInflater) AppUtils.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			ImageView refreshButtonView = (ImageView) inflater.inflate(R.layout.refresh_button_view, null);
-			Animation rotation = AnimationUtils.loadAnimation(AppUtils.ctx, R.anim.anim_rotate);
-			refreshButtonView.startAnimation(rotation);
-			refreshButtonItem.setActionView(refreshButtonView);
+		if (displayedRefreshButtonItem != null) {
+			if ((displayedRefreshButtonItem.getActionView() == null)) {
+				animateRefreshIcon = true;
+				LayoutInflater inflater = (LayoutInflater) AppUtils.ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				ImageView refreshButtonView = (ImageView) inflater.inflate(R.layout.refresh_button_view, null);
+				Animation rotation = AnimationUtils.loadAnimation(AppUtils.ctx, R.anim.anim_rotate);
+				refreshButtonView.startAnimation(rotation);
+				displayedRefreshButtonItem.setActionView(refreshButtonView);
+			}
 		}
 	}
 	

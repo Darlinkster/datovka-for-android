@@ -2,8 +2,15 @@
 
     <style name="AppTheme" parent="@style/Theme.Sherlock.Light">
         <item name="android:panelFullBackground">@color/abs__background_holo_light</item>
+        <item name="android:panelBackground">@color/abs__background_holo_light</item>
+        <item name="android:panelTextAppearance">@style/mypaneltextapp</item>
+        
     </style>
-
+    
+    <style name="mypaneltextapp">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+    
     <style name="CustomCheckbox">
         <item name="android:textColor">@color/dimwhite</item>
     </style>
@@ -29,5 +36,5 @@
     <style name="listItemMainText">
         <item name="android:textAppearance">?android:attr/textAppearance</item>
     </style>
-
+    
 </resources>
