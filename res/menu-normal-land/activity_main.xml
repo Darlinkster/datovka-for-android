@@ -34,7 +34,7 @@
         android:title="@string/menu_lock_app"/>
     <item
         android:id="@+id/root_menu"
-        android:icon="@android:drawable/ic_menu_more"
+        android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
         android:orderInCategory="300"
         android:showAsAction="always"
         android:title="@string/overflow_menu_name">
