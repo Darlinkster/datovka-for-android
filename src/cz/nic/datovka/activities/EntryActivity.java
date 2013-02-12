@@ -77,7 +77,6 @@ public class EntryActivity extends SherlockFragmentActivity{
 			toast.setGravity(Gravity.TOP, 0, 200);
 			toast.show();
 			
-			et.setBackgroundColor(getResources().getColor(R.color.wrong_pin_edit_text_color));
 			et.setText("");
 		}
 	}
