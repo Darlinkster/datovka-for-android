@@ -26,7 +26,7 @@
             android:layout_toRightOf="@+id/launcher_icon"
             android:layout_alignBaseline="@+id/launcher_icon"
             android:paddingLeft="10dp"
-            android:text="Datovka"
+            android:text="@string/app_name"
             android:textSize="40sp"
             android:textStyle="bold|italic" />
     </RelativeLayout>
