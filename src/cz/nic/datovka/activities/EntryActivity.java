@@ -69,12 +69,15 @@ public class EntryActivity extends SherlockFragmentActivity{
 		EditText et = (EditText) ((View) v.getParent()).findViewById(R.id.pin_edittext);
 		String enteredPin = et.getText().toString();
 		String savedPin = new String(Base64.decode(prefs.getString(MyCheckBoxPreference.PIN_PREF_ID, "NOTFOUND")));
+		int[] editTextLocation = new int[2];
+		et.getLocationOnScreen(editTextLocation);
+		int toastXOffset = editTextLocation[1] + et.getPaddingBottom();
 		
 		if(enteredPin.equals(savedPin)) {
 			startActivity(new Intent(this, MainActivity.class));
 		} else {
 			Toast toast = Toast.makeText(this, R.string.wrong_pin_code, Toast.LENGTH_LONG);
-			toast.setGravity(Gravity.TOP, 0, 200);
+			toast.setGravity(Gravity.TOP, 0, toastXOffset);
 			toast.show();
 			
 			et.setText("");
