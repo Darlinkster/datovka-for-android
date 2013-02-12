@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/gray" >
 
     <RelativeLayout
         android:id="@+id/enter_pin_code_top"
@@ -9,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:paddingTop="30dp"
+        android:paddingBottom="10dp"
         android:layout_gravity="bottom" >
 
         <ImageView
@@ -35,8 +37,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/enter_pin_code_top"
         android:layout_centerHorizontal="true"
-        android:paddingTop="30dp"
-        android:layout_gravity="bottom" >
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/rectangle_colored_background" >
 
         <EditText
             android:id="@+id/pin_edittext"
