@@ -43,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/enter_pin_code"
+            android:layout_alignBaseline="@+id/send_pin_button"
             android:inputType="numberPassword"
             android:password="true" />
 
