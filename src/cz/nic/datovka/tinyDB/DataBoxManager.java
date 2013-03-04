@@ -409,10 +409,12 @@ public class DataBoxManager {
 
 	private void checkHttpResponseCode(HttpsURLConnection con) throws IOException, HttpException {
 		if (con != null) {
-			if (!OKCodes.contains(con.getResponseCode())) {
-				String message = "Pozadavek selhal se stavovym kodem" + " " + con.getResponseCode() + ", " + con.getResponseMessage() + ".";
+			int responseCode = con.getResponseCode();
+			String responseMessage = con.getResponseMessage();
+			if (!OKCodes.contains(responseCode)) {
+				String message = "Pozadavek selhal se stavovym kodem" + " " + responseCode + ", " + responseMessage + ".";
 				logger.log(Level.SEVERE, message);
-				throw new HttpException(con.getResponseMessage(), con.getResponseCode());
+				throw new HttpException(responseMessage, responseCode);
 			}
 		}
 	}
