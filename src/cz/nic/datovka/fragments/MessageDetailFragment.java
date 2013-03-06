@@ -77,7 +77,6 @@ public class MessageDetailFragment extends SherlockFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.message_detail_fragment, container, false);
 		View customActionBarView = inflater.inflate(R.layout.message_detail_actionbar, null);
 		updater = new Updater(new Handler());

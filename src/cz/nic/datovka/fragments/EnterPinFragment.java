@@ -12,7 +12,6 @@ import cz.nic.datovka.R;
 public class EnterPinFragment extends SherlockFragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.enter_pin_code_fragment, container, false);
 		
 		return v;
