@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import cz.nic.datovka.R;
+import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.connector.DatabaseHelper;
 import cz.nic.datovka.contentProviders.MessageListCursorAdapter;
 import cz.nic.datovka.contentProviders.MessagesContentProvider;
@@ -41,10 +42,10 @@ public class MessageListFragment extends SherlockListFragment implements LoaderC
 	private static String MSGBOXID = "msgboxid";
 	private static String MSG_FOLDER = "msgfolder";
 	
-	public static MessageListFragment getInstance(String arg, int folder){
+	public static MessageListFragment getInstance(String msgBoxID, int folder){
 		MessageListFragment rmlf = new MessageListFragment();
 		Bundle bundle = new Bundle();
-		bundle.putString(MSGBOXID, arg);
+		bundle.putString(MSGBOXID, msgBoxID);
 		bundle.putInt(MSG_FOLDER, folder);
 		
 		rmlf.setArguments(bundle);
@@ -55,7 +56,11 @@ public class MessageListFragment extends SherlockListFragment implements LoaderC
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		updateList();
-		this.setEmptyText(getString(R.string.empty_inbox_message));
+		
+		if(getArguments().getInt(MSG_FOLDER) == AppUtils.INBOX)
+			this.setEmptyText(getString(R.string.empty_inbox_message));
+		else
+			this.setEmptyText(getString(R.string.empty_outbox_message));
 	}
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
