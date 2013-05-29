@@ -92,7 +92,20 @@
                         <!-- platform or api level (api level 4 = platform 1.6) -->
                         <platform>17</platform>
                     </sdk>
+                    <zipalign>
+                       <skip>false</skip>
+                        <verbose>true</verbose>
+                    </zipalign>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>alignApk</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>zipalign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
