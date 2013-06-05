@@ -37,7 +37,9 @@
          <dependency>
                  <groupId>com.bugsense.trace</groupId>
                  <artifactId>bugsense</artifactId>
-                 <version>3.2.2</version>
+                 <version>3.2.3</version>
+                 <scope>system</scope>
+                 <systemPath>${basedir}/libs/bugsense3.2.3.jar</systemPath>
          </dependency>
          <dependency>
                  <groupId>com.actionbarsherlock</groupId>
@@ -61,6 +63,8 @@
                  <artifactId>common</artifactId>
                  <version>1.0</version>
                  <type>jar</type>
+                 <scope>system</scope>
+                 <systemPath>${basedir}/libs/ISDSCommon-1.0-SNAPSHOT.jar</systemPath>
           </dependency>
          <dependency>
                  <groupId>com.google.android</groupId>
