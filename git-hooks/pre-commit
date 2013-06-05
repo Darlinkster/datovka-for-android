@@ -1,0 +1,16 @@
+#!/bin/sh
+
+MANIFEST="./AndroidManifest.xml"
+VERSIONCODE=`cat $MANIFEST | grep -oE 'android:versionCode="[0-9]+"' | cut -d '"' -f 2`
+#VERSIONNAME=`cat $MANIFEST | grep -oE 'android:versionName="[0-9a-zA-Z\._-()]+"' | cut -d '"' -f 2 | cut -d '(' -f 1`
+
+VERSIONCODE=$(($VERSIONCODE+1))
+#VERSIONNAME=${VERSIONNAME}"(r"${VERSIONCODE}")"
+
+sed  "s/android:versionCode=\"[0-9]*\"/android:versionCode=\"${VERSIONCODE}\"/" $MANIFEST > $MANIFEST.tmp && mv $MANIFEST.tmp $MANIFEST
+#sed  "s/android:versionName=\"[0-9a-zA-Z\._-()]*\"/android:versionName=\"${VERSIONNAME}\"/" $MANIFEST > $MANIFEST.tmp && mv $MANIFEST.tmp $MANIFEST
+
+git add $MANIFEST
+
+#echo VersionName=$VERSIONNAME
+echo VersionCode=$VERSIONCODE
