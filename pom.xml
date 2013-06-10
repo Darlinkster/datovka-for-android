@@ -126,6 +126,13 @@
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+            </plugins>
         </plugins>
     </reporting>
 </project> 
