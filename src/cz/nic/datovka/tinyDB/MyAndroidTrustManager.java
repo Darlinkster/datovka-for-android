@@ -43,8 +43,8 @@ public class MyAndroidTrustManager implements X509TrustManager {
 	public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
 
 		//  Debug Code for saving certificates, used when www.mojedatovaschranka.cz changes certificates
-/*
 
+/*
 		try{
 		  KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 			ks.load(null, null);
@@ -70,8 +70,8 @@ public class MyAndroidTrustManager implements X509TrustManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-*/		
+*/
+	
 		
 		//show me better solution how to trust someone on non-rooted android phone and i buy you a beer. 
 		int numberOfHits = 0;
