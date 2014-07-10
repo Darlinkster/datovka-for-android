@@ -34,10 +34,7 @@ import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
@@ -57,6 +54,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.kobjects.base64.Base64;
 import org.xml.sax.SAXException;
 
+import android.content.res.Resources.NotFoundException;
 import cz.abclinuxu.datoveschranky.common.entities.Hash;
 import cz.abclinuxu.datoveschranky.common.entities.MessageEnvelope;
 import cz.abclinuxu.datoveschranky.common.entities.MessageState;
@@ -69,8 +67,6 @@ import cz.abclinuxu.datoveschranky.common.impl.DataBoxEnvironment;
 import cz.abclinuxu.datoveschranky.common.impl.DataBoxException;
 import cz.abclinuxu.datoveschranky.common.impl.Utils;
 import cz.abclinuxu.datoveschranky.common.interfaces.AttachmentStorer;
-import cz.nic.datovka.R.raw;
-import cz.nic.datovka.activities.AppUtils;
 import cz.nic.datovka.tinyDB.exceptions.DSException;
 import cz.nic.datovka.tinyDB.exceptions.HttpException;
 import cz.nic.datovka.tinyDB.exceptions.SSLCertificateException;
@@ -108,10 +104,8 @@ public class DataBoxManager {
 	
 	private static final int PRODUCTION = 0;
 	//private static final int TESTING = 1;
-	private int environment;
 
 	private DataBoxManager(int environment) {
-		this.environment = environment;
 		if(environment == PRODUCTION){
 			this.config = new Config(DataBoxEnvironment.PRODUCTION);
 		} else {
@@ -308,33 +302,18 @@ public class DataBoxManager {
 		authorization = "Basic " + new String(Base64.encode(userPassword.getBytes()));
 
 		try {
-			KeyStore keyStore = KeyStore.getInstance("BKS");
 			SSLContext sslcontext = SSLContext.getInstance("TLS");
 			
-			InputStream keyStoreStream;
-			if(environment == PRODUCTION){
-				keyStoreStream = AppUtils.ctx.getResources().openRawResource(raw.key_store_production_env);
-			} else {
-				keyStoreStream = AppUtils.ctx.getResources().openRawResource(raw.key_store_test_env);
-			}
-			keyStore.load(keyStoreStream, "kiasdhkjsdh@$@R%.S1257".toCharArray());
-			
-			sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager(keyStore) }, null);
+			sslcontext.init(null, new TrustManager[] { new MyAndroidTrustManager() }, null);
 			this.socketFactory = sslcontext.getSocketFactory();
 			
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-			throw new SSLCertificateException(e.getMessage());
 		}catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			throw new SSLCertificateException(e.getMessage());
-		} catch (CertificateException e) {
-			e.printStackTrace();
-			throw new SSLCertificateException(e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new SSLCertificateException(e.getMessage());
 		} catch (KeyManagementException e) {
+			e.printStackTrace();
+			throw new SSLCertificateException(e.getMessage());
+		} catch (NotFoundException e) {
 			e.printStackTrace();
 			throw new SSLCertificateException(e.getMessage());
 		}
